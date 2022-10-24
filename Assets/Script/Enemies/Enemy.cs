@@ -10,11 +10,6 @@ namespace MonkeyMonk.Enemies
         private Action onDestroyEvent;
 
 
-
-
-
-
-
         #region === Events
 
         public void AddOnDestroyListener(Action action)
