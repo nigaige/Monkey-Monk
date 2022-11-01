@@ -6,7 +6,7 @@ public class Player : MonoBehaviour{
 
     [SerializeField] float hspeed = 1f;
     [SerializeField] float hmaxSpeed =1f;
-    
+
     float velocity = 0;
     float acceleration = 0;
 
@@ -26,7 +26,7 @@ public class Player : MonoBehaviour{
     KeyCode vkUp = KeyCode.UpArrow;
     KeyCode vkDown = KeyCode.DownArrow;
     KeyCode vkJump = KeyCode.Space;
-    KeyCode vkcheat1 = KeyCode.A;
+    KeyCode vkLiane = KeyCode.A; //touche Q TODO gestion des clavier
     KeyCode vkcheat2 = KeyCode.Z;
     KeyCode vkcheat3 = KeyCode.E;
 
@@ -36,7 +36,9 @@ public class Player : MonoBehaviour{
 
 
     Rigidbody rb;
-    int dir;
+    private int dir;
+    private int lastDir = 1;
+
     [SerializeField] int MaxJump = 2;
     public int nbJump = 1;
 
@@ -44,8 +46,12 @@ public class Player : MonoBehaviour{
     public Vector3 RayCast_Dir;
     
     [SerializeField] private LayerMask platformMask;
-    [SerializeField] private LayerMask platformfall;
-    [SerializeField] private LayerMask platformV;
+
+    //liane
+    [SerializeField] private Liane liane;
+    [SerializeField] private float lianeSpeed;
+    private float lianeAcceleration = 100000;
+
 
 
 
@@ -73,21 +79,11 @@ public class Player : MonoBehaviour{
     }
 
     void hMovment(bool left, bool right) {
-/*
-        transform.position += new Vector3(hspeed * Time.deltaTime * dir, 0, 0);
-        float hMovment = hspeed * Time.deltaTime * dir;
-
-
-
-        if(!onGround){
-            if (right == true)
-        }
-*/
-
-
-
         dir = (left ? -1 : 0) + (right ? 1 : 0);
-  
+        if (dir !=0 && dir != lastDir){
+            lastDir = dir;
+        }
+
         if (onGround){
             velocity = hspeed * dir;
             acceleration += velocity * Time.deltaTime;
@@ -97,18 +93,65 @@ public class Player : MonoBehaviour{
             if (dir == 0)               {acceleration = 0;      }
         }
 
-
-
         //déplacement selon la velocité
+        rb.velocity = new Vector3(acceleration,rb.velocity.y,0);
+        
         transform.position += new Vector3(acceleration,0,0);
 
     }
 
 
+    //orthogonal vector
+    public Vector3 PerpendicularClockwise(Vector3 vect){
+        return new Vector3(vect.y, -vect.x,0);
+    }
+    public Vector3 PerpendicularCounterClockwise(Vector3 vect){
+        return new Vector3(-vect.y, vect.x,0);
+    }
+
+
+    void CatchAcceleration(){
+
+    }
+
+    private void setLianeAcceleration(Vector3 dir, Vector3 lianeDir){
+        lianeAcceleration = Vector3.Dot(dir, lianeDir) ;
+        if (!liane.isLeftOfFixed()){
+            lianeAcceleration *= -1;
+        }
+    }
+
+    private void lianeMovment(){
+        Vector3 lianeDir = liane.getLianeDir();
+
+        if (lianeAcceleration == 100000) {
+            setLianeAcceleration(rb.velocity, lianeDir);
+        }
+
+        
+
+        
+        rb.velocity = PerpendicularCounterClockwise(lianeDir)*lianeAcceleration * lianeSpeed;
+
+    }
+
+
+    float CastARay(Vector3 pos,Vector3 dir,float length, LayerMask mask){
+        RaycastHit Hit;
+
+        Debug.DrawRay(pos, dir * length);
+        bool hitPlateform = Physics.Raycast(pos, transform.TransformDirection( dir), out Hit, length, mask);  
+        
+        if(hitPlateform) return Hit.distance;
+        return -1;
+    }
+
+
+
+
     void Checkground(){
         m_Collider = GetComponent<Collider>();
-        RaycastHit Hit1;
-        RaycastHit Hit2;
+
 
         Vector3 RayStart1;
         Vector3 RayStart2;
@@ -134,24 +177,42 @@ public class Player : MonoBehaviour{
         float raySize = (0.1f);
 
         RayCast_Dir = Vector3.down;
-        if(rayDir >0)
-            {
-                RayCast_Dir=Vector3.up;
-                raySize = (0.2f);
-            }
-        Debug.DrawRay(RayStart1, RayCast_Dir * raySize);
-        Debug.DrawRay(RayStart2, RayCast_Dir * raySize);
-        bool hitPlatformMask1 = Physics.Raycast(RayStart1, transform.TransformDirection( RayCast_Dir), out Hit1, raySize, platformMask);  
-        bool hitPlatformMask2 = Physics.Raycast(RayStart2, transform.TransformDirection( RayCast_Dir), out Hit2, raySize, platformMask);
-        float dist = Hit1.distance + Hit2.distance / 2;
+        if(rayDir >0){
+            RayCast_Dir=Vector3.up;
+            raySize = (0.2f);
+        }
 
-       // Debug.Log(dist);
+        float dist1 = CastARay(RayStart1, transform.TransformDirection( RayCast_Dir),raySize, platformMask);
+        float dist2 = CastARay(RayStart2, transform.TransformDirection( RayCast_Dir),raySize, platformMask);
 
-        if (hitPlatformMask1 || hitPlatformMask2) {
+        if (dist1 > 0 || dist2 > 0) {
+            float dist = (dist1 + dist2) / 2;
+
             onGround = true;
             nbJump = MaxJump;
         }else {
             onGround = false;
+        }
+
+    }
+
+
+    void startLiane(){
+        if(Input.GetKeyDown(vkLiane)){
+            if (liane.isLianeFixed() || liane.getIsExtending()){
+                liane.resetLiane();
+                lianeAcceleration = 100000;
+                acceleration = rb.velocity.x/1000;
+                
+            }else {
+                //TODO 8 DIRECTION
+                if (lastDir == 1){//right
+                    liane.startExtend(1);
+                }else {
+                    liane.startExtend(3);
+                }
+                
+            }
         }
     }
 
@@ -162,8 +223,22 @@ public class Player : MonoBehaviour{
 
     // Update is called once per frame
     void Update(){
-        hMovment(Input.GetKey(vkLeft), Input.GetKey(vkRight));
+        if (liane.isLianeFixed()){
+            Debug.Log("liane movment");
+            lianeMovment();    
+        }else {
+            hMovment(Input.GetKey(vkLeft), Input.GetKey(vkRight));
+            vMovment();
+        }
+        
+
+
+
+        
+        //extendLiane(new Vector3(0.5f,0.5f,0));
+
         Checkground ();
-        vMovment();
+        startLiane();
+
     }
 }
