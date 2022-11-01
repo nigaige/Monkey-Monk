@@ -8,16 +8,23 @@ namespace MonkeyMonk.Enemies.StateMachine
     public class WalkingState : State
     {
         [SerializeField] private float speed = 1f;
-
+        
         private int _walkingDirection = -1;
 
         private Rigidbody2D _rb2d;
         private Collider2D _collider;
 
+        private LayerMask _cliffHitMaskLayer;
+        private LayerMask _hitMaskLayer;
+
+
         private void Start()
         {
             _rb2d = Entity.GetComponent<Rigidbody2D>();
             _collider = Entity.GetComponent<Collider2D>();
+
+            _cliffHitMaskLayer = LayerMask.GetMask("Block");
+            _hitMaskLayer = LayerMask.GetMask("Block", "Enemy");
         }
 
         public override void EnterState()
@@ -28,12 +35,18 @@ namespace MonkeyMonk.Enemies.StateMachine
         public override void UpdateState()
         {
             // Check if near cliff
-            RaycastHit2D hit = Physics2D.Raycast(Entity.transform.position + new Vector3(_walkingDirection * _collider.bounds.extents.x, -_collider.bounds.extents.y) + new Vector3(_walkingDirection * 0.1f, 0.1f), Vector2.down, 0.2f);
+            RaycastHit2D cliffHit = Physics2D.Raycast(Entity.transform.position + new Vector3(_walkingDirection * _collider.bounds.extents.x, -_collider.bounds.extents.y) + new Vector3(_walkingDirection * 0.1f, 0.1f), Vector2.down, 0.2f, _cliffHitMaskLayer);
 
-            bool isGrounded = _collider.Cast(Vector2.down, new RaycastHit2D[1], 0.05f) > 0;
+            RaycastHit2D hit = Physics2D.Raycast(Entity.transform.position + new Vector3(_walkingDirection * (_collider.bounds.extents.x + 0.05f), 0), Vector2.right * _walkingDirection, 0.05f, _hitMaskLayer);
 
             // Switch dir if near cliff
-            if(!hit && isGrounded)
+            if(!cliffHit && Entity.IsGrounded)
+            {
+                _walkingDirection *= -1;
+            }
+
+            // Switch dir if near cliff
+            if (hit && Entity.IsGrounded)
             {
                 _walkingDirection *= -1;
             }

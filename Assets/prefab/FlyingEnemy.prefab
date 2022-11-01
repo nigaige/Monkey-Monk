@@ -11,12 +11,12 @@ GameObject:
   - component: {fileID: 1013426802355366005}
   - component: {fileID: 7045210275351237427}
   - component: {fileID: 1977442665767209339}
-  - component: {fileID: 4703473300726338930}
   - component: {fileID: 1319047078137101111}
   - component: {fileID: 7383593976976905939}
-  m_Layer: 0
-  m_Name: Enemy
-  m_TagString: Untagged
+  - component: {fileID: 3894942178914463459}
+  m_Layer: 8
+  m_Name: FlyingEnemy
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: ef4e1d5ff14483e4b9ddda16db8c9307, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -87,22 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!70 &4703473300726338930
-CapsuleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2065392604693888622}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 1}
-  m_Direction: 0
 --- !u!50 &1319047078137101111
 Rigidbody2D:
   serializedVersion: 4
@@ -136,6 +120,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27332224e8ac4ab478936eeb8d5294db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyStateMachine: {fileID: 8408350272955851566}
+  isJumpable: 1
+--- !u!61 &3894942178914463459
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2065392604693888622}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1 &4265335748697337480
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,7 +158,7 @@ GameObject:
   m_Component:
   - component: {fileID: 854407930968045606}
   - component: {fileID: 8408350272955851566}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: States
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -181,8 +193,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fead1c120abbc247b19271ad596f9cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entity: {fileID: 7383593976976905939}
-  startingState: {fileID: 7820948243793955615}
+  startingState: {fileID: 0}
+  knockState: {fileID: 0}
 --- !u!1 &5994429880692730487
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,8 +204,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2432696076230315409}
-  - component: {fileID: 7820948243793955615}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Idle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -215,16 +226,3 @@ Transform:
   m_Father: {fileID: 854407930968045606}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7820948243793955615
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5994429880692730487}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 620f213d099495c40bdbb436bc60e842, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 1

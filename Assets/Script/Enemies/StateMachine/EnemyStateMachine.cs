@@ -6,15 +6,17 @@ namespace MonkeyMonk.Enemies.StateMachine
 {
     public class EnemyStateMachine : MonoBehaviour
     {
-        [SerializeField] private Enemy entity;
-        public Enemy Entity { get => entity; }
+        public Enemy Entity { get; private set; }
 
         [SerializeField] private State startingState;
+        [SerializeField] private State knockState;
 
         private State _currentState;
 
-        public void Awake()
+        public void Initialize(Enemy entity)
         {
+            Entity = entity;
+
             // Init all states
             State[] states = gameObject.GetComponentsInChildren<State>();
             foreach (State state in states)
@@ -25,6 +27,13 @@ namespace MonkeyMonk.Enemies.StateMachine
             SwitchState(startingState);
         }
 
+        public void Knock()
+        {
+            SwitchState(knockState);
+        }
+
+
+
         public void SwitchState(State state)
         {
             _currentState?.ExitState();
@@ -32,9 +41,15 @@ namespace MonkeyMonk.Enemies.StateMachine
             _currentState?.EnterState();
         }
 
+
         private void Update()
         {
             _currentState?.UpdateState();
+
+            if (_currentState != null && _currentState.IsCompleted)
+            {
+                SwitchState(startingState);
+            }
         }
 
         private void FixedUpdate()

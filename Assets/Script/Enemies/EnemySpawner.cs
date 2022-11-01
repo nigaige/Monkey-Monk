@@ -16,7 +16,10 @@ namespace MonkeyMonk.Enemies
             RespawnEnemy();
         }
 
-        
+        private void Update()
+        {
+            
+        }
 
         void RespawnEvent()
         {
@@ -34,6 +37,16 @@ namespace MonkeyMonk.Enemies
         private void OnDestroy()
         {
             if (_spawnEnemy != null) _spawnEnemy.RemoveOnDestroyListener(RespawnEvent);
+        }
+
+        // Preview in editor
+        private void OnDrawGizmosSelected()
+        {
+            if (enemyPrefab == null) return;
+
+            if (enemyPrefab.TryGetComponent(out MeshFilter filter)) {
+                Gizmos.DrawMesh(filter.sharedMesh, transform.position, transform.rotation, enemyPrefab.transform.localScale);
+            }
         }
     }
 }
