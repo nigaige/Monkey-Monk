@@ -9,6 +9,8 @@ public class PlayerGrab : MonoBehaviour
     [SerializeField] private Transform grabParent;
     [SerializeField] private BoxCollider2D catchBox;
 
+    private Rigidbody2D _rb2d;
+
     private Collider2D[] _overlappingColliders = new Collider2D[6];
     private GameObject _grabbedObj;
     private ContactFilter2D _grabFilter = new ContactFilter2D();
@@ -16,6 +18,17 @@ public class PlayerGrab : MonoBehaviour
     private void OnEnable()
     {
         PlayerInput.GetPlayerByIndex(0).actions["catch"].performed += Catch_performed;
+    }
+
+    private void Awake()
+    {
+        _rb2d = catchBox.attachedRigidbody;
+    }
+
+    private void Update()
+    {
+        if (_rb2d.velocity.x > 0) catchBox.transform.localPosition = new Vector3(1, 0, 0);
+        if (_rb2d.velocity.x < 0) catchBox.transform.localPosition = new Vector3(-1, 0, 0);
     }
 
     private void Catch_performed(InputAction.CallbackContext obj)
