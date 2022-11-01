@@ -92,7 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fead1c120abbc247b19271ad596f9cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingState: {fileID: 0}
+  startingState: {fileID: 3068680863927689095}
   knockState: {fileID: 0}
 --- !u!1 &8619606685248268439
 GameObject:
@@ -108,6 +108,7 @@ GameObject:
   - component: {fileID: 8753154246315191758}
   - component: {fileID: 954915571921403946}
   - component: {fileID: 7082529121462233069}
+  - component: {fileID: 6022698550958454847}
   m_Layer: 8
   m_Name: MovingFlyingEnemy
   m_TagString: Enemy
@@ -196,7 +197,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 1
   m_SleepingMode: 1
@@ -242,3 +243,16 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &6022698550958454847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8619606685248268439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21c6e5ca523fb3a4ba310b301093d66e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 954915571921403946}

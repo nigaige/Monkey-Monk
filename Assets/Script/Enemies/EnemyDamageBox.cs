@@ -1,59 +1,61 @@
-using MonkeyMonk.Enemies;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyDamageBox : MonoBehaviour
+namespace MonkeyMonk.Enemies
 {
-    [SerializeField] private Enemy enemy;
-
-    private Collider2D _collider;
-    private Rigidbody2D _rb2d;
-
-    private void Awake()
+    public class EnemyDamageBox : MonoBehaviour
     {
-        _collider = GetComponent<Collider2D>();
-        _rb2d = _collider.attachedRigidbody;
-    }
+        [SerializeField] private Enemy enemy;
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (enemy.IsKnocked) return;
+        private Collider2D _collider;
+        private Rigidbody2D _rb2d;
 
-        if (collision.tag != "Player" || enemy.IsKnocked) return;
-
-
-        Rigidbody2D otherRb = collision.attachedRigidbody;
-        if (enemy.IsJumpable && otherRb.velocity.y < 0)
+        private void Awake()
         {
-            // Check if player was on top of enemy
-
-            float y1 = collision.bounds.center.y - collision.bounds.extents.y;
-            float y2 = _collider.bounds.center.y + _collider.bounds.extents.y;
-
-            float last_y1 = y1 - otherRb.velocity.y * Time.fixedDeltaTime;
-            float last_y2 = y2 - _rb2d.velocity.y * Time.fixedDeltaTime;
-
-            if (last_y1 >= last_y2)
-            {
-                Jumped(collision);
-                return;
-            }
+            _collider = GetComponent<Collider2D>();
+            _rb2d = _collider.attachedRigidbody;
         }
 
-        // Else
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (enemy.IsKnocked) return;
 
-        Hit(collision);
-    }
+            if (collision.tag != "Player" || enemy.IsKnocked) return;
 
-    private void Jumped(Collider2D collision)
-    {
-        Debug.Log("Enemy Death - " + collision.gameObject);
-    }
 
-    private void Hit(Collider2D collision)
-    {
-        // Damage player
-        Debug.Log("Hit Player - " + collision.gameObject);
+            Rigidbody2D otherRb = collision.attachedRigidbody;
+            if (enemy.IsJumpable && otherRb.velocity.y < 0)
+            {
+                // Check if player was on top of enemy
+
+                float y1 = collision.bounds.center.y - collision.bounds.extents.y;
+                float y2 = _collider.bounds.center.y + _collider.bounds.extents.y;
+
+                float last_y1 = y1 - otherRb.velocity.y * Time.fixedDeltaTime;
+                float last_y2 = y2 - _rb2d.velocity.y * Time.fixedDeltaTime;
+
+                if (last_y1 >= last_y2)
+                {
+                    Jumped(collision);
+                    return;
+                }
+            }
+
+            // Else
+
+            Hit(collision);
+        }
+
+        private void Jumped(Collider2D collision)
+        {
+            Debug.Log("Enemy Death - " + collision.gameObject);
+        }
+
+        private void Hit(Collider2D collision)
+        {
+            // Damage player
+            Debug.Log("Hit Player - " + collision.gameObject);
+        }
     }
 }

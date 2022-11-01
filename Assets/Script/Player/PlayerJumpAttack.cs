@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerJumpAttack : MonoBehaviour
 {
-    [SerializeField] private TEST_PlayerMovement player;
+    [SerializeField] private GameObject player;
 
     private Collider2D _collider;
     private Rigidbody2D _rb2d;
