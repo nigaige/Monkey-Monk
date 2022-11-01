@@ -7,7 +7,6 @@ public class Player : MonoBehaviour{
     [SerializeField] float hspeed = 1f;
     [SerializeField] float hmaxSpeed =1f;
 
-
     float velocity = 0;
     float acceleration = 0;
 
@@ -39,6 +38,7 @@ public class Player : MonoBehaviour{
     Rigidbody rb;
     private int dir;
     private int lastDir = 1;
+
     [SerializeField] int MaxJump = 2;
     public int nbJump = 1;
 
@@ -47,12 +47,11 @@ public class Player : MonoBehaviour{
     
     [SerializeField] private LayerMask platformMask;
 
-
-
     //liane
     [SerializeField] private Liane liane;
     [SerializeField] private float lianeSpeed;
     private float lianeAcceleration = 100000;
+
 
 
 
@@ -84,6 +83,7 @@ public class Player : MonoBehaviour{
         if (dir !=0 && dir != lastDir){
             lastDir = dir;
         }
+
         if (onGround){
             velocity = hspeed * dir;
             acceleration += velocity * Time.deltaTime;
@@ -133,23 +133,7 @@ public class Player : MonoBehaviour{
         
         rb.velocity = PerpendicularCounterClockwise(lianeDir)*lianeAcceleration * lianeSpeed;
 
-
-        
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     float CastARay(Vector3 pos,Vector3 dir,float length, LayerMask mask){
@@ -167,6 +151,7 @@ public class Player : MonoBehaviour{
 
     void Checkground(){
         m_Collider = GetComponent<Collider>();
+
 
         Vector3 RayStart1;
         Vector3 RayStart2;
@@ -202,6 +187,7 @@ public class Player : MonoBehaviour{
 
         if (dist1 > 0 || dist2 > 0) {
             float dist = (dist1 + dist2) / 2;
+
             onGround = true;
             nbJump = MaxJump;
         }else {
@@ -230,7 +216,6 @@ public class Player : MonoBehaviour{
         }
     }
 
-
     // Start is called before the first frame update
     void Start(){
         rb = GetComponent<Rigidbody>();
@@ -238,7 +223,6 @@ public class Player : MonoBehaviour{
 
     // Update is called once per frame
     void Update(){
-
         if (liane.isLianeFixed()){
             Debug.Log("liane movment");
             lianeMovment();    
@@ -255,5 +239,6 @@ public class Player : MonoBehaviour{
 
         Checkground ();
         startLiane();
+
     }
 }
