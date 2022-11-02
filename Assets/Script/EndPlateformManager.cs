@@ -6,17 +6,6 @@ using UnityEngine.SceneManagement;
 public class EndPlateformManager : MonoBehaviour
 {
     private string HUB_NAME = "HubScene";
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     private void OnTriggerEnter(Collider other)
     {
