@@ -1,30 +1,26 @@
-using MonkeyMonk.Enemies;
-using MonkeyMonk.Enemies.StateMachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyGrabbable : MonoBehaviour, IGrabbable
+public class ObjectGrabbable : MonoBehaviour, IGrabbable
 {
-    private Enemy _enemy;
     private Rigidbody2D _rb2d;
 
     private void Awake()
     {
-        _enemy = GetComponent<Enemy>();
         _rb2d = GetComponent<Rigidbody2D>();
     }
 
     public void OnGrabbed(PlayerGrab grab)
     {
-        _enemy.StateMachine.SwitchState(null);
+        Physics2D.IgnoreCollision(grab.GetComponent<Collider2D>(), GetComponent<Collider2D>());
         _rb2d.velocity = Vector2.zero;
         _rb2d.isKinematic = true;
     }
 
     public void OnUnGrabbed(PlayerGrab grab)
     {
-        _enemy.Knock();
+        //Physics2D.IgnoreCollision(grab.GetComponent<Collider2D>(), GetComponent<Collider2D>(), false);
         _rb2d.isKinematic = false;
     }
 }

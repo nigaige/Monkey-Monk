@@ -43,7 +43,7 @@ public class PlayerGrab : MonoBehaviour
 
                 if (collider2D.TryGetComponent(out IGrabbable grab))
                 {
-                    grab.OnGrabbed();
+                    grab.OnGrabbed(this);
                     collider2D.transform.SetParent(grabParent, false);
                     collider2D.transform.localPosition = Vector3.zero;
 
@@ -58,7 +58,7 @@ public class PlayerGrab : MonoBehaviour
             Vector2 shotDir = ((Vector3)PlayerInput.GetPlayerByIndex(0).actions["Pointer"].ReadValue<Vector2>() - Camera.main.WorldToScreenPoint(transform.position)).normalized;
             
             _grabbedObj.transform.SetParent(null);
-            _grabbedObj.GetComponent<IGrabbable>().OnUnGrabbed();
+            _grabbedObj.GetComponent<IGrabbable>().OnUnGrabbed(this);
             _grabbedObj.GetComponent<Rigidbody2D>().velocity = shotDir * force;
 
             _grabbedObj = null;

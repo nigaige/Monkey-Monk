@@ -4,6 +4,6 @@ using UnityEngine;
 
 public interface IGrabbable
 {
-    public abstract void OnGrabbed();
-    public abstract void OnUnGrabbed();
+    public abstract void OnGrabbed(PlayerGrab grab);
+    public abstract void OnUnGrabbed(PlayerGrab grab);
 }
