@@ -7,24 +7,24 @@ using UnityEngine;
 public class EnemyGrabbable : MonoBehaviour, IGrabbable
 {
     private Enemy _enemy;
-    private Rigidbody2D _rb2d;
+    private Rigidbody _rb;
 
     private void Awake()
     {
         _enemy = GetComponent<Enemy>();
-        _rb2d = GetComponent<Rigidbody2D>();
+        _rb = GetComponent<Rigidbody>();
     }
 
     public void OnGrabbed(PlayerGrab grab)
     {
         _enemy.StateMachine.SwitchState(null);
-        _rb2d.velocity = Vector2.zero;
-        _rb2d.isKinematic = true;
+        _rb.velocity = Vector2.zero;
+        _rb.isKinematic = true;
     }
 
     public void OnUnGrabbed(PlayerGrab grab)
     {
         _enemy.Knock();
-        _rb2d.isKinematic = false;
+        _rb.isKinematic = false;
     }
 }

@@ -13,19 +13,19 @@ namespace MonkeyMonk.Enemies.StateMachine
         private bool _direction = true;
         private int _currentIndex;
         private Vector2 _startingPosition;
-        private Rigidbody2D _rb2d;
+        private Rigidbody _rb;
 
         private void Start()
         {
             _startingPosition = transform.position;
-            _rb2d = Entity.GetComponent<Rigidbody2D>();
+            _rb = Entity.GetComponent<Rigidbody>();
         }
 
         public override void UpdateState()
         {
             // Move
             Vector2 dir = (_startingPosition + path[_currentIndex]) - (Vector2)Entity.transform.position;
-            _rb2d.velocity = dir.normalized * speed;
+            _rb.velocity = dir.normalized * speed;
 
             // Check next target
             if (Vector2.Distance(_startingPosition + path[_currentIndex], (Vector2)Entity.transform.position) < 0.01f)

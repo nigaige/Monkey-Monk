@@ -6,11 +6,13 @@ namespace MonkeyMonk.Enemies.StateMachine
 {
     public class KnockedState : State
     {
-        private Rigidbody2D _rb2d;
+        private Rigidbody _rb;
 
-        private void Start()
+        public override void Initialize(EnemyStateMachine stateMachine)
         {
-            _rb2d = Entity.GetComponent<Rigidbody2D>();
+            base.Initialize(stateMachine);
+
+            _rb = Entity.GetComponent<Rigidbody>();
         }
 
         public override void UpdateState()
@@ -18,7 +20,7 @@ namespace MonkeyMonk.Enemies.StateMachine
             if (Entity.IsGrounded)
             {
                 if (Entity.IsKnocked) 
-                    _rb2d.velocity = Vector2.zero;
+                    _rb.velocity = Vector2.zero;
                 else 
                     ExitState();
             }

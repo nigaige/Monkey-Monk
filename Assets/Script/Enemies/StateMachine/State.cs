@@ -16,7 +16,7 @@ namespace MonkeyMonk.Enemies.StateMachine
         private State _currentSubState;
 
 
-        public void Initialize(EnemyStateMachine stateMachine)
+        public virtual void Initialize(EnemyStateMachine stateMachine)
         {
             _stateMachine = stateMachine;
         }

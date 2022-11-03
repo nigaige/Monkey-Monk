@@ -7,13 +7,13 @@ public class PlayerGrab : MonoBehaviour
 {
     [SerializeField] private float force = 5f;
     [SerializeField] private Transform grabParent;
-    [SerializeField] private BoxCollider2D catchBox;
+    [SerializeField] private Transform catchBoxPosition;
+    [SerializeField] private Vector3 catchBoxBoundsExtents;
 
-    private Rigidbody2D _rb2d;
+    private Rigidbody _rb;
 
-    private Collider2D[] _overlappingColliders = new Collider2D[6];
+    private Collider[] _overlappingColliders = new Collider[6];
     private GameObject _grabbedObj;
-    private ContactFilter2D _grabFilter = new ContactFilter2D();
 
     private void OnEnable()
     {
@@ -22,32 +22,32 @@ public class PlayerGrab : MonoBehaviour
 
     private void Awake()
     {
-        _rb2d = catchBox.attachedRigidbody;
+        _rb = GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
-        if (_rb2d.velocity.x > 0) catchBox.transform.localPosition = new Vector3(1, 0, 0);
-        if (_rb2d.velocity.x < 0) catchBox.transform.localPosition = new Vector3(-1, 0, 0);
+        if (_rb.velocity.x > 0) catchBoxPosition.localPosition = new Vector3(1, 0, 0);
+        if (_rb.velocity.x < 0) catchBoxPosition.localPosition = new Vector3(-1, 0, 0);
     }
 
     private void Catch_performed(InputAction.CallbackContext obj)
     {
         if (_grabbedObj == null)
         {
-            int collidersCount = catchBox.OverlapCollider(_grabFilter, _overlappingColliders);
+            _overlappingColliders = Physics.OverlapBox(catchBoxPosition.position, catchBoxBoundsExtents);
 
-            for (int i = 0; i < collidersCount; i++)
+            for (int i = 0; i < _overlappingColliders.Length; i++)
             {
-                Collider2D collider2D = _overlappingColliders[i];
+                Collider collider = _overlappingColliders[i];
 
-                if (collider2D.TryGetComponent(out IGrabbable grab))
+                if (collider.TryGetComponent(out IGrabbable grab))
                 {
                     grab.OnGrabbed(this);
-                    collider2D.transform.SetParent(grabParent, false);
-                    collider2D.transform.localPosition = Vector3.zero;
+                    collider.transform.SetParent(grabParent, false);
+                    collider.transform.localPosition = Vector3.zero;
 
-                    _grabbedObj = collider2D.gameObject;
+                    _grabbedObj = collider.gameObject;
 
                     break;
                 }
@@ -59,10 +59,17 @@ public class PlayerGrab : MonoBehaviour
             
             _grabbedObj.transform.SetParent(null);
             _grabbedObj.GetComponent<IGrabbable>().OnUnGrabbed(this);
-            _grabbedObj.GetComponent<Rigidbody2D>().velocity = shotDir * force;
+            _grabbedObj.GetComponent<Rigidbody>().velocity = shotDir * force;
 
             _grabbedObj = null;
         }
         
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (catchBoxPosition == null) return;
+
+        Gizmos.DrawWireCube(catchBoxPosition.transform.position, catchBoxBoundsExtents);
     }
 }

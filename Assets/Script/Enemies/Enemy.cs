@@ -18,9 +18,9 @@ namespace MonkeyMonk.Enemies
         public bool IsJumpable { get => isJumpable; }
 
 
-        private Collider2D _collider;
+        private Collider _collider;
 
-        private ContactFilter2D _groundFilter;
+        private LayerMask _groundMask;
         private float _knockTimeLeft;
 
         private Action onDestroyEvent;
@@ -30,8 +30,8 @@ namespace MonkeyMonk.Enemies
         {
             enemyStateMachine.Initialize(this);
 
-            _collider = GetComponent<Collider2D>();
-            _groundFilter.SetLayerMask(LayerMask.GetMask("Block"));
+            _collider = GetComponent<Collider>();
+            _groundMask = LayerMask.GetMask("Block");
         }
 
         public void Knock()
@@ -45,13 +45,18 @@ namespace MonkeyMonk.Enemies
 
         private void Update()
         {
-            IsGrounded = _collider.Cast(Vector2.down, _groundFilter, new RaycastHit2D[1], 0.05f) > 0;
-
             if (IsKnocked && IsGrounded)
             {
                 if (_knockTimeLeft > 0) _knockTimeLeft -= Time.deltaTime;
                 if (_knockTimeLeft <= 0) IsKnocked = false;
             }
+        }
+
+        private void FixedUpdate()
+        {
+            IsGrounded = Physics.Raycast(new Ray(transform.position + new Vector3(0, -_collider.bounds.extents.y + 0.05f), Vector3.down), 0.1f, _groundMask)
+                    || Physics.Raycast(new Ray(transform.position + new Vector3(-_collider.bounds.extents.x, -_collider.bounds.extents.y + 0.05f), Vector3.down), 0.1f, _groundMask)
+                    || Physics.Raycast(new Ray(transform.position + new Vector3(_collider.bounds.extents.x, -_collider.bounds.extents.y + 0.05f), Vector3.down), 0.1f, _groundMask);
         }
 
         #region === Events
