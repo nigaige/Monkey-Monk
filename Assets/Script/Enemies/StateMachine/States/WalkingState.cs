@@ -38,7 +38,7 @@ namespace MonkeyMonk.Enemies.StateMachine
             // Check if near cliff
             bool IsNearCliff = Physics.Raycast(Entity.transform.position + new Vector3(_walkingDirection * _collider.bounds.extents.x, -_collider.bounds.extents.y, 0) + new Vector3(_walkingDirection * 0.1f, 0.1f, 0), Vector3.down, 0.2f, _cliffHitMaskLayer);
 
-            bool IsNearWall = Physics.Raycast(Entity.transform.position + new Vector3(_walkingDirection * (_collider.bounds.extents.x), 0, 0), Vector3.right * _walkingDirection, 0.05f, _hitMaskLayer);
+            bool IsNearWall = Physics.Raycast(Entity.transform.position + new Vector3(_walkingDirection * (_collider.bounds.extents.x - 0.05f), 0, 0), Vector3.right * _walkingDirection, 0.1f, _hitMaskLayer);
 
             // Switch dir if near cliff
             if(!IsNearCliff && Entity.IsGrounded)

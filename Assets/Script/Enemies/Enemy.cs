@@ -16,6 +16,7 @@ namespace MonkeyMonk.Enemies
         public bool IsKnocked { get; private set; }
         public bool IsGrounded { get; private set; }
         public bool IsJumpable { get => isJumpable; }
+        public int LookDirection { get; private set; } = 1;
 
 
         private Collider _collider;
@@ -40,6 +41,11 @@ namespace MonkeyMonk.Enemies
             _knockTimeLeft = 2.0f;
 
             enemyStateMachine.Knock();
+        }
+
+        public void ChangeDirection(int dir)
+        {
+            LookDirection = dir;
         }
 
 

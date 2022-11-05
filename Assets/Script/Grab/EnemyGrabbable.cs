@@ -20,11 +20,18 @@ public class EnemyGrabbable : MonoBehaviour, IGrabbable
         _enemy.StateMachine.SwitchState(null);
         _rb.velocity = Vector2.zero;
         _rb.isKinematic = true;
+        _rb.interpolation = RigidbodyInterpolation.None;
     }
 
     public void OnUnGrabbed(PlayerGrab grab)
     {
         _enemy.Knock();
         _rb.isKinematic = false;
+        _rb.interpolation = RigidbodyInterpolation.Interpolate;
+    }
+
+    public bool IsHeavy()
+    {
+        return true;
     }
 }

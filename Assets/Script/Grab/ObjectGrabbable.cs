@@ -16,11 +16,18 @@ public class ObjectGrabbable : MonoBehaviour, IGrabbable
         Physics.IgnoreCollision(grab.GetComponent<Collider>(), GetComponent<Collider>());
         _rb.velocity = Vector2.zero;
         _rb.isKinematic = true;
+        _rb.interpolation = RigidbodyInterpolation.None;
     }
 
     public void OnUnGrabbed(PlayerGrab grab)
     {
         //Physics.IgnoreCollision(grab.GetComponent<Collider>(), GetComponent<Collider>(), false);
         _rb.isKinematic = false;
+        _rb.interpolation = RigidbodyInterpolation.Interpolate;
+    }
+
+    public bool IsHeavy()
+    {
+        return true;
     }
 }
