@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyGrabbable : MonoBehaviour, IGrabbable
+public class EnemyGrabbable : Grabbable
 {
     private Enemy _enemy;
     private Rigidbody _rb;
@@ -15,7 +15,12 @@ public class EnemyGrabbable : MonoBehaviour, IGrabbable
         _rb = GetComponent<Rigidbody>();
     }
 
-    public void OnGrabbed(PlayerGrab grab)
+    public override bool IsHeavy()
+    {
+        return true;
+    }
+
+    public override void OnGrabbed(PlayerGrab grab)
     {
         _enemy.StateMachine.SwitchState(null);
         _rb.velocity = Vector2.zero;
@@ -23,15 +28,10 @@ public class EnemyGrabbable : MonoBehaviour, IGrabbable
         _rb.interpolation = RigidbodyInterpolation.None;
     }
 
-    public void OnUnGrabbed(PlayerGrab grab)
+    public override void OnUnGrabbed(PlayerGrab grab)
     {
         _enemy.Knock();
         _rb.isKinematic = false;
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
-    }
-
-    public bool IsHeavy()
-    {
-        return true;
     }
 }

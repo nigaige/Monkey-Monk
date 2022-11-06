@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectGrabbable : MonoBehaviour, IGrabbable
+public class ObjectGrabbable : Grabbable
 {
     private Rigidbody _rb;
 
@@ -11,7 +11,12 @@ public class ObjectGrabbable : MonoBehaviour, IGrabbable
         _rb = GetComponent<Rigidbody>();
     }
 
-    public void OnGrabbed(PlayerGrab grab)
+    public override bool IsHeavy()
+    {
+        return true;
+    }
+
+    public override void OnGrabbed(PlayerGrab grab)
     {
         Physics.IgnoreCollision(grab.GetComponent<Collider>(), GetComponent<Collider>());
         _rb.velocity = Vector2.zero;
@@ -19,15 +24,10 @@ public class ObjectGrabbable : MonoBehaviour, IGrabbable
         _rb.interpolation = RigidbodyInterpolation.None;
     }
 
-    public void OnUnGrabbed(PlayerGrab grab)
+    public override void OnUnGrabbed(PlayerGrab grab)
     {
         //Physics.IgnoreCollision(grab.GetComponent<Collider>(), GetComponent<Collider>(), false);
         _rb.isKinematic = false;
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
-    }
-
-    public bool IsHeavy()
-    {
-        return true;
     }
 }

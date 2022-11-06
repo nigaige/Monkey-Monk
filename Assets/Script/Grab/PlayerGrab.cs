@@ -40,7 +40,7 @@ public class PlayerGrab : MonoBehaviour
                 Collider collider = _overlappingColliders[i];
 
                 // Grab first grabbable
-                if (collider.TryGetComponent(out IGrabbable grab))
+                if (collider.TryGetComponent(out Grabbable grab) && grab.IsGrabbable())
                 {
                     grab.OnGrabbed(this);
 
@@ -59,7 +59,7 @@ public class PlayerGrab : MonoBehaviour
         {
             Vector2 shotDir = ((Vector3)GetComponent<PlayerInput>().actions["Pointer"].ReadValue<Vector2>() - Camera.main.WorldToScreenPoint(transform.position)).normalized;
             _grabbedObj.transform.SetParent(null);
-            _grabbedObj.GetComponent<IGrabbable>().OnUnGrabbed(this);
+            _grabbedObj.GetComponent<Grabbable>().OnUnGrabbed(this);
 
             if (_grabbedObj.TryGetComponent(out Projectile proj))
                 proj.Initialize(shotDir, gameObject);

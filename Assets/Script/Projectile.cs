@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile : MonoBehaviour, IGrabbable
+public class Projectile : Grabbable
 {
     private Rigidbody _rb;
 
@@ -53,20 +53,20 @@ public class Projectile : MonoBehaviour, IGrabbable
         }
     }
 
-    public void OnGrabbed(PlayerGrab grab)
+    public override bool IsHeavy()
+    {
+        return false;
+    }
+
+    public override void OnGrabbed(PlayerGrab grab)
     {
         _rb.isKinematic = true;
         _rb.interpolation = RigidbodyInterpolation.None;
     }
 
-    public void OnUnGrabbed(PlayerGrab grab)
+    public override void OnUnGrabbed(PlayerGrab grab)
     {
         _rb.isKinematic = false;
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
-    }
-
-    public bool IsHeavy()
-    {
-        return false;
     }
 }
