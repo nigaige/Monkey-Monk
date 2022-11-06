@@ -22,6 +22,8 @@ public class EnemyGrabbable : Grabbable
 
     public override void OnGrabbed(PlayerGrab grab)
     {
+        base.OnGrabbed(grab);
+
         _enemy.StateMachine.SwitchState(null);
         _rb.velocity = Vector2.zero;
         _rb.isKinematic = true;
@@ -30,6 +32,8 @@ public class EnemyGrabbable : Grabbable
 
     public override void OnUnGrabbed(PlayerGrab grab)
     {
+        base.OnUnGrabbed(grab);
+
         _enemy.Knock();
         _rb.isKinematic = false;
         _rb.interpolation = RigidbodyInterpolation.Interpolate;

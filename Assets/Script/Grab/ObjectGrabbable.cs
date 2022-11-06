@@ -18,6 +18,8 @@ public class ObjectGrabbable : Grabbable
 
     public override void OnGrabbed(PlayerGrab grab)
     {
+        base.OnGrabbed(grab);
+
         Physics.IgnoreCollision(grab.GetComponent<Collider>(), GetComponent<Collider>());
         _rb.velocity = Vector2.zero;
         _rb.isKinematic = true;
@@ -26,6 +28,8 @@ public class ObjectGrabbable : Grabbable
 
     public override void OnUnGrabbed(PlayerGrab grab)
     {
+        base.OnUnGrabbed(grab);
+
         //Physics.IgnoreCollision(grab.GetComponent<Collider>(), GetComponent<Collider>(), false);
         _rb.isKinematic = false;
         _rb.interpolation = RigidbodyInterpolation.Interpolate;

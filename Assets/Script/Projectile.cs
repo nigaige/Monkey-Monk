@@ -60,12 +60,16 @@ public class Projectile : Grabbable
 
     public override void OnGrabbed(PlayerGrab grab)
     {
+        base.OnGrabbed(grab);
+        
         _rb.isKinematic = true;
         _rb.interpolation = RigidbodyInterpolation.None;
     }
 
     public override void OnUnGrabbed(PlayerGrab grab)
     {
+        base.OnUnGrabbed(grab);
+
         _rb.isKinematic = false;
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
