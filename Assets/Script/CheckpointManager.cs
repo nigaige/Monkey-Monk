@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CheckpointManager : MonoBehaviour
+public class CheckpointManager : MonoBehaviour, ITriggerable
 {
 
     [SerializeField] private GameManager gameManager;
@@ -15,10 +15,23 @@ public class CheckpointManager : MonoBehaviour
     {
         if (IsActive == false)
         {
-            IsActive = true;
-            gameManager.SetRespawnPoint(gameObject.transform.position);
-            var checkpointRanderer = gameObject.transform.GetChild(0).gameObject.GetComponent<Renderer>();
-            checkpointRanderer.material.SetColor("_Color", Color.green);
+            ActivateTrigger(true);
         }
+    }
+
+    public void ActivateTrigger(bool status)
+    {
+        IsActive = status;
+        if (status)
+        {
+            TriggerAction();
+        }
+    }
+
+    public void TriggerAction()
+    {
+        gameManager.SetRespawnPoint(gameObject.transform.position);
+        var checkpointRanderer = gameObject.transform.GetChild(0).gameObject.GetComponent<Renderer>();
+        checkpointRanderer.material.SetColor("_Color", Color.green);
     }
 }

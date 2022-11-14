@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _respawnPoint = new Vector3(-1.5f, 0f, 0f);
+        _respawnPoint = new Vector3(-4.83f, 0f, 0f);
     }
 
     // Update is called once per frame
@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
     private void RespawnMonkey()
     {
         monkey.gameObject.transform.position = _respawnPoint;
+        monkey.GetComponent<Rigidbody>().velocity = new Vector3(0,0,0);
     }
 
     public void SetRespawnPoint(Vector3 newRespawnPoint)

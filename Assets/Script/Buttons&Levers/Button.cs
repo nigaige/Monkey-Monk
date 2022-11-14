@@ -6,7 +6,9 @@ public class Button : MonoBehaviour, ITriggerable
 {
     public bool IsActive { get; set; }
 
-    [SerializeField] GameObject wall;
+    [SerializeField] GameObject activableObject;
+    private IActivable activableObjectScript;
+
 
     private void Start()
     {
@@ -14,6 +16,7 @@ public class Button : MonoBehaviour, ITriggerable
         var buttonBody = gameObject.transform.GetChild(1).gameObject;
         var buttonRenderer = buttonBody.GetComponent<Renderer>();
         buttonRenderer.material.SetColor("_Color", Color.red);
+        activableObjectScript = activableObject.GetComponent<IActivable>();
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -21,12 +24,13 @@ public class Button : MonoBehaviour, ITriggerable
         {
             // Change the button to mark it as activated
             var buttonBody = gameObject.transform.GetChild(1).gameObject;
-            var buttonBodyRotation = buttonBody.transform.rotation;
-            var buttonBodyPosition= buttonBody.transform.position;
+            var buttonBodyRotation = buttonBody.transform.localRotation;
+            var buttonBodyPosition= buttonBody.transform.localPosition;
             buttonBodyPosition.y -= 0.1f;
-            buttonBody.transform.SetPositionAndRotation(buttonBodyPosition, buttonBodyRotation);
+            buttonBody.transform.SetLocalPositionAndRotation(buttonBodyPosition, buttonBodyRotation);
             var buttonRenderer = buttonBody.GetComponent<Renderer>();
             buttonRenderer.material.SetColor("_Color", Color.green);
+            // ButtonAction
             ActivateTrigger(true);
         }
 
@@ -43,6 +47,6 @@ public class Button : MonoBehaviour, ITriggerable
 
     public void TriggerAction()
     {
-        Destroy(wall);
+        activableObjectScript.Activate();
     }
 }
