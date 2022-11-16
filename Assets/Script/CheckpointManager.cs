@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CheckpointManager : MonoBehaviour, ITriggerable
+public class CheckpointManager : ATriggerable
 {
 
     [SerializeField] private GameManager gameManager;
@@ -19,7 +19,7 @@ public class CheckpointManager : MonoBehaviour, ITriggerable
         }
     }
 
-    public void ActivateTrigger(bool status)
+    public override void ActivateTrigger(bool status)
     {
         IsActive = status;
         if (status)
@@ -28,7 +28,7 @@ public class CheckpointManager : MonoBehaviour, ITriggerable
         }
     }
 
-    public void TriggerAction()
+    public override void TriggerAction()
     {
         gameManager.SetRespawnPoint(gameObject.transform.position);
         var checkpointRanderer = gameObject.transform.GetChild(0).gameObject.GetComponent<Renderer>();

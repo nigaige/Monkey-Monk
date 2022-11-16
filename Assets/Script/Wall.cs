@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Wall : MonoBehaviour, IActivable
+public class Wall : AActivable
 {
-    public void Activate()
+
+    public override void Activate()
     {
         Destroy(gameObject);
     }

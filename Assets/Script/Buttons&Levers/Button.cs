@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Button : MonoBehaviour, ITriggerable
+public class Button : ATriggerable
 {
     public bool IsActive { get; set; }
 
-    [SerializeField] GameObject activableObject;
-    private IActivable activableObjectScript;
+    [SerializeField] AActivable activableObject;
 
 
     private void Start()
@@ -16,7 +15,6 @@ public class Button : MonoBehaviour, ITriggerable
         var buttonBody = gameObject.transform.GetChild(1).gameObject;
         var buttonRenderer = buttonBody.GetComponent<Renderer>();
         buttonRenderer.material.SetColor("_Color", Color.red);
-        activableObjectScript = activableObject.GetComponent<IActivable>();
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -36,7 +34,7 @@ public class Button : MonoBehaviour, ITriggerable
 
     }
 
-    public void ActivateTrigger(bool status)
+    public override void ActivateTrigger(bool status)
     {
         IsActive = status;
         if (status)
@@ -45,8 +43,8 @@ public class Button : MonoBehaviour, ITriggerable
         }
     }
 
-    public void TriggerAction()
+    public override void TriggerAction()
     {
-        activableObjectScript.Activate();
+        activableObject.Activate();
     }
 }
