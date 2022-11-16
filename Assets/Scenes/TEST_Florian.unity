@@ -676,6 +676,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 896646984}
+  reboundForce: 0
 --- !u!114 &896646987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1541,9 +1542,9 @@ GameObject:
   - component: {fileID: 1949538699}
   - component: {fileID: 1949538698}
   - component: {fileID: 1949538701}
-  - component: {fileID: 1949538702}
   - component: {fileID: 1949538704}
   - component: {fileID: 1949538703}
+  - component: {fileID: 1949538702}
   - component: {fileID: 1949538705}
   - component: {fileID: 1949538706}
   m_Layer: 7
@@ -1694,6 +1695,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1949538695}
+  reboundForce: 7
 --- !u!114 &1949538706
 MonoBehaviour:
   m_ObjectHideFlags: 0

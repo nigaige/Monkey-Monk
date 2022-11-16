@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerJumpAttack : MonoBehaviour
 {
     [SerializeField] private GameObject player;
+    [SerializeField] private float reboundForce;
 
     private Collider _collider;
     private Rigidbody _rb;
@@ -18,17 +19,14 @@ public class PlayerJumpAttack : MonoBehaviour
     
     private void FixedUpdate()
     {
-        float y = _collider.bounds.center.y - _collider.bounds.extents.y;
-
-
         Collider[] cs = Physics.OverlapBox(_collider.bounds.center + Vector3.down * _collider.bounds.extents.y + Vector3.up * _rb.velocity.y * Time.fixedDeltaTime / 2, new Vector3(_collider.bounds.extents.x, -1 * _rb.velocity.y * Time.fixedDeltaTime / 2, _collider.bounds.extents.z));
         foreach (var item in cs)
         {
-            T(item);
+            CheckRebound(item);
         }
     }
 
-    private void T(Collider other)
+    private void CheckRebound(Collider other)
     {
         if (other.tag != "Enemy") return;
 
@@ -50,9 +48,8 @@ public class PlayerJumpAttack : MonoBehaviour
 
             if (last_y1 >= last_y2)
             {
-                Debug.Log("Rebound");
-                player.GetComponent<Rigidbody>().velocity = Vector2.up * 7;
-                other.GetComponent<Enemy>().Knock();
+                _rb.velocity = new Vector3(_rb.velocity.x, reboundForce, 0);
+                enemy.Knock();
             }
         }
     }

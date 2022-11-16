@@ -16,11 +16,6 @@ namespace MonkeyMonk.Enemies
             RespawnEnemy();
         }
 
-        private void Update()
-        {
-            
-        }
-
         void RespawnEvent()
         {
             Invoke(nameof(RespawnEnemy), respawnDelay);
