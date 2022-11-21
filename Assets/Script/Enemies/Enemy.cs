@@ -24,7 +24,7 @@ namespace MonkeyMonk.Enemies
         private LayerMask _groundMask;
         private float _knockTimeLeft;
 
-        private Action onDestroyEvent;
+        public event Action OnDestroyEvent;
 
 
         private void Awake()
@@ -65,23 +65,9 @@ namespace MonkeyMonk.Enemies
                     || Physics.Raycast(new Ray(transform.position + new Vector3(_collider.bounds.extents.x, -_collider.bounds.extents.y + 0.05f), Vector3.down), 0.1f, _groundMask);
         }
 
-        #region === Events
-
-        public void AddOnDestroyListener(Action action)
-        {
-            onDestroyEvent += action;
-        }
-
-        public void RemoveOnDestroyListener(Action action)
-        {
-            onDestroyEvent -= action;
-        }
-
-        #endregion
-
         private void OnDestroy()
         {
-            onDestroyEvent?.Invoke();
+            OnDestroyEvent?.Invoke();
         }
     }
 }

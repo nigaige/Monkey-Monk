@@ -18,6 +18,10 @@ namespace MonkeyMonk.Enemies
         private void Hit(Collider other)
         {
             // Damage player
+            if (other.TryGetComponent(out Entity entity))
+            {
+                entity.Damage(1);
+            }
             Debug.Log("Hit Player - " + other.gameObject);
         }
     }

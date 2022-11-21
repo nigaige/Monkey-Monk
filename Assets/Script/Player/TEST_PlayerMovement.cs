@@ -1,12 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.UI;
-using static TEST_PlayerMovement;
 
-public class TEST_PlayerMovement : MonoBehaviour
+public class TEST_PlayerMovement : Entity
 {
     [SerializeField] private float speed = 2.0f;
 
@@ -15,8 +12,9 @@ public class TEST_PlayerMovement : MonoBehaviour
     private Vector2 _inputMovement;
     private Rigidbody _rb;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         _rb = GetComponent<Rigidbody>();
     }
 

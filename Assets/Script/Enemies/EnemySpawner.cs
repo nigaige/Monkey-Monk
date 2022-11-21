@@ -24,14 +24,14 @@ namespace MonkeyMonk.Enemies
         void RespawnEnemy()
         {
             _spawnEnemy = Instantiate(enemyPrefab, transform.position, Quaternion.identity).GetComponent<Enemy>();
-            _spawnEnemy.AddOnDestroyListener(RespawnEvent);
+            _spawnEnemy.OnDestroyEvent += RespawnEvent;
         }
 
 
 
         private void OnDestroy()
         {
-            if (_spawnEnemy != null) _spawnEnemy.RemoveOnDestroyListener(RespawnEvent);
+            if (_spawnEnemy != null) _spawnEnemy.OnDestroyEvent -= RespawnEvent;
         }
 
         // Preview in editor
