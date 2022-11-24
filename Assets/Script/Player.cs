@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Player : MonoBehaviour{
 
@@ -51,6 +52,8 @@ public class Player : MonoBehaviour{
     [SerializeField] private Liane liane;
     [SerializeField] private float lianeSpeed;
     private float lianeAcceleration = 100000;
+    [SerializeField] private float minlianeSpeed = 1;
+    
 
 
 
@@ -116,6 +119,7 @@ public class Player : MonoBehaviour{
 
     private void setLianeAcceleration(Vector3 dir, Vector3 lianeDir){
         lianeAcceleration = Vector3.Dot(dir, lianeDir) ;
+        if (lianeAcceleration < minlianeSpeed) {lianeAcceleration = minlianeSpeed;}
         if (!liane.isLeftOfFixed()){
             lianeAcceleration *= -1;
         }
@@ -127,7 +131,8 @@ public class Player : MonoBehaviour{
         if (lianeAcceleration == 100000) {
             setLianeAcceleration(rb.velocity, lianeDir);
         }
-
+        
+        Debug.Log(lianeAcceleration);
         
 
         
@@ -156,7 +161,7 @@ public class Player : MonoBehaviour{
         Vector3 RayStart1;
         Vector3 RayStart2;
 
-        float rayDist = 0.05f;
+        float rayDist = 0.1f;
 
 
         float rayDir = (vSpeed > 0) ? 1 : -1;
@@ -198,12 +203,26 @@ public class Player : MonoBehaviour{
 
 
     void startLiane(){
+        if (Input.GetKeyDown(vkJump) && liane.isLianeFixed()){
+            liane.resetLiane();
+            lianeAcceleration = 100000;
+            acceleration = rb.velocity.x/1000;
+            onGround = true;//WILL ALLOW THE JUMP
+            nbJump = 1;
+        }
+
+
         if(Input.GetKeyDown(vkLiane)){
+            //LIANE IS LAUNCHED OR FIXED
             if (liane.isLianeFixed() || liane.getIsExtending()){
+               
+                //rb.velocity = new Vector3();
+               // rb.AddForceAtPosition(PerpendicularCounterClockwise(liane.getLianeDir())*Math.Sign(lianeAcceleration) * minlianeSpeed, transform.position);
                 liane.resetLiane();
                 lianeAcceleration = 100000;
                 acceleration = rb.velocity.x/1000;
-                
+
+            //LIANE IS NOT
             }else {
                 //TODO 8 DIRECTION
                 if (lastDir == 1){//right
@@ -223,14 +242,6 @@ public class Player : MonoBehaviour{
 
     // Update is called once per frame
     void Update(){
-        if (liane.isLianeFixed()){
-            Debug.Log("liane movment");
-            lianeMovment();    
-        }else {
-            hMovment(Input.GetKey(vkLeft), Input.GetKey(vkRight));
-            vMovment();
-        }
-        
 
 
 
@@ -239,6 +250,15 @@ public class Player : MonoBehaviour{
 
         Checkground ();
         startLiane();
+
+        if (liane.isLianeFixed()){
+            Debug.Log("liane movment");
+            lianeMovment();    
+        }else {
+            hMovment(Input.GetKey(vkLeft), Input.GetKey(vkRight));
+            vMovment();
+        }
+        
 
     }
 }

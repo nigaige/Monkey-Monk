@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Block
+  - plateform
   layers:
   - Default
   - TransparentFX
@@ -13,6 +14,7 @@ TagManager:
   - Water
   - UI
   - Block
+  - plateform
   - 
   - 
   - 
