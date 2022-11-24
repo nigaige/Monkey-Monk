@@ -66,6 +66,7 @@ public class Player : MonoBehaviour{
             rb.velocity = velo;
             rb.AddForceAtPosition(direction, transform.position);
             nbJump --;
+            GetComponent<AudioSource>().Play();
         }
 
         //clamp la velocité de chute

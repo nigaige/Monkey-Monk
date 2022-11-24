@@ -16,6 +16,7 @@ public class Button : ATriggerable
         var buttonRenderer = buttonBody.GetComponent<Renderer>();
         buttonRenderer.material.SetColor("_Color", Color.red);
     }
+
     private void OnTriggerEnter(Collider other)
     {
         if(IsActive == false)
@@ -30,6 +31,8 @@ public class Button : ATriggerable
             buttonRenderer.material.SetColor("_Color", Color.green);
             // ButtonAction
             ActivateTrigger(true);
+            //Sound of button pressed
+            GetComponent<AudioSource>().Play();
         }
 
     }
