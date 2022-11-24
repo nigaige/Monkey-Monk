@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CheckpointManager : MonoBehaviour
+public class CheckpointManager : ATriggerable
 {
 
     [SerializeField] private GameManager gameManager;
@@ -11,20 +11,27 @@ public class CheckpointManager : MonoBehaviour
     {
         IsActive = false;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     private void OnTriggerEnter(Collider other)
     {
         if (IsActive == false)
         {
-            IsActive = true;
-            gameManager.SetRespawnPoint(gameObject.transform.position);
-            var checkpointRanderer = gameObject.transform.GetChild(0).gameObject.GetComponent<Renderer>();
-            checkpointRanderer.material.SetColor("_Color", Color.green);
+            ActivateTrigger(true);
         }
+    }
+
+    public override void ActivateTrigger(bool status)
+    {
+        IsActive = status;
+        if (status)
+        {
+            TriggerAction();
+        }
+    }
+
+    public override void TriggerAction()
+    {
+        gameManager.SetRespawnPoint(gameObject.transform.position);
+        var checkpointRanderer = gameObject.transform.GetChild(0).gameObject.GetComponent<Renderer>();
+        checkpointRanderer.material.SetColor("_Color", Color.green);
     }
 }

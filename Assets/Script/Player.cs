@@ -61,7 +61,7 @@ public class Player : MonoBehaviour{
     
 
     void vMovment() {
-        Debug.Log(nbJump);
+        //Debug.Log(nbJump);
         if (Input.GetKeyDown(vkJump) && nbJump > 0) {
             Vector3 direction = Vector3.up * jumpSpeed; 
             Vector3 velo = rb.velocity;
@@ -69,6 +69,7 @@ public class Player : MonoBehaviour{
             rb.velocity = velo;
             rb.AddForceAtPosition(direction, transform.position);
             nbJump --;
+            GetComponent<AudioSource>().Play();
         }
 
         //clamp la velocité de chute
