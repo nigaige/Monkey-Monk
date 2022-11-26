@@ -26,7 +26,7 @@ namespace MonkeyMonk.Map
             return null;
         }
 
-        public virtual void OnClick()
+        public virtual void OnClick(PlayerMapMovement origin)
         {
 
         }

@@ -11,6 +11,8 @@ public class PlayerMapMovement : MonoBehaviour
     [SerializeField] private Node startingNode;
     [SerializeField] private float speed = 15;
 
+    private bool _isLocked = false;
+
     private Node _currentNode;
     private bool _isMoving = false;
 
@@ -27,20 +29,25 @@ public class PlayerMapMovement : MonoBehaviour
 
     private void Update()
     {
-        if(!_isMoving)
+        Move();
+    }
+
+    private void Move()
+    {
+        if (_isLocked) return;
+        if (_isMoving) return;
+
+        if(_inputMovement != Vector2.zero)
         {
-            if(_inputMovement != Vector2.zero)
-            {
-                NodePath path = _currentNode.GetPath(_inputMovement);
+            NodePath path = _currentNode.GetPath(_inputMovement);
 
-                if (path == null) return;
+            if (path == null) return;
 
-                _isMoving = true;
-                StartCoroutine(MoveToNextNode(path, path.IsTarget(_currentNode)));
-                _currentNode = path.GetTargetNode(_currentNode);
+            _isMoving = true;
+            StartCoroutine(MoveToNextNode(path, path.IsTarget(_currentNode)));
+            _currentNode = path.GetTargetNode(_currentNode);
 
-                OnNodeChangeEvent.Invoke(_currentNode);
-            }
+            OnNodeChangeEvent.Invoke(_currentNode);
         }
     }
 
@@ -62,6 +69,11 @@ public class PlayerMapMovement : MonoBehaviour
         _isMoving = false;
     }
 
+    public void Lock()
+    {
+        _isLocked = true;
+    }
+
     public void OnMovement(InputAction.CallbackContext obj)
     {
         _inputMovement = obj.ReadValue<Vector2>();
@@ -69,6 +81,8 @@ public class PlayerMapMovement : MonoBehaviour
 
     public void OnClick(InputAction.CallbackContext obj)
     {
-        if (obj.started && _currentNode != null) _currentNode.OnClick();
+        if (_isLocked) return;
+
+        if (obj.started && _currentNode != null && !_isMoving) _currentNode.OnClick(this);
     }
 }

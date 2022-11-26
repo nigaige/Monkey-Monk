@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace MonkeyMonk.Map
 {
@@ -12,11 +11,12 @@ namespace MonkeyMonk.Map
         [SerializeField] private LevelSO level;
         public LevelSO Level { get => level; }
 
-        public override void OnClick()
+        public override void OnClick(PlayerMapMovement origin)
         {
-            base.OnClick();
+            base.OnClick(origin);
 
             SceneMaster.Instance.LoadLevel(level);
+            origin.Lock();
         }
 
     }

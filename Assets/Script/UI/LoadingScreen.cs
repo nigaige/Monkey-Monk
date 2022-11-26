@@ -50,7 +50,7 @@ public class LoadingScreen : MonoBehaviour
 
         while (indexProgress < asyncOperations.Length)
         {
-            Debug.Log(indexProgress + " : " + asyncOperations[indexProgress].progress);
+            //Debug.Log(indexProgress + " : " + asyncOperations[indexProgress].progress);
             if (asyncOperations[indexProgress].isDone) indexProgress++;
             yield return null;
         }
