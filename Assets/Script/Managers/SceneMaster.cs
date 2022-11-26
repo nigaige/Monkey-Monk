@@ -14,6 +14,24 @@ public class SceneMaster : MonoBehaviour
         Instance = this;
     }
 
+    public void LoadHubWorld()
+    {
+        StartCoroutine(LoadHubWorldCoroutine());
+    }
+
+    public IEnumerator LoadHubWorldCoroutine()
+    {
+        yield return loadingScreen.FadeIn();
+
+        AsyncOperation asyncMapUnload = SceneManager.UnloadSceneAsync("MainMenu");
+        AsyncOperation asyncLevelLoad = SceneManager.LoadSceneAsync("HubWorld", LoadSceneMode.Additive);
+        asyncLevelLoad.completed += _ => SceneManager.SetActiveScene(SceneManager.GetSceneByName("HubWorld"));
+
+        yield return loadingScreen.DisplayLoading(asyncMapUnload, asyncLevelLoad);
+
+        yield return loadingScreen.FadeOut();
+    }
+
     public void LoadLevel(LevelSO level)
     {
         StartCoroutine(LoadLevelCoroutine(level));
@@ -23,7 +41,7 @@ public class SceneMaster : MonoBehaviour
     {
         yield return loadingScreen.FadeIn();
 
-        AsyncOperation asyncMapUnload = SceneManager.UnloadSceneAsync("HubScene");
+        AsyncOperation asyncMapUnload = SceneManager.UnloadSceneAsync("HubWorld");
         AsyncOperation asyncLevelLoad = SceneManager.LoadSceneAsync(level.SceneName, LoadSceneMode.Additive);
         asyncLevelLoad.completed += _ => SceneManager.SetActiveScene(SceneManager.GetSceneByName(level.SceneName));
 

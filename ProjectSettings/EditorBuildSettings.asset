@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Hub/HubScene.unity
+    path: Assets/Scenes/Hub/HubWorld.unity
     guid: d3636f028fe963c4ca3e344fdb0b8a0a
   - enabled: 1
     path: Assets/Scenes/TEST_Florian.unity
