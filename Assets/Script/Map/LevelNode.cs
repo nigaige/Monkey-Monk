@@ -10,12 +10,13 @@ namespace MonkeyMonk.Map
     {
         [Header("Level")]
         [SerializeField] private LevelSO level;
+        public LevelSO Level { get => level; }
 
         public override void OnClick()
         {
             base.OnClick();
 
-            SceneManager.LoadScene(level.SceneName);
+            SceneMaster.Instance.LoadLevel(level);
         }
 
     }

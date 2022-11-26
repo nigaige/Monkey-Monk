@@ -1,4 +1,5 @@
 using MonkeyMonk.Map;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,16 +9,19 @@ using UnityEngine.Splines;
 public class PlayerMapMovement : MonoBehaviour
 {
     [SerializeField] private Node startingNode;
-    [SerializeField] private float speed = 0.2f;
+    [SerializeField] private float speed = 15;
 
     private Node _currentNode;
     private bool _isMoving = false;
 
     private Vector2 _inputMovement;
 
+    public event Action<Node> OnNodeChangeEvent;
+
     private void Awake()
     {
         _currentNode = startingNode;
+        OnNodeChangeEvent.Invoke(_currentNode);
         transform.position = _currentNode.transform.position + Vector3.up * transform.lossyScale.y / 2f;
     }
 
@@ -34,6 +38,8 @@ public class PlayerMapMovement : MonoBehaviour
                 _isMoving = true;
                 StartCoroutine(MoveToNextNode(path, path.IsTarget(_currentNode)));
                 _currentNode = path.GetTargetNode(_currentNode);
+
+                OnNodeChangeEvent.Invoke(_currentNode);
             }
         }
     }
