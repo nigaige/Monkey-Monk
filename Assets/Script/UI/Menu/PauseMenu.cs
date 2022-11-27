@@ -6,7 +6,9 @@ using UnityEngine.InputSystem;
 
 public class PauseMenu : MonoBehaviour
 {
-    [SerializeField] private GameObject menu;
+    [SerializeField] private CanvasGroup menu;
+    [SerializeField] private GameObject confirmationMenuPrefab;
+    private ConfirmationMenu _confirmationMenuObj;
 
     private bool _isOpen;
 
@@ -17,7 +19,7 @@ public class PauseMenu : MonoBehaviour
 
     public void OpenMenu()
     {
-        menu.SetActive(true);
+        menu.gameObject.SetActive(true);
         Time.timeScale = 0;
         InputManager.Instance.SwitchInputMap(InputMap.UI);
 
@@ -26,7 +28,7 @@ public class PauseMenu : MonoBehaviour
 
     public void CloseMenu()
     {
-        menu.SetActive(false);
+        menu.gameObject.SetActive(false);
         Time.timeScale = 1;
         InputManager.Instance.SwitchInputMap(InputMap.Game);
 
@@ -34,6 +36,23 @@ public class PauseMenu : MonoBehaviour
     }
 
     // =============== BUTTON METHODS ======================
+
+    public void AskToQuitToLevelSelection()
+    {
+        menu.interactable = false;
+        _confirmationMenuObj = Instantiate(confirmationMenuPrefab, transform).GetComponent<ConfirmationMenu>();
+        _confirmationMenuObj.Initialize("Are you sure blablabla progression will be lost blablabla",
+            () =>
+            {
+                QuitToLevelSelection();
+                Destroy(_confirmationMenuObj.gameObject);
+            },
+            () =>
+            {
+                Destroy(_confirmationMenuObj.gameObject);
+                menu.interactable = true;
+            });
+    }
 
     public void QuitToLevelSelection()
     {
