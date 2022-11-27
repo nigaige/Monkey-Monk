@@ -3,11 +3,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.Splines;
 
 public class PlayerMapMovement : MonoBehaviour
 {
+    [SerializeField] public UnityAction t;
+
     [SerializeField] private Node startingNode;
     [SerializeField] private float speed = 15;
 

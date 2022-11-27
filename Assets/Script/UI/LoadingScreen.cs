@@ -18,7 +18,7 @@ public class LoadingScreen : MonoBehaviour
             float newAlpha = Mathf.Lerp(0.0f, 1.0f, lerpVal);
             panel.color = new Color(panel.color.r, panel.color.g, panel.color.b, newAlpha);
 
-            lerpVal += Time.deltaTime / transitionDuration;
+            lerpVal += Time.unscaledDeltaTime / transitionDuration;
             yield return null;
         }
 
@@ -34,7 +34,7 @@ public class LoadingScreen : MonoBehaviour
             float newAlpha = 1.0f - Mathf.Lerp(0.0f, 1.0f, lerpVal);
             panel.color = new Color(panel.color.r, panel.color.g, panel.color.b, newAlpha);
 
-            lerpVal += Time.deltaTime / transitionDuration;
+            lerpVal += Time.unscaledDeltaTime / transitionDuration;
             yield return null;
         }
 

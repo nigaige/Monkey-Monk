@@ -19,7 +19,6 @@ public class NodeEditor : Editor
     private void OnEnable()
     {
         _targetNode = target as Node;
-
         _northProperty = serializedObject.FindProperty("northPath");
         _southProperty = serializedObject.FindProperty("southPath");
         _westProperty = serializedObject.FindProperty("westPath");
