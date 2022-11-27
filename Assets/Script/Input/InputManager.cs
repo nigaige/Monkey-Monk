@@ -47,6 +47,16 @@ namespace MonkeyMonk.Inputs
             currentMap = map;
         }
 
+        public void DisableInput()
+        {
+            playerInput.DeactivateInput();
+        }
+
+        public void EnableInput()
+        {
+            playerInput.ActivateInput();
+        }
+
     }
 
     public enum InputMap

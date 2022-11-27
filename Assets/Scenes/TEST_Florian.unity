@@ -2243,7 +2243,19 @@ MonoBehaviour:
     m_ActionId: faeee1b1-70c6-479b-bb10-ce722013e416
     m_ActionName: Player/Catch[/Keyboard/e]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1949538702}
+        m_TargetAssemblyTypeName: PlayerGrab, Assembly-CSharp
+        m_MethodName: OnPointer
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 75adadf7-59a8-40c2-86b2-b7167aa77719
     m_ActionName: Player/Pointer[/Mouse/position]
   - m_PersistentCalls:

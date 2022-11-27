@@ -28,7 +28,7 @@ public class SceneMaster : MonoBehaviour
 
     public IEnumerator LoadHubWorldCoroutine()
     {
-        // TODO: LockInput
+        InputManager.Instance.DisableInput();
         yield return loadingScreen.FadeIn();
 
         // Unload
@@ -54,7 +54,7 @@ public class SceneMaster : MonoBehaviour
 
     private IEnumerator LoadLevelCoroutine(LevelSO level)
     {
-        // TODO: LockInput
+        InputManager.Instance.DisableInput();
         yield return loadingScreen.FadeIn();
 
         // Unload
