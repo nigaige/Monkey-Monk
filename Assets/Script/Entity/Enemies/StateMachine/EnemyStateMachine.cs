@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MonkeyMonk.Enemies.StateMachine.Variables;
 
 namespace MonkeyMonk.Enemies.StateMachine
 {
@@ -11,11 +13,21 @@ namespace MonkeyMonk.Enemies.StateMachine
         [SerializeField] private State startingState;
         [SerializeField] private State knockState;
 
+        [SerializeField] [HideInInspector] private List<VariableDictVal> variables;
+        private Dictionary<string, MachineVariable> _variablesDict;
+
         private State _currentState;
 
         public void Initialize(Enemy entity)
         {
             Entity = entity;
+
+            _variablesDict = new();
+
+            foreach (var item in variables)
+            {
+                _variablesDict.Add(item.Name, item.Value);
+            }
 
             // Init all states
             State[] states = gameObject.GetComponentsInChildren<State>();
@@ -57,5 +69,38 @@ namespace MonkeyMonk.Enemies.StateMachine
             _currentState?.FixedUpdateState();
         }
 
+        public void AddVariable(string variableName, MachineVariable variable)
+        {
+            variables.Add(new VariableDictVal(variableName, variable));
+        }
+
+        public T GetVariable<T>(string variableName)
+        {
+            if (_variablesDict.TryGetValue(variableName, out MachineVariable value))
+            {
+                return (T)value.GetVariable();
+            }
+
+            return default;
+        }
+
+        public MachineVariable GetMachineVariable(int i)
+        {
+            return variables[i].Value;
+        }
+
+    }
+
+    [System.Serializable]
+    public class VariableDictVal
+    {
+        public string Name;
+        [SerializeReference] public MachineVariable Value;
+
+        public VariableDictVal(string variableName, MachineVariable value)
+        {
+            this.Name = variableName;
+            this.Value = value;
+        }
     }
 }

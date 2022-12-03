@@ -237,6 +237,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startingState: {fileID: 0}
   knockState: {fileID: 0}
+  variables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &5994429880692730487
 GameObject:
   m_ObjectHideFlags: 0

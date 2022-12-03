@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MonkeyMonk.Enemies.StateMachine.Variables;
 
 
 namespace MonkeyMonk.Enemies.StateMachine
@@ -8,7 +9,8 @@ namespace MonkeyMonk.Enemies.StateMachine
     public class WalkingState : State
     {
         [SerializeField] private float speed = 1f;
-        
+        [SerializeField] private LinkedVariable<EntityWalkableZone> walkableZone;
+
         private int _walkingDirection = -1;
 
         private Rigidbody _rb;
@@ -26,6 +28,8 @@ namespace MonkeyMonk.Enemies.StateMachine
 
             _cliffHitMaskLayer = LayerMask.GetMask("Block");
             _hitMaskLayer = LayerMask.GetMask("Block", "Enemy");
+
+            walkableZone.Init(stateMachine);
         }
 
         public override void EnterState()
@@ -35,13 +39,29 @@ namespace MonkeyMonk.Enemies.StateMachine
 
         public override void FixedUpdateState()
         {
+            if (walkableZone.Value != null) CheckZone();
+            CheckLedge();
+
+            _rb.velocity = new Vector2(_walkingDirection * speed, _rb.velocity.y);
+
+            base.FixedUpdateState();
+        }
+
+        void CheckZone()
+        {
+            if (_walkingDirection < 0 && Entity.transform.position.x < walkableZone.Value.GetZones().x) _walkingDirection *= -1;
+            if (_walkingDirection > 0 && Entity.transform.position.x > walkableZone.Value.GetZones().y) _walkingDirection *= -1;
+        }
+
+        void CheckLedge()
+        {
             // Check if near cliff
             bool IsNearCliff = Physics.Raycast(Entity.transform.position + new Vector3(_walkingDirection * _collider.bounds.extents.x, -_collider.bounds.extents.y, 0) + new Vector3(_walkingDirection * 0.1f, 0.1f, 0), Vector3.down, 0.2f, _cliffHitMaskLayer);
 
             bool IsNearWall = Physics.Raycast(Entity.transform.position + new Vector3(_walkingDirection * (_collider.bounds.extents.x - 0.05f), 0, 0), Vector3.right * _walkingDirection, 0.1f, _hitMaskLayer);
 
             // Switch dir if near cliff
-            if(!IsNearCliff && Entity.IsGrounded)
+            if (!IsNearCliff && Entity.IsGrounded)
             {
                 _walkingDirection *= -1;
             }
@@ -51,10 +71,6 @@ namespace MonkeyMonk.Enemies.StateMachine
             {
                 _walkingDirection *= -1;
             }
-
-            _rb.velocity = new Vector2(_walkingDirection * speed, _rb.velocity.y);
-
-            base.FixedUpdateState();
         }
 
     }

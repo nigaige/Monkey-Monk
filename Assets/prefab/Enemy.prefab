@@ -160,7 +160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27332224e8ac4ab478936eeb8d5294db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyStateMachine: {fileID: 8408350272955851566}
+  enemyStateMachine: {fileID: 6020171985040525279}
   isJumpable: 1
 --- !u!114 &7018562572884819736
 MonoBehaviour:
@@ -212,7 +212,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 854407930968045606}
-  - component: {fileID: 8408350272955851566}
+  - component: {fileID: 6020171985040525279}
   m_Layer: 8
   m_Name: States
   m_TagString: Untagged
@@ -237,7 +237,7 @@ Transform:
   m_Father: {fileID: 1013426802355366005}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8408350272955851566
+--- !u!114 &6020171985040525279
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -251,6 +251,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startingState: {fileID: 7820948243793955615}
   knockState: {fileID: 2795416061598892898}
+  variables:
+  - Name: WalkableZone
+    Value:
+      rid: 5891051446572679175
+  references:
+    version: 2
+    RefIds:
+    - rid: 5891051446572679175
+      type: {class: MonoBehaviourVariable, ns: MonkeyMonk.Enemies.StateMachine.Variables, asm: Assembly-CSharp}
+      data:
+        Value: {fileID: 0}
 --- !u!1 &5578422638789779784
 GameObject:
   m_ObjectHideFlags: 0
@@ -340,3 +351,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1
+  walkableZone:
+    variableName: WalkableZone
+    value: {fileID: 0}

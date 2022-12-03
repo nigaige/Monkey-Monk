@@ -18,6 +18,7 @@ namespace MonkeyMonk.Enemies
         public bool IsJumpable { get => isJumpable; }
         public int LookDirection { get; private set; } = 1;
 
+        private MonoBehaviour b;
 
         private Collider _collider;
 
@@ -29,6 +30,7 @@ namespace MonkeyMonk.Enemies
 
         private void Awake()
         {
+
             enemyStateMachine.Initialize(this);
 
             _collider = GetComponent<Collider>();

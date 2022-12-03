@@ -33,13 +33,6 @@ namespace MonkeyMonk.Inputs
             _actionEventsProperty = serializedObject.FindProperty("actionEvents");
         }
 
-        private void Refresh()
-        {
-            ////FIXME: doesn't seem like we're picking up the results of the latest import
-            _actionAssetInitialized = false;
-            Repaint();
-        }
-
         public override void OnInspectorGUI()
         {
             EditorGUI.BeginChangeCheck();
