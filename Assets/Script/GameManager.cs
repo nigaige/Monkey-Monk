@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
 
     private void IsFallingToDeath()
     {
-        if (monkey.gameObject.transform.position.y < -6)
+        if (monkey.gameObject.transform.position.y < -4)
         {
             RespawnMonkey();
         }

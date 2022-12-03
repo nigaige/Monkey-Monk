@@ -57,7 +57,7 @@ public class PlayerGrab : MonoBehaviour
         }
         else
         {
-            Vector2 shotDir = ((Vector3)GetComponent<PlayerInput>().actions["Pointer"].ReadValue<Vector2>() - Camera.main.WorldToScreenPoint(transform.position)).normalized;
+            Vector2 shotDir = ((Vector3)GetComponent<PlayerInput>().actions["Pointer"].ReadValue<Vector2>() - UnityEngine.Camera.main.WorldToScreenPoint(transform.position)).normalized;
             _grabbedObj.transform.SetParent(null);
             _grabbedObj.GetComponent<Grabbable>().OnUnGrabbed(this);
 
