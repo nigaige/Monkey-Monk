@@ -7,6 +7,6 @@ public class Wall : AActivable
 
     public override void Activate()
     {
-        Destroy(gameObject);
+
     }
 }
