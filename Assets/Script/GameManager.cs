@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _respawnPoint = new Vector3(-4.83f, 0f, 0f);
+        _respawnPoint = new Vector3(-4.83f, -3.2f, 0f);
     }
 
     // Update is called once per frame
