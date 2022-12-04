@@ -7,12 +7,12 @@ using UnityEngine;
 public class LevelSO : ScriptableObject
 {
     [Header("Scene")]
-    [SerializeField] private SceneAsset scene;
+    [SerializeField] private string scene;
 
     [Header("Info")]
     [SerializeField] private string displayedName;
 
-    public string SceneName { get => scene.name; }
+    public string SceneName { get => scene; }
     public string DisplayedName { get => displayedName; }
 
 }

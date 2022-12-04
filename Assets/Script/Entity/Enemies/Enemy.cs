@@ -29,8 +29,10 @@ namespace MonkeyMonk.Enemies
 
 
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             enemyStateMachine.Initialize(this);
 
             _isKnockedLink.Init(enemyStateMachine);

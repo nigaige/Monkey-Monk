@@ -3,36 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile : Grabbable
+public abstract class Projectile : Grabbable
 {
     [SerializeField] private LayerMask blockingLayers;
 
-    private Rigidbody _rb;
+    protected Rigidbody _rb;
 
-    private bool _isPlayerProj = false;
-    private Vector2 _direction;
-    private float _speed;
+    protected bool _isPlayerProj = false;
+    protected Vector2 _direction;
+    protected float _speed;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
     }
 
-    public void Initialize(Vector2 direction, float speed, GameObject launcher)
+    public virtual void Initialize(Vector2 direction, float speed, GameObject launcher)
     {
         _direction = direction;
         _speed = speed;
         _isPlayerProj = launcher.tag == "Player";
     }
 
-    public void Initialize(Vector2 direction, GameObject launcher)
+    public virtual void Initialize(Vector2 direction, GameObject launcher)
     {
         Initialize(direction, _speed, launcher);
-    }
-
-    private void FixedUpdate()
-    {
-        if(!_rb.isKinematic) _rb.velocity = _direction * _speed;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -44,7 +39,6 @@ public class Projectile : Grabbable
             if(other.tag == "Player" && other.TryGetComponent(out TEST_PlayerMovement player))
             {
                 player.Damage(1);
-                Debug.Log("Damage Player");
                 Destroy(gameObject);
             }
         }
@@ -53,7 +47,6 @@ public class Projectile : Grabbable
             if (other.tag == "Enemy" && other.TryGetComponent(out Enemy enemy))
             {
                 enemy.Damage(1);
-                Debug.Log("Damage Enemy");
                 Destroy(gameObject);
             }
         }
@@ -68,7 +61,6 @@ public class Projectile : Grabbable
 
     public override void OnGrabbed(PlayerGrab grab)
     {
-        Debug.Log("HA");
         base.OnGrabbed(grab);
 
         this.enabled = false;
