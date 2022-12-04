@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Projectile : Grabbable
 {
+    [SerializeField] private LayerMask blockingLayers;
+
     private Rigidbody _rb;
 
     private bool _isPlayerProj = false;
@@ -35,10 +37,13 @@ public class Projectile : Grabbable
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!this.enabled) return;
+
         if (!_isPlayerProj)
         {
-            if(other.tag == "Player" && other.TryGetComponent(out Player player))
+            if(other.tag == "Player" && other.TryGetComponent(out TEST_PlayerMovement player))
             {
+                player.Damage(1);
                 Debug.Log("Damage Player");
                 Destroy(gameObject);
             }
@@ -47,10 +52,13 @@ public class Projectile : Grabbable
         {
             if (other.tag == "Enemy" && other.TryGetComponent(out Enemy enemy))
             {
+                enemy.Damage(1);
                 Debug.Log("Damage Enemy");
                 Destroy(gameObject);
             }
         }
+        
+        if(((1 << other.gameObject.layer) & blockingLayers) > 0) Destroy(gameObject);
     }
 
     public override bool IsHeavy()
@@ -60,8 +68,10 @@ public class Projectile : Grabbable
 
     public override void OnGrabbed(PlayerGrab grab)
     {
+        Debug.Log("HA");
         base.OnGrabbed(grab);
-        
+
+        this.enabled = false;
         _rb.isKinematic = true;
         _rb.interpolation = RigidbodyInterpolation.None;
     }
@@ -70,6 +80,7 @@ public class Projectile : Grabbable
     {
         base.OnUnGrabbed(grab);
 
+        this.enabled = true;
         _rb.isKinematic = false;
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
     }

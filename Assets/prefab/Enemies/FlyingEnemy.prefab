@@ -100,6 +100,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27332224e8ac4ab478936eeb8d5294db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHeathPoint: 1
+  invulnerabilityDuration: 0
   enemyStateMachine: {fileID: 8408350272955851566}
   isJumpable: 1
   _isKnockedLink:

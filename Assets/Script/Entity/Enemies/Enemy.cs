@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace MonkeyMonk.Enemies
 {
-    public class Enemy : MonoBehaviour
+    public class Enemy : Entity
     {
         [SerializeField] private EnemyStateMachine enemyStateMachine;
 
