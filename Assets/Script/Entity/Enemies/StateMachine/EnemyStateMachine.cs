@@ -89,6 +89,11 @@ namespace MonkeyMonk.Enemies.StateMachine
             return variables[i].Value;
         }
 
+        public MachineVariable<T> GetMachineVariable<T>(string variableName)
+        {
+            return (MachineVariable<T>)_variablesDict[variableName];
+        }
+
     }
 
     [System.Serializable]

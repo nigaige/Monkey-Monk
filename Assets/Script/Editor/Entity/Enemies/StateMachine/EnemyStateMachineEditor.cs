@@ -79,7 +79,9 @@ namespace MonkeyMonk.Enemies.StateMachine
             {"Generic/Vector3", () => new Vector3Variable() },
 
             {"Behaviours/MonoBehaviour", () => new MonoBehaviourVariable() },
-            {"Behaviours/Transform", () => new TransformVariable() }
+            {"Behaviours/Transform", () => new TransformVariable() },
+
+            {"MonkeyMonk/EntityWalkableZone", () => new EntityWalkableZoneVariable() },
         };
 
     }

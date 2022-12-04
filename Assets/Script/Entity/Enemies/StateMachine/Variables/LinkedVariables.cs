@@ -8,13 +8,13 @@ namespace MonkeyMonk.Enemies.StateMachine.Variables
     public class LinkedVariable<T>
     {
         [SerializeField] private string variableName;
-        [SerializeField] [HideInInspector] private T value;
+        private MachineVariable<T> _value;
 
-        public T Value { get => value; }
+        public T Value { get => _value.Value; set => _value.Value = value; }
 
         public void Init(EnemyStateMachine machine)
         {
-            value = machine.GetVariable<T>(variableName);
+            _value = machine.GetMachineVariable<T>(variableName);
         }
         
     }

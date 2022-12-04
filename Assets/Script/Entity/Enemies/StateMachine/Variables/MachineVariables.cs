@@ -35,4 +35,8 @@ namespace MonkeyMonk.Enemies.StateMachine.Variables
 
     [System.Serializable] public class MonoBehaviourVariable    : MachineVariable<MonoBehaviour>    { }
     [System.Serializable] public class TransformVariable        : MachineVariable<Transform>        { }
+
+    // =============================== MONKEY MONK ===============================
+
+    [System.Serializable] public class EntityWalkableZoneVariable : MachineVariable<EntityWalkableZone> { }
 }

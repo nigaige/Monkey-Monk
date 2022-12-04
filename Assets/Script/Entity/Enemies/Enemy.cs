@@ -1,4 +1,5 @@
 using MonkeyMonk.Enemies.StateMachine;
+using MonkeyMonk.Enemies.StateMachine.Variables;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,25 +14,26 @@ namespace MonkeyMonk.Enemies
         [SerializeField] private bool isJumpable = false;
 
         public EnemyStateMachine StateMachine { get => enemyStateMachine; }
-        public bool IsKnocked { get; private set; }
+        public bool IsKnocked { get => _isKnockedLink.Value; private set => _isKnockedLink.Value = value; }
         public bool IsGrounded { get; private set; }
         public bool IsJumpable { get => isJumpable; }
         public int LookDirection { get; private set; } = 1;
 
-        private MonoBehaviour b;
+        [SerializeField] private LinkedVariable<bool> _isKnockedLink;
 
         private Collider _collider;
 
         private LayerMask _groundMask;
-        private float _knockTimeLeft;
 
         public event Action OnDestroyEvent;
 
 
+
         private void Awake()
         {
-
             enemyStateMachine.Initialize(this);
+
+            _isKnockedLink.Init(enemyStateMachine);
 
             _collider = GetComponent<Collider>();
             _groundMask = LayerMask.GetMask("Block");
@@ -39,25 +41,12 @@ namespace MonkeyMonk.Enemies
 
         public void Knock()
         {
-            IsKnocked = true;
-            _knockTimeLeft = 2.0f;
-
             enemyStateMachine.Knock();
         }
 
         public void ChangeDirection(int dir)
         {
             LookDirection = dir;
-        }
-
-
-        private void Update()
-        {
-            if (IsKnocked && IsGrounded)
-            {
-                if (_knockTimeLeft > 0) _knockTimeLeft -= Time.deltaTime;
-                if (_knockTimeLeft <= 0) IsKnocked = false;
-            }
         }
 
         private void FixedUpdate()

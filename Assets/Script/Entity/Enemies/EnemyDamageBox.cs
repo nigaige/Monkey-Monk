@@ -8,21 +8,28 @@ namespace MonkeyMonk.Enemies
     {
         [SerializeField] private Enemy enemy;
 
-        private void OnTriggerEnter(Collider other)
-        {
-            if (other.tag != "Player" || enemy.IsKnocked) return;
+        [SerializeField] private Vector3 collisionExtends;
+        [SerializeField] private LayerMask mask;
 
-            Hit(other);
-        }
+        private Collider[] _collisions = new Collider[10];
 
-        private void Hit(Collider other)
+        private void FixedUpdate()
         {
-            // Damage player
-            if (other.TryGetComponent(out Entity entity))
+            if (enemy.IsKnocked) return;
+
+            int n = Physics.OverlapBoxNonAlloc(transform.position, collisionExtends, _collisions, Quaternion.identity, mask);
+
+            for (int i = 0; i < n; i++)
             {
-                entity.Damage(1);
+                if (_collisions[i].TryGetComponent(out TEST_PlayerMovement player)) player.Damage(1);
             }
-            Debug.Log("Hit Player - " + other.gameObject);
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.DrawWireCube(transform.position, collisionExtends * 2);
+        }
+#endif
     }
 }

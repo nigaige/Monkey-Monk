@@ -1,64 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1255316729871261552
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 992804588319629707}
-  - component: {fileID: 2103366515147250490}
-  - component: {fileID: 4254291407485030061}
-  m_Layer: 0
-  m_Name: DamageBox
-  m_TagString: Enemy
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &992804588319629707
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1255316729871261552}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1013426802355366005}
-  m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &2103366515147250490
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1255316729871261552}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4254291407485030061
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1255316729871261552}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21c6e5ca523fb3a4ba310b301093d66e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemy: {fileID: 7383593976976905939}
 --- !u!1 &2065392604693888622
 GameObject:
   m_ObjectHideFlags: 0
@@ -71,6 +12,7 @@ GameObject:
   - component: {fileID: 7045210275351237427}
   - component: {fileID: 1977442665767209339}
   - component: {fileID: 7383593976976905939}
+  - component: {fileID: 1820019637486271226}
   - component: {fileID: 7018562572884819736}
   - component: {fileID: 3136315696447578085}
   - component: {fileID: 9102081758545096179}
@@ -94,7 +36,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 854407930968045606}
-  - {fileID: 992804588319629707}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -162,6 +103,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyStateMachine: {fileID: 6020171985040525279}
   isJumpable: 1
+  _isKnockedLink:
+    variableName: IsKnocked
+--- !u!114 &1820019637486271226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2065392604693888622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21c6e5ca523fb3a4ba310b301093d66e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemy: {fileID: 7383593976976905939}
+  collisionExtends: {x: 0.5, y: 0.5, z: 0.5}
+  mask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!114 &7018562572884819736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,6 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb3da7875caeff34e8b96d46a8ff9d52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyDamageBox: {fileID: 1820019637486271226}
 --- !u!54 &3136315696447578085
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -232,8 +193,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2432696076230315409}
   - {fileID: 8866088577176618312}
+  - {fileID: 2432696076230315409}
   m_Father: {fileID: 1013426802355366005}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -252,16 +213,23 @@ MonoBehaviour:
   startingState: {fileID: 7820948243793955615}
   knockState: {fileID: 2795416061598892898}
   variables:
+  - Name: IsKnocked
+    Value:
+      rid: 5891051463477035058
   - Name: WalkableZone
     Value:
-      rid: 5891051446572679175
+      rid: 5891051463477035019
   references:
     version: 2
     RefIds:
-    - rid: 5891051446572679175
-      type: {class: MonoBehaviourVariable, ns: MonkeyMonk.Enemies.StateMachine.Variables, asm: Assembly-CSharp}
+    - rid: 5891051463477035019
+      type: {class: EntityWalkableZoneVariable, ns: MonkeyMonk.Enemies.StateMachine.Variables, asm: Assembly-CSharp}
       data:
         Value: {fileID: 0}
+    - rid: 5891051463477035058
+      type: {class: BoolVariable, ns: MonkeyMonk.Enemies.StateMachine.Variables, asm: Assembly-CSharp}
+      data:
+        Value: 0
 --- !u!1 &5578422638789779784
 GameObject:
   m_ObjectHideFlags: 0
@@ -306,6 +274,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab9f65d04459bd4c9ac042514093c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isKnockedLinked:
+    variableName: IsKnocked
 --- !u!1 &5994429880692730487
 GameObject:
   m_ObjectHideFlags: 0
@@ -353,4 +323,3 @@ MonoBehaviour:
   speed: 1
   walkableZone:
     variableName: WalkableZone
-    value: {fileID: 0}
