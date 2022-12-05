@@ -20,7 +20,7 @@ public class ObjectGrabbable : Grabbable
     {
         base.OnGrabbed(grab);
 
-        Physics.IgnoreCollision(grab.GetComponent<Collider>(), GetComponent<Collider>());
+        //Physics.IgnoreCollision(grab.GetComponent<Collider>(), GetComponent<Collider>());
         _rb.velocity = Vector2.zero;
         _rb.isKinematic = true;
         _rb.interpolation = RigidbodyInterpolation.None;
