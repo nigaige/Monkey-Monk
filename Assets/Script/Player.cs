@@ -212,9 +212,9 @@ public class Player : MonoBehaviour{
             nbJump = 1;
         }
 
-
-        if(Input.GetKeyDown(vkLiane)){
+        if (Input.GetKeyDown(vkLiane)){
             //LIANE IS LAUNCHED OR FIXED
+            Debug.Log("Liane ");
             if (liane.isLianeFixed() || liane.getIsExtending()){
                
                 //rb.velocity = new Vector3();

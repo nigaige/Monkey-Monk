@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _respawnPoint = new Vector3(-4.83f, 0f, 0f);
+        _respawnPoint = new Vector3(-4.83f, -3.2f, 0f);
     }
 
     // Update is called once per frame
@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
 
     private void IsFallingToDeath()
     {
-        if (monkey.gameObject.transform.position.y < -6)
+        if (monkey.gameObject.transform.position.y < -4)
         {
             RespawnMonkey();
         }

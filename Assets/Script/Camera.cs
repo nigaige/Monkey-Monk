@@ -9,7 +9,7 @@ public class Camera : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        MaxOffset = new Vector3(4, 1, 0);
+        MaxOffset = new Vector3(0.3f, 0.1f, 0);
     }
 
     // Update is called once per frame
@@ -38,9 +38,9 @@ public class Camera : MonoBehaviour
         else if ((y_offset < -(MaxOffset.y)) && NewPosition.y > 0)
         {
             NewPosition.y += (y_offset + MaxOffset.y);
-            if(NewPosition.y < 0)
+            if(NewPosition.y < -3.17f)
             {
-                NewPosition.y = 0;
+                NewPosition.y = -3.17f;
             }
         }
         transform.position = NewPosition;
