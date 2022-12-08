@@ -53,11 +53,28 @@ namespace MonkeyMonk.Enemies
 
         private void FixedUpdate()
         {
-            IsGrounded = Physics.Raycast(new Ray(transform.position + new Vector3(0, -_collider.bounds.extents.y + 0.05f), Vector3.down), 0.1f, _groundMask)
-                    || Physics.Raycast(new Ray(transform.position + new Vector3(-_collider.bounds.extents.x, -_collider.bounds.extents.y + 0.05f), Vector3.down), 0.1f, _groundMask)
-                    || Physics.Raycast(new Ray(transform.position + new Vector3(_collider.bounds.extents.x, -_collider.bounds.extents.y + 0.05f), Vector3.down), 0.1f, _groundMask);
+            float raySize = 0.06f;
+
+
+            Debug.DrawRay(transform.position + new Vector3(0, -_collider.bounds.extents.y + 0.05f), Vector3.down * raySize);
+
+            IsGrounded = Physics.Raycast(new Ray(transform.position + new Vector3(0, -_collider.bounds.extents.y + 0.05f), Vector3.down), raySize, _groundMask)
+                    || Physics.Raycast(new Ray(transform.position + new Vector3(-_collider.bounds.extents.x, -_collider.bounds.extents.y + 0.05f), Vector3.down), raySize, _groundMask)
+                    || Physics.Raycast(new Ray(transform.position + new Vector3(_collider.bounds.extents.x, -_collider.bounds.extents.y + 0.05f), Vector3.down), raySize, _groundMask);
         }
 
+
+
+        float CastARay(Vector3 pos, Vector3 dir, float length, LayerMask mask)
+        {
+            RaycastHit Hit;
+
+            Debug.DrawRay(pos, dir * length);
+            bool hitPlateform = Physics.Raycast(pos, transform.TransformDirection(dir), out Hit, length, mask);
+
+            if (hitPlateform) return Hit.distance;
+            return -1;
+        }
         private void OnDestroy()
         {
             OnDestroyEvent?.Invoke();

@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class Button : ATriggerable
 {
-    public bool IsActive { get; set; }
-
-    [SerializeField] AActivable activableObject;
-
 
     private void Start()
     {
@@ -21,6 +17,8 @@ public class Button : ATriggerable
     {
         if(IsActive == false)
         {
+
+            #region visual
             // Change the button to mark it as activated
             var buttonBody = gameObject.transform.GetChild(1).gameObject;
             var buttonBodyRotation = buttonBody.transform.localRotation;
@@ -29,6 +27,7 @@ public class Button : ATriggerable
             buttonBody.transform.SetLocalPositionAndRotation(buttonBodyPosition, buttonBodyRotation);
             var buttonRenderer = buttonBody.GetComponent<Renderer>();
             buttonRenderer.material.SetColor("_Color", Color.green);
+            #endregion
             // ButtonAction
             ActivateTrigger(true);
             //Sound of button pressed
@@ -46,8 +45,4 @@ public class Button : ATriggerable
         }
     }
 
-    public override void TriggerAction()
-    {
-        activableObject.Activate();
-    }
 }

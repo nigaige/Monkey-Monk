@@ -12,7 +12,6 @@ public class Player : MonoBehaviour{
     float acceleration = 0;
 
 
-    [SerializeField] float gravity = 0.1f;
     [SerializeField] float jumpSpeed = 0.4f;
 
     [SerializeField] float vSpeed = 0f;
@@ -100,7 +99,7 @@ public class Player : MonoBehaviour{
         //déplacement selon la velocité
         rb.velocity = new Vector3(acceleration,rb.velocity.y,0);
         
-        transform.position += new Vector3(acceleration,0,0);
+       // transform.position += new Vector3(acceleration,0,0) * Time.deltaTime;
 
     }
 

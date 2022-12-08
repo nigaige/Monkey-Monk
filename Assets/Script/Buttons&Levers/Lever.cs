@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class Lever : ATriggerable
 {
-    public bool IsActive { get; set; }
     [SerializeField] bool isOneWay;
-    [SerializeField] AActivable activableObject;
-
 
     private void Start()
     {
@@ -51,10 +48,5 @@ public class Lever : ATriggerable
         {
             TriggerAction();
         }
-    }
-
-    public override void TriggerAction()
-    {
-        activableObject.Activate();
     }
 }

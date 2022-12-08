@@ -25,14 +25,16 @@ public class PlayerGrab : MonoBehaviour
 
     private void Update()
     {
+        /*
         if (_rb.velocity.x > 0) catchBoxPosition.localPosition = new Vector3(1, 0, 0);
         if (_rb.velocity.x < 0) catchBoxPosition.localPosition = new Vector3(-1, 0, 0);
+        */
     }
 
     public void OnGrab(InputAction.CallbackContext obj)
     {
         if (!obj.started) return;
-
+        //grabbing
         if (_grabbedObj == null)
         {
             _overlappingColliders = Physics.OverlapBox(catchBoxPosition.position, catchBoxBoundsExtents);
@@ -57,16 +59,21 @@ public class PlayerGrab : MonoBehaviour
                 }
             }
         }
+        //launching
         else
         {
-            Vector2 shotDir = ((Vector3)GetComponent<PlayerInput>().actions["Pointer"].ReadValue<Vector2>() - UnityEngine.Camera.main.WorldToScreenPoint(transform.position)).normalized;
+            Vector2 shotDir = ((Vector3)_pointerPos - UnityEngine.Camera.main.WorldToScreenPoint(transform.position)).normalized;
             _grabbedObj.transform.SetParent(null);
             _grabbedObj.GetComponent<Grabbable>().OnUnGrabbed(this);
 
             if (_grabbedObj.TryGetComponent(out Projectile proj))
                 proj.Initialize(shotDir, gameObject);
-            else 
+            else
+            {
                 _grabbedObj.GetComponent<Rigidbody>().velocity = shotDir * force;
+                Debug.Log(_grabbedObj.GetComponent<Rigidbody>().velocity);
+            } 
+                
 
             _grabbedObj = null;
         }

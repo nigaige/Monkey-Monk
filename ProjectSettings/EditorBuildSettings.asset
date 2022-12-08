@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UI/GameUI.unity
     guid: abc809449c353ee4f9791bbb5d58c4a2
+  - enabled: 1
+    path: Assets/Scenes/GameLoopSandBox.unity
+    guid: 543424e7e8673aa488ba33fb05abce52
   m_configObjects: {}
