@@ -773,7 +773,7 @@ MonoBehaviour:
   southPath: {fileID: 0}
   westPath: {fileID: 549707340}
   eastPath: {fileID: 693697837}
-  level: {fileID: 11400000, guid: 59fb46bfa85988a429b3274fdfc45149, type: 2}
+  level: {fileID: 0}
 --- !u!65 &716997382
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1526,6 +1526,10 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 1440333897}
     m_Modifications:
+    - target: {fileID: 6270329955509943184, guid: e5ed503f24a05e04b95ed302799c0a48, type: 3}
+      propertyPath: level
+      value: 
+      objectReference: {fileID: 11400000, guid: 59fb46bfa85988a429b3274fdfc45149, type: 2}
     - target: {fileID: 6270329955509943184, guid: e5ed503f24a05e04b95ed302799c0a48, type: 3}
       propertyPath: eastPath
       value: 
