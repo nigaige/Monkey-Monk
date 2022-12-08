@@ -16,6 +16,8 @@ public class PlayerGrab : MonoBehaviour
     private Collider[] _overlappingColliders = new Collider[6];
     private GameObject _grabbedObj;
 
+    private Vector2 _pointerPos;
+
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
@@ -76,5 +78,10 @@ public class PlayerGrab : MonoBehaviour
         if (catchBoxPosition == null) return;
 
         Gizmos.DrawWireCube(catchBoxPosition.transform.position, catchBoxBoundsExtents);
+    }
+
+    public void OnPointer(InputAction.CallbackContext callback)
+    {
+        _pointerPos = callback.ReadValue<Vector2>();
     }
 }
