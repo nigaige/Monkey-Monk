@@ -9,7 +9,7 @@ public class Camera : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        MaxOffset = new Vector3(0.3f, 0.1f, 0);
+        MaxOffset = new Vector3(0.5f, 0.1f, 0);
     }
 
     // Update is called once per frame
@@ -18,9 +18,9 @@ public class Camera : MonoBehaviour
         Vector3 NewPosition = transform.position;
         float x_offset = player.transform.position.x - transform.position.x;
         // Déplacement à droite
-        if (x_offset > MaxOffset.x)
+        if (x_offset > 0)
         {
-            NewPosition.x += (x_offset - MaxOffset.x);
+            NewPosition.x += x_offset;
         }
         // Déplacement à gauche
         else if (x_offset < -(MaxOffset.x))
@@ -35,12 +35,12 @@ public class Camera : MonoBehaviour
             NewPosition.y += (y_offset - MaxOffset.y);
         }
         // Déplacement en bas
-        else if ((y_offset < -(MaxOffset.y)) && NewPosition.y > 0)
+        else if ((y_offset < -(MaxOffset.y)) && NewPosition.y > -3f)
         {
             NewPosition.y += (y_offset + MaxOffset.y);
-            if(NewPosition.y < -3.17f)
+            if(NewPosition.y < -3f)
             {
-                NewPosition.y = -3.17f;
+                NewPosition.y = -3f;
             }
         }
         transform.position = NewPosition;
