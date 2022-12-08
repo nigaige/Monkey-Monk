@@ -4,46 +4,29 @@ using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
 
-public class Player : MonoBehaviour{
+public class Player : MonoBehaviour
+{
+    [Header("Movement")]
+    [SerializeField] private float horizontalAcceleration = 1f;
+    [SerializeField] float horizontalMaxVelocity =1f;
 
-    [SerializeField] float hspeed = 1f;
-    [SerializeField] float hmaxSpeed =1f;
-
-    float velocity = 0;
-    float acceleration = 0;
-
-
-    [SerializeField] float jumpSpeed = 0.4f;
+    [Header("Jump")]
+    [SerializeField] private float fallMultiplier;
+    [SerializeField] private float lowJumpMultiplier;
+    [SerializeField] private float jumpForce = 0.4f;
 
     [SerializeField] float vSpeed = 0f;
-    [SerializeField] float maxFallSpeed = -1;
-    private Animator anim;
-    private SpriteRenderer sp;
- 
-
-
-    KeyCode vkLeft = KeyCode.LeftArrow;
-    KeyCode vkRight = KeyCode.RightArrow;
-    KeyCode vkUp = KeyCode.UpArrow;
-    KeyCode vkDown = KeyCode.DownArrow;
-    KeyCode vkJump = KeyCode.Space;
-    KeyCode vkLiane = KeyCode.A; //touche Q TODO gestion des clavier
-    KeyCode vkcheat2 = KeyCode.Z;
-    KeyCode vkcheat3 = KeyCode.E;
+    [SerializeField] float maxFallVelocity = -1;
 
 
 
-    Collider m_Collider;
-
-
-    Rigidbody rb;
     private int dir;
     private int lastDir = 1;
 
     [SerializeField] int MaxJump = 2;
     public int nbJump = 1;
 
-    [SerializeField] public bool onGround = false ;
+    [SerializeField] public bool onGround = false;
     public Vector3 RayCast_Dir;
     
     [SerializeField] private LayerMask platformMask;
@@ -55,42 +38,66 @@ public class Player : MonoBehaviour{
     [SerializeField] private float minlianeSpeed = 1;
     
 
+    private Rigidbody _rb;
+    private Collider _collider;
     private Vector2 _movementInput;
+    private bool _jumpInput;
 
 
-    void Jump()
+    void Awake()
     {
+        _rb = GetComponent<Rigidbody>();
+        _collider = GetComponent<Collider>();
+    }
+
+
+    void FixedUpdate()
+    {
+        Checkground();
 
         if (liane.isLianeFixed())
         {
+            lianeMovment();
+        }
+        else
+        {
+            hMovment(_movementInput.x);
+            if (!onGround) vMovment();
+        }
+    }
+
+    void Jump()
+    {
+        if (liane.isLianeFixed()) // TODO : Reset velocity + add normal jump in dir
+        {
             liane.resetLiane();
             lianeAcceleration = 100000;
-            acceleration = rb.velocity.x / 1000;
+            //acceleration = _rb.velocity.x / 1000;
             onGround = true;//WILL ALLOW THE JUMP
             nbJump = 1;
         }
 
         if (nbJump <= 0) return;
 
-        Vector3 direction = Vector3.up * jumpSpeed;
-        Vector3 velo = rb.velocity;
-        velo.y = 0;
-        rb.velocity = velo;
-        rb.AddForceAtPosition(direction, transform.position);
+        // Jump
+        _rb.velocity = new Vector3(_rb.velocity.x, jumpForce, 0);
         nbJump--;
         GetComponent<AudioSource>().Play();
     }
 
     void vMovment() {
-
-        //clamp la velocité de chute
-        if(rb.velocity.y <= maxFallSpeed){
-            Vector3 velo = rb.velocity;
-            velo.y = maxFallSpeed;
-            rb.velocity = velo;
+        
+        if (_rb.velocity.y < 0)
+        {
+            _rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+        }
+        else if (_rb.velocity.y > 0 && !_jumpInput)
+        {
+            _rb.velocity += Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
         }
 
-
+        // Clamp fall velocity
+        if (_rb.velocity.y < -maxFallVelocity) _rb.velocity = new Vector3(_rb.velocity.x, -maxFallVelocity, 0);
     }
 
     void hMovment(float hinput) {
@@ -99,23 +106,21 @@ public class Player : MonoBehaviour{
         else if (hinput < 0) dir = -1;
         else dir = 0;
 
-        if (dir != 0 && dir != lastDir)
-        {
-            lastDir = dir;
-        }
+        // Set last direction
+        if (dir != 0 && dir != lastDir) lastDir = dir;
 
+
+        // On ground movement
         if (!onGround) return;
 
-        velocity = hspeed * dir;
-        acceleration += velocity * Time.deltaTime;
+        float acceleration = horizontalAcceleration * dir;
+        float newHVelocity = _rb.velocity.x + acceleration * Time.deltaTime;
 
-        if (acceleration > hmaxSpeed) { acceleration = hmaxSpeed; }
-        if (acceleration < -hmaxSpeed) { acceleration = -hmaxSpeed; }
-        if (dir == 0) { acceleration = 0; }
+        if (newHVelocity > horizontalMaxVelocity) newHVelocity = horizontalMaxVelocity;
+        else if (newHVelocity < -horizontalMaxVelocity) newHVelocity = -horizontalMaxVelocity;
+        else if (dir == 0) newHVelocity = 0; // TODO : Check this
 
-        //déplacement selon la velocité
-        rb.velocity = new Vector3(acceleration, rb.velocity.y, 0);
-
+        _rb.velocity = new Vector3(newHVelocity, _rb.velocity.y, 0);
     }
 
 
@@ -127,10 +132,6 @@ public class Player : MonoBehaviour{
         return new Vector3(-vect.y, vect.x,0);
     }
 
-
-    void CatchAcceleration(){
-
-    }
 
     private void setLianeAcceleration(Vector3 dir, Vector3 lianeDir){
         lianeAcceleration = Vector3.Dot(dir, lianeDir) ;
@@ -144,14 +145,14 @@ public class Player : MonoBehaviour{
         Vector3 lianeDir = liane.getLianeDir();
 
         if (lianeAcceleration == 100000) {
-            setLianeAcceleration(rb.velocity, lianeDir);
+            setLianeAcceleration(_rb.velocity, lianeDir);
         }
         
         Debug.Log(lianeAcceleration);
         
 
         
-        rb.velocity = PerpendicularCounterClockwise(lianeDir)*lianeAcceleration * lianeSpeed;
+        _rb.velocity = PerpendicularCounterClockwise(lianeDir)*lianeAcceleration * lianeSpeed;
 
     }
 
@@ -169,10 +170,8 @@ public class Player : MonoBehaviour{
 
 
 
-    void Checkground(){
-        m_Collider = GetComponent<Collider>();
-
-
+    void Checkground()
+    {
         Vector3 RayStart1;
         Vector3 RayStart2;
 
@@ -183,13 +182,13 @@ public class Player : MonoBehaviour{
 
 
         RayStart1 = new Vector3(
-            transform.position.x - m_Collider.bounds.extents.x,
-            transform.position.y + (m_Collider.bounds.extents.y - rayDist) * rayDir,
+            transform.position.x - _collider.bounds.extents.x,
+            transform.position.y + (_collider.bounds.extents.y - rayDist) * rayDir,
             transform.position.z
             );
         RayStart2 = new Vector3(
-            transform.position.x + m_Collider.bounds.extents.x,
-            transform.position.y + (m_Collider.bounds.extents.y - rayDist) * rayDir,
+            transform.position.x + _collider.bounds.extents.x,
+            transform.position.y + (_collider.bounds.extents.y - rayDist) * rayDir,
             transform.position.z
             );
 
@@ -245,31 +244,7 @@ public class Player : MonoBehaviour{
         }
     }
 
-    // Start is called before the first frame update
-    void Start(){
-        rb = GetComponent<Rigidbody>();
-    }
-
-    // Update is called once per frame
-    void FixedUpdate(){
-
-
-
-        
-        //extendLiane(new Vector3(0.5f,0.5f,0));
-
-        Checkground ();
-
-        if (liane.isLianeFixed()){
-            Debug.Log("liane movment");
-            lianeMovment();    
-        }else {
-            hMovment(_movementInput.x);
-            vMovment();
-        }
-        
-
-    }
+    // ============================== Inputs
 
     public void OnMovement(InputAction.CallbackContext callback)
     {
@@ -278,6 +253,8 @@ public class Player : MonoBehaviour{
 
     public void OnJump(InputAction.CallbackContext callback)
     {
+        _jumpInput = callback.ReadValue<float>() > 0f;
+
         if (!callback.started) return;
 
         Jump();

@@ -73,7 +73,7 @@ Transform:
   - {fileID: 7925084796213150508}
   - {fileID: 5368244036304838587}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8884808085109925187
 MeshFilter:
@@ -132,7 +132,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1723195303924927862}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 16ad6e643c8d53c48a68f0333dd1841f, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -150,11 +150,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13f0846637f424641b304d395e92eebe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hspeed: 4
-  hmaxSpeed: 1
-  jumpSpeed: 25
+  horizontalAcceleration: 20
+  horizontalMaxVelocity: 1.1
+  fallMultiplier: 1
+  lowJumpMultiplier: 3
+  jumpForce: 2.3
   vSpeed: 0
-  maxFallSpeed: -0.5
+  maxFallVelocity: 2
   MaxJump: 2
   nbJump: 1
   onGround: 0
@@ -180,7 +182,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 120
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &3914884982506606422
 MonoBehaviour:
   m_ObjectHideFlags: 0
