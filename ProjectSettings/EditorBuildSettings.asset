@@ -15,9 +15,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Hubs/HubWorld.unity
     guid: d3636f028fe963c4ca3e344fdb0b8a0a
   - enabled: 1
-    path: Assets/Scenes/Dev Rooms/TEST_Florian.unity
-    guid: 90a5cb85511504b4bb32797568b7b9e9
-  - enabled: 1
     path: Assets/Scenes/UI/GameUI.unity
     guid: abc809449c353ee4f9791bbb5d58c4a2
   - enabled: 1
