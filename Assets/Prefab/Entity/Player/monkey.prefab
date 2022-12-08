@@ -227,7 +227,19 @@ MonoBehaviour:
   actions: {fileID: -944628639613478452, guid: 3a5b9ec4c75fb9a4f9a4137aa19c5f93, type: 3}
   actionEvents:
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 599859582340476481}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: OnMovement
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 7bfc2f87-3574-4d3d-90ba-966d621a4c73
     m_ActionName: Player/Movement[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
   - m_PersistentCalls:
@@ -263,7 +275,19 @@ MonoBehaviour:
     m_ActionId: 75adadf7-59a8-40c2-86b2-b7167aa77719
     m_ActionName: Player/Pointer[/Mouse/position]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 599859582340476481}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: OnJump
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 7fdfd536-fb92-42c2-8b36-866b00e28361
     m_ActionName: Player/Jump[/Keyboard/space]
   - m_PersistentCalls:
@@ -314,6 +338,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 8048eaa9-9f48-4698-9b42-f0232414f859
     m_ActionName: UI/Pause[/Keyboard/escape]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 599859582340476481}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: OnLiane
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 4fcaa6a3-ebc8-48fa-9e97-b3fbb780b80e
+    m_ActionName: Player/Liane
 --- !u!82 &304948565
 AudioSource:
   m_ObjectHideFlags: 0
@@ -495,8 +535,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 1
+        time: 0.013965607
+        value: 0.14465332
         inSlope: 0
         outSlope: 0
         tangentMode: 0

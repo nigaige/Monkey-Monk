@@ -12,15 +12,12 @@ EditorBuildSettings:
     path: Assets/Scenes/UI/MainMenu.unity
     guid: 20a2ee5ba2be3b245b6d27249d1a5734
   - enabled: 1
-    path: Assets/Scenes/Hub/HubWorld.unity
+    path: Assets/Scenes/Hubs/HubWorld.unity
     guid: d3636f028fe963c4ca3e344fdb0b8a0a
-  - enabled: 1
-    path: Assets/Scenes/TEST_Florian.unity
-    guid: 90a5cb85511504b4bb32797568b7b9e9
   - enabled: 1
     path: Assets/Scenes/UI/GameUI.unity
     guid: abc809449c353ee4f9791bbb5d58c4a2
   - enabled: 1
-    path: Assets/Scenes/GameLoopSandBox.unity
+    path: Assets/Scenes/Levels/GameLoopSandBox.unity
     guid: 543424e7e8673aa488ba33fb05abce52
   m_configObjects: {}

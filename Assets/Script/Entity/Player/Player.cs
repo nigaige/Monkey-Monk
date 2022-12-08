@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour{
 
@@ -54,22 +55,33 @@ public class Player : MonoBehaviour{
     [SerializeField] private float minlianeSpeed = 1;
     
 
+    private Vector2 _movementInput;
 
 
+    void Jump()
+    {
 
-    
+        if (liane.isLianeFixed())
+        {
+            liane.resetLiane();
+            lianeAcceleration = 100000;
+            acceleration = rb.velocity.x / 1000;
+            onGround = true;//WILL ALLOW THE JUMP
+            nbJump = 1;
+        }
+
+        if (nbJump <= 0) return;
+
+        Vector3 direction = Vector3.up * jumpSpeed;
+        Vector3 velo = rb.velocity;
+        velo.y = 0;
+        rb.velocity = velo;
+        rb.AddForceAtPosition(direction, transform.position);
+        nbJump--;
+        GetComponent<AudioSource>().Play();
+    }
 
     void vMovment() {
-        //Debug.Log(nbJump);
-        if (Input.GetKeyDown(vkJump) && nbJump > 0) {
-            Vector3 direction = Vector3.up * jumpSpeed; 
-            Vector3 velo = rb.velocity;
-            velo.y = 0;
-            rb.velocity = velo;
-            rb.AddForceAtPosition(direction, transform.position);
-            nbJump --;
-            GetComponent<AudioSource>().Play();
-        }
 
         //clamp la velocité de chute
         if(rb.velocity.y <= maxFallSpeed){
@@ -81,25 +93,28 @@ public class Player : MonoBehaviour{
 
     }
 
-    void hMovment(bool left, bool right) {
-        dir = (left ? -1 : 0) + (right ? 1 : 0);
-        if (dir !=0 && dir != lastDir){
+    void hMovment(float hinput) {
+
+        if (hinput > 0) dir = 1;
+        else if (hinput < 0) dir = -1;
+        else dir = 0;
+
+        if (dir != 0 && dir != lastDir)
+        {
             lastDir = dir;
         }
 
-        if (onGround){
-            velocity = hspeed * dir;
-            acceleration += velocity * Time.deltaTime;
+        if (!onGround) return;
 
-            if (acceleration > hmaxSpeed)  {acceleration = hmaxSpeed; }
-            if (acceleration < -hmaxSpeed) {acceleration = -hmaxSpeed; }
-            if (dir == 0)               {acceleration = 0;      }
-        }
+        velocity = hspeed * dir;
+        acceleration += velocity * Time.deltaTime;
+
+        if (acceleration > hmaxSpeed) { acceleration = hmaxSpeed; }
+        if (acceleration < -hmaxSpeed) { acceleration = -hmaxSpeed; }
+        if (dir == 0) { acceleration = 0; }
 
         //déplacement selon la velocité
-        rb.velocity = new Vector3(acceleration,rb.velocity.y,0);
-        
-       // transform.position += new Vector3(acceleration,0,0) * Time.deltaTime;
+        rb.velocity = new Vector3(acceleration, rb.velocity.y, 0);
 
     }
 
@@ -203,35 +218,30 @@ public class Player : MonoBehaviour{
 
 
     void startLiane(){
-        if (Input.GetKeyDown(vkJump) && liane.isLianeFixed()){
+
+        // Quit liane
+        if (liane.isLianeFixed() || liane.getIsExtending())
+        {
+            //rb.velocity = new Vector3();
+            //rb.AddForceAtPosition(PerpendicularCounterClockwise(liane.getLianeDir())*Math.Sign(lianeAcceleration) * minlianeSpeed, transform.position);
             liane.resetLiane();
             lianeAcceleration = 100000;
-            acceleration = rb.velocity.x/1000;
-            onGround = true;//WILL ALLOW THE JUMP
-            nbJump = 1;
+           // acceleration = rb.velocity.x / 1000;
+
+            
         }
-
-        if (Input.GetKeyDown(vkLiane)){
-            //LIANE IS LAUNCHED OR FIXED
-            Debug.Log("Liane ");
-            if (liane.isLianeFixed() || liane.getIsExtending()){
-               
-                //rb.velocity = new Vector3();
-               // rb.AddForceAtPosition(PerpendicularCounterClockwise(liane.getLianeDir())*Math.Sign(lianeAcceleration) * minlianeSpeed, transform.position);
-                liane.resetLiane();
-                lianeAcceleration = 100000;
-                acceleration = rb.velocity.x/1000;
-
-            //LIANE IS NOT
-            }else {
-                //TODO 8 DIRECTION
-                if (lastDir == 1){//right
-                    liane.startExtend(1);
-                }else {
-                    liane.startExtend(3);
-                }
-                
+        else // Start liane
+        {
+            //TODO 8 DIRECTION
+            if (lastDir == 1)
+            {//right
+                liane.startExtend(1);
             }
+            else
+            {
+                liane.startExtend(3);
+            }
+
         }
     }
 
@@ -241,7 +251,7 @@ public class Player : MonoBehaviour{
     }
 
     // Update is called once per frame
-    void Update(){
+    void FixedUpdate(){
 
 
 
@@ -249,16 +259,35 @@ public class Player : MonoBehaviour{
         //extendLiane(new Vector3(0.5f,0.5f,0));
 
         Checkground ();
-        startLiane();
 
         if (liane.isLianeFixed()){
             Debug.Log("liane movment");
             lianeMovment();    
         }else {
-            hMovment(Input.GetKey(vkLeft), Input.GetKey(vkRight));
+            hMovment(_movementInput.x);
             vMovment();
         }
         
 
     }
+
+    public void OnMovement(InputAction.CallbackContext callback)
+    {
+        _movementInput = callback.ReadValue<Vector2>();
+    }
+
+    public void OnJump(InputAction.CallbackContext callback)
+    {
+        if (!callback.started) return;
+
+        Jump();
+    }
+
+    public void OnLiane(InputAction.CallbackContext callback)
+    {
+        if (!callback.started) return;
+
+        startLiane();
+    }
+
 }
