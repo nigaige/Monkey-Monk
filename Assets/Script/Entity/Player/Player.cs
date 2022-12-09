@@ -6,28 +6,27 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    [Header("Movement")]
+    [Header("Ground Movement")]
     [SerializeField] private float horizontalAcceleration = 1f;
     [SerializeField] float horizontalMaxVelocity =1f;
+
+    [Header("Air Movement")]
+    [SerializeField] private float airHorizontalAcceleration = 1f;
 
     [Header("Jump")]
     [SerializeField] private float fallMultiplier;
     [SerializeField] private float lowJumpMultiplier;
     [SerializeField] private float jumpForce = 0.4f;
+    [SerializeField] private float maxFallVelocity = -1;
 
-    [SerializeField] float vSpeed = 0f;
-    [SerializeField] float maxFallVelocity = -1;
+    [Header("Others")]
 
-
-
-    private int dir;
     private int lastDir = 1;
 
     [SerializeField] int MaxJump = 2;
     public int nbJump = 1;
 
     [SerializeField] public bool onGround = false;
-    public Vector3 RayCast_Dir;
     
     [SerializeField] private LayerMask platformMask;
 
@@ -61,7 +60,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            hMovment(_movementInput.x);
+            hMovment();
             if (!onGround) vMovment();
         }
     }
@@ -100,28 +99,86 @@ public class Player : MonoBehaviour
         if (_rb.velocity.y < -maxFallVelocity) _rb.velocity = new Vector3(_rb.velocity.x, -maxFallVelocity, 0);
     }
 
-    void hMovment(float hinput) {
-
-        if (hinput > 0) dir = 1;
-        else if (hinput < 0) dir = -1;
-        else dir = 0;
+    void hMovment() {
 
         // Set last direction
-        if (dir != 0 && dir != lastDir) lastDir = dir;
+        if (_movementInput.x != 0 && _movementInput.x != lastDir) lastDir = (int)_movementInput.x;
 
 
         // On ground movement
-        if (!onGround) return;
+        if (onGround) GroundMovement();
+        else AirMovement();
+    }
 
-        float acceleration = horizontalAcceleration * dir;
-        float newHVelocity = _rb.velocity.x + acceleration * Time.deltaTime;
+    public void GroundMovement()
+    {
+        float acceleration = horizontalAcceleration * _movementInput.x;
+
+        float newHVelocity;
+
+        if (_movementInput.x == 0) // deceleration
+        {
+            if (_rb.velocity.x == 0)
+            {
+                newHVelocity = 0;
+            }
+            else if (_rb.velocity.x > 0)
+            {
+                newHVelocity = _rb.velocity.x - horizontalAcceleration * Time.deltaTime;
+                if (newHVelocity < 0) newHVelocity = 0;
+            }
+            else
+            {
+                newHVelocity = _rb.velocity.x + horizontalAcceleration * Time.deltaTime;
+                if (newHVelocity > 0) newHVelocity = 0;
+            }
+        }
+        else // acceleration
+            newHVelocity = _rb.velocity.x + acceleration * Time.deltaTime;
+
+
 
         if (newHVelocity > horizontalMaxVelocity) newHVelocity = horizontalMaxVelocity;
         else if (newHVelocity < -horizontalMaxVelocity) newHVelocity = -horizontalMaxVelocity;
-        else if (dir == 0) newHVelocity = 0; // TODO : Check this
 
         _rb.velocity = new Vector3(newHVelocity, _rb.velocity.y, 0);
     }
+
+    public void AirMovement()
+    {
+        float acceleration = airHorizontalAcceleration * _movementInput.x;
+
+        float newHVelocity;
+
+        if (_movementInput.x == 0) // deceleration
+        {
+            if (_rb.velocity.x == 0)
+            {
+                newHVelocity = 0;
+            }
+            else if (_rb.velocity.x > 0)
+            {
+                newHVelocity = _rb.velocity.x - airHorizontalAcceleration * Time.deltaTime;
+                if (newHVelocity < 0) newHVelocity = 0;
+            }
+            else
+            {
+                newHVelocity = _rb.velocity.x + airHorizontalAcceleration * Time.deltaTime;
+                if (newHVelocity > 0) newHVelocity = 0;
+            }
+        }
+        else // acceleration
+            newHVelocity = _rb.velocity.x + acceleration * Time.deltaTime;
+
+
+
+        if (newHVelocity > horizontalMaxVelocity) newHVelocity = horizontalMaxVelocity;
+        else if (newHVelocity < -horizontalMaxVelocity) newHVelocity = -horizontalMaxVelocity;
+
+        _rb.velocity = new Vector3(newHVelocity, _rb.velocity.y, 0);
+    }
+
+
 
 
     //orthogonal vector
@@ -178,38 +235,27 @@ public class Player : MonoBehaviour
         float rayDist = 0.1f;
 
 
-        float rayDir = (vSpeed > 0) ? 1 : -1;
-
-
         RayStart1 = new Vector3(
             transform.position.x - _collider.bounds.extents.x,
-            transform.position.y + (_collider.bounds.extents.y - rayDist) * rayDir,
+            transform.position.y - _collider.bounds.extents.y + rayDist,
             transform.position.z
             );
         RayStart2 = new Vector3(
             transform.position.x + _collider.bounds.extents.x,
-            transform.position.y + (_collider.bounds.extents.y - rayDist) * rayDir,
+            transform.position.y - _collider.bounds.extents.y + rayDist,
             transform.position.z
             );
 
-        
-        float raySize = (0.1f);
+        float dist1 = CastARay(RayStart1, transform.TransformDirection(Vector3.down), rayDist * 2f, platformMask);
+        float dist2 = CastARay(RayStart2, transform.TransformDirection(Vector3.down), rayDist * 2f, platformMask);
 
-        RayCast_Dir = Vector3.down;
-        if(rayDir >0){
-            RayCast_Dir=Vector3.up;
-            raySize = (0.2f);
-        }
-
-        float dist1 = CastARay(RayStart1, transform.TransformDirection( RayCast_Dir),raySize, platformMask);
-        float dist2 = CastARay(RayStart2, transform.TransformDirection( RayCast_Dir),raySize, platformMask);
-
-        if (dist1 > 0 || dist2 > 0) {
-            float dist = (dist1 + dist2) / 2;
-
+        if (dist1 > 0 || dist2 > 0) 
+        {
             onGround = true;
             nbJump = MaxJump;
-        }else {
+        }
+        else 
+        {
             onGround = false;
         }
 
@@ -249,6 +295,12 @@ public class Player : MonoBehaviour
     public void OnMovement(InputAction.CallbackContext callback)
     {
         _movementInput = callback.ReadValue<Vector2>();
+
+        if (_movementInput.x > 0) _movementInput.x = 1;
+        else if (_movementInput.x < 0) _movementInput.x = -1;
+
+        if (_movementInput.y > 0) _movementInput.y = 1;
+        else if (_movementInput.y < 0) _movementInput.y = -1;
     }
 
     public void OnJump(InputAction.CallbackContext callback)
