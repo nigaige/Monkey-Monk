@@ -105,7 +105,7 @@ public class Player : MonoBehaviour
         if (liane.isLianeFixed()) // TODO : Reset velocity + add normal jump in dir
         {
             liane.Release();
-            lianeAcceleration = 100000;
+            //lianeAcceleration = 100000;
             //acceleration = _rb.velocity.x / 1000;
             onGround = true;//WILL ALLOW THE JUMP
             nbJump = 1;
