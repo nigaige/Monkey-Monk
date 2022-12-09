@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float airHorizontalAcceleration = 1f;
 
     [Header("Jump")]
+    [SerializeField] private float gravityMultiplier;
     [SerializeField] private float fallMultiplier;
     [SerializeField] private float lowJumpMultiplier;
     [SerializeField] private float jumpForce = 0.4f;
@@ -65,11 +66,45 @@ public class Player : MonoBehaviour
         }
     }
 
-    void Jump()
+    private void Checkground()
+    {
+        Vector3 RayStart1;
+        Vector3 RayStart2;
+
+        float rayDist = 0.1f;
+
+
+        RayStart1 = new Vector3(
+            transform.position.x - _collider.bounds.extents.x,
+            transform.position.y - _collider.bounds.extents.y + rayDist,
+            transform.position.z
+            );
+        RayStart2 = new Vector3(
+            transform.position.x + _collider.bounds.extents.x,
+            transform.position.y - _collider.bounds.extents.y + rayDist,
+            transform.position.z
+            );
+
+        float dist1 = CastARay(RayStart1, transform.TransformDirection(Vector3.down), rayDist * 2f, platformMask);
+        float dist2 = CastARay(RayStart2, transform.TransformDirection(Vector3.down), rayDist * 2f, platformMask);
+
+        if (dist1 > 0 || dist2 > 0)
+        {
+            onGround = true;
+            nbJump = MaxJump;
+        }
+        else
+        {
+            onGround = false;
+        }
+
+    }
+
+    private void Jump()
     {
         if (liane.isLianeFixed()) // TODO : Reset velocity + add normal jump in dir
         {
-            liane.resetLiane();
+            liane.Release();
             lianeAcceleration = 100000;
             //acceleration = _rb.velocity.x / 1000;
             onGround = true;//WILL ALLOW THE JUMP
@@ -85,7 +120,9 @@ public class Player : MonoBehaviour
     }
 
     void vMovment() {
-        
+
+        _rb.velocity += Vector3.up * Physics.gravity.y * (gravityMultiplier - 1) * Time.deltaTime;
+
         if (_rb.velocity.y < 0)
         {
             _rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
@@ -110,7 +147,7 @@ public class Player : MonoBehaviour
         else AirMovement();
     }
 
-    public void GroundMovement()
+    private void GroundMovement()
     {
         float acceleration = horizontalAcceleration * _movementInput.x;
 
@@ -144,8 +181,9 @@ public class Player : MonoBehaviour
         _rb.velocity = new Vector3(newHVelocity, _rb.velocity.y, 0);
     }
 
-    public void AirMovement()
+    private void AirMovement()
     {
+
         float acceleration = airHorizontalAcceleration * _movementInput.x;
 
         float newHVelocity;
@@ -172,46 +210,23 @@ public class Player : MonoBehaviour
 
 
 
-        if (newHVelocity > horizontalMaxVelocity) newHVelocity = horizontalMaxVelocity;
-        else if (newHVelocity < -horizontalMaxVelocity) newHVelocity = -horizontalMaxVelocity;
+        if (newHVelocity > horizontalMaxVelocity)
+        {
+            if (_rb.velocity.x <= horizontalMaxVelocity) newHVelocity = horizontalMaxVelocity;
+            else if (newHVelocity > _rb.velocity.x) newHVelocity = _rb.velocity.x;
+        }
+        else if (newHVelocity < -horizontalMaxVelocity)
+        {
+            if (_rb.velocity.x >= -horizontalMaxVelocity) newHVelocity = -horizontalMaxVelocity;
+            else if (newHVelocity < _rb.velocity.x) newHVelocity = _rb.velocity.x;
+        }
 
         _rb.velocity = new Vector3(newHVelocity, _rb.velocity.y, 0);
+        Debug.Log(newHVelocity);
     }
 
 
 
-
-    //orthogonal vector
-    public Vector3 PerpendicularClockwise(Vector3 vect){
-        return new Vector3(vect.y, -vect.x,0);
-    }
-    public Vector3 PerpendicularCounterClockwise(Vector3 vect){
-        return new Vector3(-vect.y, vect.x,0);
-    }
-
-
-    private void setLianeAcceleration(Vector3 dir, Vector3 lianeDir){
-        lianeAcceleration = Vector3.Dot(dir, lianeDir) ;
-        if (lianeAcceleration < minlianeSpeed) {lianeAcceleration = minlianeSpeed;}
-        if (!liane.isLeftOfFixed()){
-            lianeAcceleration *= -1;
-        }
-    }
-
-    private void lianeMovment(){
-        Vector3 lianeDir = liane.getLianeDir();
-
-        if (lianeAcceleration == 100000) {
-            setLianeAcceleration(_rb.velocity, lianeDir);
-        }
-        
-        Debug.Log(lianeAcceleration);
-        
-
-        
-        _rb.velocity = PerpendicularCounterClockwise(lianeDir)*lianeAcceleration * lianeSpeed;
-
-    }
 
 
     float CastARay(Vector3 pos,Vector3 dir,float length, LayerMask mask){
@@ -225,69 +240,64 @@ public class Player : MonoBehaviour
     }
 
 
-
-
-    void Checkground()
+    //orthogonal vector
+    public Vector3 PerpendicularClockwise(Vector3 vect)
     {
-        Vector3 RayStart1;
-        Vector3 RayStart2;
-
-        float rayDist = 0.1f;
-
-
-        RayStart1 = new Vector3(
-            transform.position.x - _collider.bounds.extents.x,
-            transform.position.y - _collider.bounds.extents.y + rayDist,
-            transform.position.z
-            );
-        RayStart2 = new Vector3(
-            transform.position.x + _collider.bounds.extents.x,
-            transform.position.y - _collider.bounds.extents.y + rayDist,
-            transform.position.z
-            );
-
-        float dist1 = CastARay(RayStart1, transform.TransformDirection(Vector3.down), rayDist * 2f, platformMask);
-        float dist2 = CastARay(RayStart2, transform.TransformDirection(Vector3.down), rayDist * 2f, platformMask);
-
-        if (dist1 > 0 || dist2 > 0) 
-        {
-            onGround = true;
-            nbJump = MaxJump;
-        }
-        else 
-        {
-            onGround = false;
-        }
-
+        return new Vector3(vect.y, -vect.x, 0);
+    }
+    public Vector3 PerpendicularCounterClockwise(Vector3 vect)
+    {
+        return new Vector3(-vect.y, vect.x, 0);
     }
 
 
-    void startLiane(){
+    // ============================== Liane
 
-        // Quit liane
-        if (liane.isLianeFixed() || liane.getIsExtending())
+    private void LaunchLiane(){
+
+        if (lastDir == 1)
         {
-            //rb.velocity = new Vector3();
-            //rb.AddForceAtPosition(PerpendicularCounterClockwise(liane.getLianeDir())*Math.Sign(lianeAcceleration) * minlianeSpeed, transform.position);
-            liane.resetLiane();
-            lianeAcceleration = 100000;
-           // acceleration = rb.velocity.x / 1000;
-
-            
+            liane.Extend(1); // Right
         }
-        else // Start liane
+        else
         {
-            //TODO 8 DIRECTION
-            if (lastDir == 1)
-            {//right
-                liane.startExtend(1);
-            }
-            else
-            {
-                liane.startExtend(3);
-            }
-
+            liane.Extend(3); // Left
         }
+    }
+
+    private void SetLianeAcceleration(Vector3 dir, Vector3 lianeDir)
+    {
+        lianeAcceleration = Vector3.Dot(dir, lianeDir);
+
+        if (lianeAcceleration < minlianeSpeed) { lianeAcceleration = minlianeSpeed; }
+        if (!liane.isLeftOfFixed())
+        {
+            lianeAcceleration *= -1;
+        }
+    }
+
+    private void lianeMovment()
+    {
+        Vector3 lianeDir = liane.GetLianeDir();
+
+        if (lianeAcceleration == 100000)
+        {
+            SetLianeAcceleration(_rb.velocity.normalized, lianeDir);
+        }
+
+        _rb.velocity = PerpendicularClockwise(lianeDir) * lianeAcceleration * lianeSpeed;
+
+    }
+
+    private void ReleaseLiane()
+    {
+        liane.Release();
+        lianeAcceleration = 100000;
+
+        //rb.velocity = new Vector3();
+        //rb.AddForceAtPosition(PerpendicularCounterClockwise(liane.getLianeDir())*Math.Sign(lianeAcceleration) * minlianeSpeed, transform.position);
+
+        // acceleration = rb.velocity.x / 1000;
     }
 
     // ============================== Inputs
@@ -316,7 +326,8 @@ public class Player : MonoBehaviour
     {
         if (!callback.started) return;
 
-        startLiane();
+        if (!liane.isLianeFixed()) LaunchLiane();
+        else ReleaseLiane();
     }
 
 }

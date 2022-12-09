@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Liane : MonoBehaviour{
+public class Liane : MonoBehaviour
+{
 
 
 
@@ -22,63 +23,46 @@ public class Liane : MonoBehaviour{
     
     //liane
     [SerializeField] private LineRenderer liane;
-    [SerializeField] private float lianeSpeed;
     private bool lianeFixed = false;
     private Vector3 lianePos = new Vector3(0,0,0);
 
-
-
+    [SerializeField] private GameObject monkeyHand;
     [SerializeField] private LayerMask platformMask;
 
-
-
-
-    [SerializeField] private GameObject monkeyHand;
-
-
-    private Vector3 monkeyPoint;
-    private Vector3 collidePoint;
-    private bool isExtending = false;
-
-    public Vector3 getLianeCollidePoint(){
-        return collidePoint;
+    void Update()
+    {
+        attachToMonkeyHand();
     }
 
-
-    public void startExtend(int dir){
-        isExtending = true;
+    public void Extend(int dir)
+    {
         lianeDir = direction[dir];
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.TransformDirection(lianeDir), out hit, float.MaxValue, platformMask))
+        {
+            liane.SetPosition(1, hit.point);
+            lianePos = hit.point;
+
+            lianeFixed = true;
+        }
     }
 
-    public void stopExtend(){
-        isExtending = false;
-    }
-
-    public bool getIsExtending(){
-        return isExtending;
-    }
-
-    public void fixLianePos(){
-        lianeFixed = true;
-    }
-    public void unfixLianePos(){
+    public void Release()
+    {
         lianeFixed = false;
     }
+
     public bool isLianeFixed(){
         return lianeFixed;
     }
 
-    public void resetLiane(){
-        stopExtend();
-        unfixLianePos();
-    }
-
-    public Vector3 getLianeDir(){
-        return (liane.GetPosition(0) - liane.GetPosition(1)).normalized;
+    public Vector3 GetLianeDir(){
+        return (liane.GetPosition(1) - liane.GetPosition(0)).normalized;
     }
 
     public bool isLeftOfFixed(){
-        return liane.GetPosition(0).x<liane.GetPosition(1).x;
+        return liane.GetPosition(0).x < liane.GetPosition(1).x;
     }
 
 
@@ -93,38 +77,12 @@ public class Liane : MonoBehaviour{
         return -1;
     }
 
-    void extendLiane(){
-        
-        if (isExtending){
-            if (CastARay(liane.GetPosition(1), transform.TransformDirection(lianeDir),lianeSpeed*Time.deltaTime, platformMask) >= 0){
-
-                lianePos = liane.GetPosition(1);
-
-                fixLianePos();
-                stopExtend();
-
-            }else if(!lianeFixed){
-                liane.SetPosition(1, liane.GetPosition(1) + lianeDir * lianeSpeed * Time.deltaTime);
-            }
-
-        }
-    }
-
     void attachToMonkeyHand(){
-        liane.SetPosition(0,monkeyHand.transform.position);
-        if (!lianeFixed && !isExtending)liane.SetPosition(1,monkeyHand.transform.position);
+        liane.SetPosition(0, monkeyHand.transform.position);
+        if (!lianeFixed) liane.SetPosition(1, monkeyHand.transform.position);
     }
 
 
 
-    // Start is called before the first frame update
-    void Start(){
-        
-    }
-
-    // Update is called once per frame
-    void Update(){
-        attachToMonkeyHand();
-        extendLiane();
-    }
+    
 }
