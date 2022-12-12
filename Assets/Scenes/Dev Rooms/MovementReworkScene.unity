@@ -471,7 +471,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 52.7
+  field of view: 50
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -497,7 +497,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 611512138}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -20.3}
+  m_LocalPosition: {x: 0, y: 1, z: -13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -864,7 +864,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 477539950342490091, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 599859582340476481, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: nbJump
@@ -876,11 +876,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 599859582340476481, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: jumpForce
-      value: 7
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 599859582340476481, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: lianeSpeed
-      value: 20
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 599859582340476481, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: fallMultiplier
@@ -992,15 +992,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7925084796213150508, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7925084796213150508, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7925084796213150508, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7925084796213150508, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []

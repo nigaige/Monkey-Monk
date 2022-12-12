@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class Liane : MonoBehaviour
 {
-
-
-
     Vector3[] direction = new [] {
         new Vector3(1.0f,0,0),      //right
         new Vector3(0.5f,0.5f,0),   //up right
@@ -29,9 +26,13 @@ public class Liane : MonoBehaviour
     [SerializeField] private GameObject monkeyHand;
     [SerializeField] private LayerMask platformMask;
 
+    private float _lianeLength;
+
+    public Vector3 LianePosition { get => lianePos; }
+
     void Update()
     {
-        attachToMonkeyHand();
+        UpdateLianePos();
     }
 
     public void Extend(int dir)
@@ -39,10 +40,12 @@ public class Liane : MonoBehaviour
         lianeDir = direction[dir];
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.TransformDirection(lianeDir), out hit, float.MaxValue, platformMask))
+        if (Physics.Raycast(transform.position, lianeDir, out hit, float.MaxValue, platformMask))
         {
             liane.SetPosition(1, hit.point);
             lianePos = hit.point;
+
+            _lianeLength = Vector3.Distance(transform.position, hit.point);
 
             lianeFixed = true;
         }
@@ -57,6 +60,11 @@ public class Liane : MonoBehaviour
         return lianeFixed;
     }
 
+    public float GetLianeLength()
+    {
+        return _lianeLength;
+    }
+
     public Vector3 GetLianeDir(){
         return (liane.GetPosition(1) - liane.GetPosition(0)).normalized;
     }
@@ -64,6 +72,7 @@ public class Liane : MonoBehaviour
     public bool isLeftOfFixed(){
         return liane.GetPosition(0).x < liane.GetPosition(1).x;
     }
+
 
 
 
@@ -77,7 +86,8 @@ public class Liane : MonoBehaviour
         return -1;
     }
 
-    void attachToMonkeyHand(){
+    void UpdateLianePos()
+    {
         liane.SetPosition(0, monkeyHand.transform.position);
         if (!lianeFixed) liane.SetPosition(1, monkeyHand.transform.position);
     }
