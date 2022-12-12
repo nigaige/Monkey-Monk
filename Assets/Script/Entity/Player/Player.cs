@@ -61,7 +61,7 @@ public class Player : MonoBehaviour
 
         if (liane.isLianeFixed())
         {
-            lianeMovment();
+            LianeMovement();
         }
         else
         {
@@ -269,22 +269,20 @@ public class Player : MonoBehaviour
 
         if (liane.isLianeFixed())
         {
+            SetStartLianeVelocity(_rb.velocity.normalized, liane.GetLianeDir().normalized);
             _rb.velocity = Vector3.zero;
-            _rb.useGravity = false;
             _angle = Mathf.Deg2Rad * Vector3.SignedAngle(Vector3.down, -liane.GetLianeDir().normalized, Vector3.forward);
-            //SetLianeAcceleration(_rb.velocity.normalized, liane.GetLianeDir());
         }
     }
 
-    private void SetLianeAcceleration(Vector3 dir, Vector3 lianeDir)
+    private void SetStartLianeVelocity(Vector3 dir, Vector3 lianeDir) // TODO : Fix this
     {
-        lianeAcceleration = Vector3.Dot(dir, lianeDir);
+        Vector3 playerLianeDir = PerpendicularClockwise(lianeDir);
 
-        if (lianeAcceleration < minlianeSpeed) { lianeAcceleration = minlianeSpeed; }
-        if (!liane.isLeftOfFixed())
-        {
-            lianeAcceleration *= -1;
-        }
+        Debug.DrawLine(transform.position, transform.position + playerLianeDir, Color.red, 1f);
+        float vel = Vector3.Dot(_rb.velocity, playerLianeDir);
+
+        _angleVelocity = vel / liane.GetLianeLength();
     }
 
     // TEST
@@ -292,41 +290,24 @@ public class Player : MonoBehaviour
     private float _angleVelocity;
     private float _angle = 0;
 
-    private void lianeMovment()
+    private void LianeMovement()
     {
+        // Calculate angle
         _angleAcceleration = Physics.gravity.y * Mathf.Sin(_angle) / liane.GetLianeLength();
-        Debug.DrawRay(transform.position, Vector3.Cross(-liane.GetLianeDir().normalized, -Vector3.forward) * _angleAcceleration, Color.red);
+        //Debug.DrawRay(transform.position, Vector3.Cross(-liane.GetLianeDir().normalized, -Vector3.forward) * _angleAcceleration, Color.red);
+        _angleVelocity += _angleAcceleration * Time.deltaTime;
+        _angleVelocity *= 0.995f; // Loss
 
-        _angleVelocity += _angleAcceleration * lianeSpeed * Time.deltaTime;
-        _angleVelocity *= 0.995f;
-        _angle += _angleVelocity * Time.deltaTime;
+        _angle += _angleVelocity * lianeSpeed * Time.deltaTime;
 
-        Debug.Log(_angle);
-
-        Vector3 lianeDir = liane.GetLianeDir();
-
-        //_rb.velocity = PerpendicularClockwise(lianeDir) * lianeAcceleration * lianeSpeed;
-
+        // Move to next pos
         Vector3 target = liane.LianePosition + liane.GetLianeLength() * new Vector3(Mathf.Sin(_angle), -Mathf.Cos(_angle), 0);
-        //_rb.position = target // Temp
-
-
-
         _rb.velocity = (target - _rb.position) / Time.deltaTime;
-
-        //_rb.velocity += Vector3.Cross(-liane.GetLianeDir().normalized, Vector3.forward) * _angleAcceleration * lianeSpeed * Time.deltaTime;
-
     }
 
     private void ReleaseLiane()
     {
-        _rb.useGravity = true;
         liane.Release();
-
-        //rb.velocity = new Vector3();
-        //rb.AddForceAtPosition(PerpendicularCounterClockwise(liane.getLianeDir())*Math.Sign(lianeAcceleration) * minlianeSpeed, transform.position);
-
-        // acceleration = rb.velocity.x / 1000;
     }
 
     // Check liane
