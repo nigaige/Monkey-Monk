@@ -20,6 +20,15 @@ public class Player : MonoBehaviour
     [SerializeField] private float jumpForce = 0.4f;
     [SerializeField] private float maxFallVelocity = -1;
 
+    [Header("Liane")]
+    [SerializeField] private Liane liane;
+    [SerializeField] private float lianeSpeed;
+    [SerializeField] private float minlianeSpeed = 1;
+
+    private float _angleAcceleration;
+    private float _angleVelocity;
+    private float _angle = 0;
+
     [Header("Others")]
 
     private int lastDir = 1;
@@ -30,13 +39,6 @@ public class Player : MonoBehaviour
     [SerializeField] public bool onGround = false;
     
     [SerializeField] private LayerMask platformMask;
-
-    //liane
-    [SerializeField] private Liane liane;
-    [SerializeField] private float lianeSpeed;
-    [SerializeField] private float minlianeSpeed = 1;
-
-    private float lianeAcceleration = 0f;
 
 
     private Rigidbody _rb;
@@ -232,7 +234,7 @@ public class Player : MonoBehaviour
 
 
 
-    float CastARay(Vector3 pos,Vector3 dir,float length, LayerMask mask){
+    float CastARay(Vector3 pos,Vector3 dir, float length, LayerMask mask){
         RaycastHit Hit;
 
         Debug.DrawRay(pos, dir * length);
@@ -272,37 +274,97 @@ public class Player : MonoBehaviour
             SetStartLianeVelocity(_rb.velocity.normalized, liane.GetLianeDir().normalized);
             _rb.velocity = Vector3.zero;
             _angle = Mathf.Deg2Rad * Vector3.SignedAngle(Vector3.down, -liane.GetLianeDir().normalized, Vector3.forward);
+
+            //Debug.Log(Mathf.Rad2Deg * GetPredictedHigherAngle(_angleAcceleration, _angleVelocity, _angle));
         }
     }
 
     private void SetStartLianeVelocity(Vector3 dir, Vector3 lianeDir) // TODO : Fix this
     {
+        /*
         Vector3 playerLianeDir = PerpendicularClockwise(lianeDir);
 
         Debug.DrawLine(transform.position, transform.position + playerLianeDir, Color.red, 1f);
         float vel = Vector3.Dot(_rb.velocity, playerLianeDir);
+        */
+
+        float vel = _rb.velocity.x;
 
         _angleVelocity = vel / liane.GetLianeLength();
     }
-
-    // TEST
-    private float _angleAcceleration;
-    private float _angleVelocity;
-    private float _angle = 0;
 
     private void LianeMovement()
     {
         // Calculate angle
         _angleAcceleration = Physics.gravity.y * Mathf.Sin(_angle) / liane.GetLianeLength();
         //Debug.DrawRay(transform.position, Vector3.Cross(-liane.GetLianeDir().normalized, -Vector3.forward) * _angleAcceleration, Color.red);
-        _angleVelocity += _angleAcceleration * Time.deltaTime;
-        _angleVelocity *= 0.995f; // Loss
+
+        // Accel / Decel
+        if (_movementInput.x != 0)
+        {
+            if (Mathf.Sign(_angleVelocity) == Mathf.Sign(_movementInput.x)) // acceleration
+            {
+                float newPredAngleAccel = _angleAcceleration + Mathf.Sign(_angleVelocity) * 0.2f * Mathf.Abs(Mathf.Cos(_angle));
+                float newPredAngleVel = _angleVelocity + newPredAngleAccel * Time.deltaTime * lianeSpeed;
+
+                float higherA = GetPredictedHigherAngle(newPredAngleAccel, newPredAngleVel, _angle + newPredAngleVel * lianeSpeed * Time.deltaTime);
+
+                if (higherA < Mathf.PI / 2f) _angleAcceleration = newPredAngleAccel;
+            }
+            else if (Mathf.Sign(_angleVelocity) != Mathf.Sign(_movementInput.x)) // deceleration
+            {
+                _angleAcceleration -= Mathf.Sign(_angleVelocity) * 0.2f * Mathf.Abs(Mathf.Cos(_angle));
+            }
+        }
+
+        float newAngleVel = _angleVelocity + _angleAcceleration * Time.deltaTime * lianeSpeed;
+
+        _angleVelocity = newAngleVel;
+
+        if (_movementInput.x == 0) _angleVelocity *= 0.995f; // Loss
 
         _angle += _angleVelocity * lianeSpeed * Time.deltaTime;
+
 
         // Move to next pos
         Vector3 target = liane.LianePosition + liane.GetLianeLength() * new Vector3(Mathf.Sin(_angle), -Mathf.Cos(_angle), 0);
         _rb.velocity = (target - _rb.position) / Time.deltaTime;
+    }
+
+    
+    private float GetPredictedHigherAngle(float angleAcceleration, float angleVelocity, float angle) // brute force higher pendulum angle
+    {
+        // init
+        float curr_angle_accel = angleAcceleration;
+        float curr_angle_vel = angleVelocity;
+        float curr_angle = angle;
+
+        // if the angle has already increased in the past (starting from this function)
+        bool has_increased = false;
+
+        int i = 0;
+
+        // loop
+        while (true)
+        {
+            float next_angle_accel = Physics.gravity.y * Mathf.Sin(curr_angle) / liane.GetLianeLength();
+            float next_angle_vel = curr_angle_vel + curr_angle_accel * Time.fixedDeltaTime * lianeSpeed;
+            float next_angle = curr_angle + next_angle_vel * lianeSpeed * Time.fixedDeltaTime;
+
+            if (Mathf.Abs(curr_angle) < Mathf.Abs(next_angle)) has_increased = true;
+            
+            if (has_increased && Mathf.Abs(curr_angle) >= Mathf.Abs(next_angle)) break;
+
+            if (Mathf.Abs(curr_angle) > Mathf.PI * 2) break;
+
+            curr_angle_accel = next_angle_accel;
+            curr_angle_vel = next_angle_vel;
+            curr_angle = next_angle;
+
+            i++;
+        }
+
+        return Mathf.Abs(curr_angle);
     }
 
     private void ReleaseLiane()
@@ -343,6 +405,8 @@ public class Player : MonoBehaviour
     public void OnLiane(InputAction.CallbackContext callback)
     {
         if (!callback.started) return;
+
+        if (onGround) return; // TODO: Check this
 
         if (!liane.isLianeFixed()) LaunchLiane();
         else ReleaseLiane();
