@@ -4,73 +4,77 @@ using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
 
-public class Player : MonoBehaviour
+public class Player : Entity
 {
+    [Header("Movement")]
+    [SerializeField] float horizontalMaxVelocity = 1f;
+    [SerializeField] private float maxFallVelocity = 20f;
+    [SerializeField] private float gravityMultiplier;
+
+    [SerializeField] private LayerMask platformMask;
+    [SerializeField] private bool onGround = false;
+
     [Header("Ground Movement")]
     [SerializeField] private float horizontalAcceleration = 1f;
-    [SerializeField] float horizontalMaxVelocity = 1f;
 
     [Header("Air Movement")]
     [SerializeField] private float airHorizontalAcceleration = 1f;
 
     [Header("Jump")]
-    [SerializeField] private float gravityMultiplier;
     [SerializeField] private float fallMultiplier;
     [SerializeField] private float lowJumpMultiplier;
     [SerializeField] private float jumpForce = 0.4f;
-    [SerializeField] private float maxFallVelocity = -1;
+    [SerializeField] private float coyoteJumpDelay = 0.1f;
+    [SerializeField] private float jumpBufferingDelay = 0.1f;
+
+    private Coroutine _coyoteJumpCoroutine;
+    private bool _canJump = false;
+    private Coroutine _jumpBufferCoroutine;
+    private bool _isJumpBufferCall = false;
 
     [Header("Liane")]
     [SerializeField] private Liane liane;
     [SerializeField] private float lianeSpeed;
-    [SerializeField] private float minlianeSpeed = 1;
+    [SerializeField] private float lianeMaxAngle = 90;
 
     private float _angleAcceleration;
     private float _angleVelocity;
     private float _angle = 0;
 
     [Header("Others")]
-
     private int lastDir = 1;
 
-    [SerializeField] int MaxJump = 2;
-    public int nbJump = 1;
 
-    [SerializeField] public bool onGround = false;
-    
-    [SerializeField] private LayerMask platformMask;
-
-
+    [Header("Components")]
     private Rigidbody _rb;
     private Collider _collider;
+
+    [Header("Inputs")]
     private Vector2 _movementInput;
     private bool _jumpInput;
 
 
-    void Awake()
+    protected override void Awake()
     {
         _rb = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
     }
 
-
-    void FixedUpdate()
+    private void FixedUpdate()
     {
+        // Rotate player
         if (_movementInput.x < 0) transform.rotation = Quaternion.Euler(0, 180, 0);
         else if (_movementInput.x > 0) transform.rotation = Quaternion.Euler(0, 0, 0);
 
+        // Set OnGround
         Checkground();
 
-        if (liane.isLianeFixed())
-        {
-            LianeMovement();
-        }
-        else
-        {
-            hMovment();
-            if (!onGround) vMovment();
-        }
+        // Liane / Basic Movement switcher
+        if (liane.isLianeFixed()) LianeMovement();
+        else Movement();
     }
+
+    // ==================================== CHECK ===========================================
 
     private void Checkground()
     {
@@ -78,7 +82,6 @@ public class Player : MonoBehaviour
         Vector3 RayStart2;
 
         float rayDist = 0.1f;
-
 
         RayStart1 = new Vector3(
             transform.position.x - _collider.bounds.extents.x,
@@ -94,63 +97,74 @@ public class Player : MonoBehaviour
         float dist1 = CastARay(RayStart1, transform.TransformDirection(Vector3.down), rayDist * 2f, platformMask);
         float dist2 = CastARay(RayStart2, transform.TransformDirection(Vector3.down), rayDist * 2f, platformMask);
 
-        if (dist1 > 0 || dist2 > 0)
+        if (_rb.velocity.y <= 0 && (dist1 > 0 || dist2 > 0)) // On Ground
         {
+            _canJump = true;
             onGround = true;
-            nbJump = MaxJump;
+
+            // Jump buffering
+            if (_isJumpBufferCall)
+            {
+                Jump();
+                _isJumpBufferCall = false;
+            }
+
+            // Reset Coyote coroutine
+            if (_coyoteJumpCoroutine != null)
+            {
+                StopCoroutine(_coyoteJumpCoroutine);
+                _coyoteJumpCoroutine = null;
+            }
         }
-        else
+        else // On Air
         {
+            if (onGround && _canJump)
+            {
+                // Start Coyote jump coroutine
+                if (_coyoteJumpCoroutine != null) 
+                {
+                    StopCoroutine(_coyoteJumpCoroutine);
+                    _coyoteJumpCoroutine = null;
+                }
+                _coyoteJumpCoroutine = StartCoroutine(CoyoteJumpCoroutine());
+            }
+
             onGround = false;
         }
-
     }
 
-    private void Jump()
+    // ==================================== MOVEMENT ===========================================
+#region Movement
+
+    private void Movement()
     {
-        if (liane.isLianeFixed()) // TODO : Reset velocity + add normal jump in dir
-        {
-            ReleaseLiane();
-            //lianeAcceleration = 100000;
-            //acceleration = _rb.velocity.x / 1000;
-            onGround = true;//WILL ALLOW THE JUMP
-            nbJump = 1;
-        }
-
-        if (nbJump <= 0) return;
-
-        // Jump
-        _rb.velocity = new Vector3(_rb.velocity.x, jumpForce, 0);
-        nbJump--;
-        GetComponent<AudioSource>().Play();
-    }
-
-    void vMovment() {
-
-        _rb.velocity += Vector3.up * Physics.gravity.y * (gravityMultiplier - 1) * Time.deltaTime;
-
-        if (_rb.velocity.y < 0)
-        {
-            _rb.velocity += Vector3.up * Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
-        }
-        else if (_rb.velocity.y > 0 && !_jumpInput)
-        {
-            _rb.velocity += Vector3.up * Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
-        }
-
-        // Clamp fall velocity
-        if (_rb.velocity.y < -maxFallVelocity) _rb.velocity = new Vector3(_rb.velocity.x, -maxFallVelocity, 0);
-    }
-
-    void hMovment() {
+        // Fall movement
+        if (!onGround) FallMovement();
 
         // Set last direction
         if (_movementInput.x != 0 && _movementInput.x != lastDir) lastDir = (int)_movementInput.x;
 
-
-        // On ground movement
+        // Ground / Air Movement switcher
         if (onGround) GroundMovement();
         else AirMovement();
+    }
+
+    private void FallMovement()
+    {
+        // Global Gravity Multiplier
+        _rb.velocity += Vector3.up * (Physics.gravity.y * (gravityMultiplier - 1) * Time.deltaTime);
+
+        if (_rb.velocity.y < 0) // Fall multiplier
+        {
+            _rb.velocity += Vector3.up * (Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime);
+        }
+        else if (_rb.velocity.y > 0 && !_jumpInput) // LowJump multiplier
+        {
+            _rb.velocity += Vector3.up * (Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime);
+        }
+
+        // Clamp fall velocity
+        if (_rb.velocity.y < -maxFallVelocity) _rb.velocity = new Vector3(_rb.velocity.x, -maxFallVelocity, 0);
     }
 
     private void GroundMovement()
@@ -158,64 +172,62 @@ public class Player : MonoBehaviour
         float acceleration = horizontalAcceleration * _movementInput.x;
 
         float newHVelocity;
-
-        if (_movementInput.x == 0) // deceleration
+        if (_movementInput.x == 0) // Deceleration
         {
-            if (_rb.velocity.x == 0)
+            if (_rb.velocity.x == 0) // End of decel
             {
                 newHVelocity = 0;
             }
-            else if (_rb.velocity.x > 0)
+            else if (_rb.velocity.x > 0) // Pos decel
             {
                 newHVelocity = _rb.velocity.x - horizontalAcceleration * Time.deltaTime;
                 if (newHVelocity < 0) newHVelocity = 0;
             }
-            else
+            else // Neg decel
             {
                 newHVelocity = _rb.velocity.x + horizontalAcceleration * Time.deltaTime;
                 if (newHVelocity > 0) newHVelocity = 0;
             }
         }
-        else // acceleration
+        else // Acceleration
             newHVelocity = _rb.velocity.x + acceleration * Time.deltaTime;
 
 
-
+        // Clamp Velocity (see horizontalMaxVelocity)
         if (newHVelocity > horizontalMaxVelocity) newHVelocity = horizontalMaxVelocity;
         else if (newHVelocity < -horizontalMaxVelocity) newHVelocity = -horizontalMaxVelocity;
 
+        // Set Velocity
         _rb.velocity = new Vector3(newHVelocity, _rb.velocity.y, 0);
     }
 
     private void AirMovement()
     {
-
         float acceleration = airHorizontalAcceleration * _movementInput.x;
 
         float newHVelocity;
-
-        if (_movementInput.x == 0) // deceleration
+        if (_movementInput.x == 0) // Deceleration
         {
-            if (_rb.velocity.x == 0)
+            if (_rb.velocity.x == 0) // End of decel
             {
                 newHVelocity = 0;
             }
-            else if (_rb.velocity.x > 0)
+            else if (_rb.velocity.x > 0) // Pos decel
             {
                 newHVelocity = _rb.velocity.x - airHorizontalAcceleration * Time.deltaTime;
                 if (newHVelocity < 0) newHVelocity = 0;
             }
-            else
+            else // Neg decel
             {
                 newHVelocity = _rb.velocity.x + airHorizontalAcceleration * Time.deltaTime;
                 if (newHVelocity > 0) newHVelocity = 0;
             }
         }
-        else // acceleration
+        else // Acceleration
             newHVelocity = _rb.velocity.x + acceleration * Time.deltaTime;
 
 
-
+        // Clamp Velocity (see horizontalMaxVelocity) execpt if already over the threshold (used to keep liane propulsion inertia)
         if (newHVelocity > horizontalMaxVelocity)
         {
             if (_rb.velocity.x <= horizontalMaxVelocity) newHVelocity = horizontalMaxVelocity;
@@ -227,70 +239,8 @@ public class Player : MonoBehaviour
             else if (newHVelocity < _rb.velocity.x) newHVelocity = _rb.velocity.x;
         }
 
+        // Set Velocity
         _rb.velocity = new Vector3(newHVelocity, _rb.velocity.y, 0);
-    }
-
-
-
-
-
-    float CastARay(Vector3 pos,Vector3 dir, float length, LayerMask mask){
-        RaycastHit Hit;
-
-        Debug.DrawRay(pos, dir * length);
-        bool hitPlateform = Physics.Raycast(pos, transform.TransformDirection( dir), out Hit, length, mask);  
-        
-        if(hitPlateform) return Hit.distance;
-        return -1;
-    }
-
-
-    //orthogonal vector
-    public Vector3 PerpendicularClockwise(Vector3 vect)
-    {
-        return new Vector3(vect.y, -vect.x, 0);
-    }
-    public Vector3 PerpendicularCounterClockwise(Vector3 vect)
-    {
-        return new Vector3(-vect.y, vect.x, 0);
-    }
-
-
-    // ============================== Liane
-
-    private void LaunchLiane(){
-
-        if (lastDir == 1)
-        {
-            liane.Extend(1); // Right
-        }
-        else
-        {
-            liane.Extend(3); // Left
-        }
-
-        if (liane.isLianeFixed())
-        {
-            SetStartLianeVelocity(_rb.velocity.normalized, liane.GetLianeDir().normalized);
-            _rb.velocity = Vector3.zero;
-            _angle = Mathf.Deg2Rad * Vector3.SignedAngle(Vector3.down, -liane.GetLianeDir().normalized, Vector3.forward);
-
-            //Debug.Log(Mathf.Rad2Deg * GetPredictedHigherAngle(_angleAcceleration, _angleVelocity, _angle));
-        }
-    }
-
-    private void SetStartLianeVelocity(Vector3 dir, Vector3 lianeDir) // TODO : Fix this
-    {
-        /*
-        Vector3 playerLianeDir = PerpendicularClockwise(lianeDir);
-
-        Debug.DrawLine(transform.position, transform.position + playerLianeDir, Color.red, 1f);
-        float vel = Vector3.Dot(_rb.velocity, playerLianeDir);
-        */
-
-        float vel = _rb.velocity.x;
-
-        _angleVelocity = vel / liane.GetLianeLength();
     }
 
     private void LianeMovement()
@@ -309,7 +259,7 @@ public class Player : MonoBehaviour
 
                 float higherA = GetPredictedHigherAngle(newPredAngleAccel, newPredAngleVel, _angle + newPredAngleVel * lianeSpeed * Time.deltaTime);
 
-                if (higherA < Mathf.PI / 2f) _angleAcceleration = newPredAngleAccel;
+                if (higherA < Mathf.Deg2Rad * lianeMaxAngle) _angleAcceleration = newPredAngleAccel;
             }
             else if (Mathf.Sign(_angleVelocity) != Mathf.Sign(_movementInput.x)) // deceleration
             {
@@ -331,7 +281,50 @@ public class Player : MonoBehaviour
         _rb.velocity = (target - _rb.position) / Time.deltaTime;
     }
 
-    
+
+    #endregion
+
+    // ==================================== UTILITES ===========================================
+
+    private IEnumerator JumpBufferCoroutine()
+    {
+        _isJumpBufferCall = true;
+        yield return new WaitForSeconds(jumpBufferingDelay);
+        _isJumpBufferCall = false;
+    }
+
+    IEnumerator CoyoteJumpCoroutine()
+    {
+        yield return new WaitForSeconds(coyoteJumpDelay);
+        _canJump = false;
+        _coyoteJumpCoroutine = null;
+    }
+
+
+    float CastARay(Vector3 pos,Vector3 dir, float length, LayerMask mask){
+        RaycastHit hit;
+
+        Debug.DrawRay(pos, dir * length);
+        bool hitPlateform = Physics.Raycast(pos, transform.TransformDirection(dir), out hit, length, mask);  
+        
+        if(hitPlateform) return hit.distance;
+        return -1;
+    }
+
+
+    //orthogonal vector
+    public Vector3 PerpendicularClockwise(Vector3 vect)
+    {
+        return new Vector3(vect.y, -vect.x, 0);
+    }
+    public Vector3 PerpendicularCounterClockwise(Vector3 vect)
+    {
+        return new Vector3(-vect.y, vect.x, 0);
+    }
+
+    /// <summary>
+    /// Calculate the higher angle of the pendulum depending on the current angle, velocity and acceleration
+    /// </summary>
     private float GetPredictedHigherAngle(float angleAcceleration, float angleVelocity, float angle) // brute force higher pendulum angle
     {
         // init
@@ -339,40 +332,37 @@ public class Player : MonoBehaviour
         float curr_angle_vel = angleVelocity;
         float curr_angle = angle;
 
-        // if the angle has already increased in the past (starting from this function)
+        // if the angle has already increased in the past (starting from this call)
         bool has_increased = false;
-
-        int i = 0;
 
         // loop
         while (true)
         {
+            // Compute new pendulum values
             float next_angle_accel = Physics.gravity.y * Mathf.Sin(curr_angle) / liane.GetLianeLength();
             float next_angle_vel = curr_angle_vel + curr_angle_accel * Time.fixedDeltaTime * lianeSpeed;
             float next_angle = curr_angle + next_angle_vel * lianeSpeed * Time.fixedDeltaTime;
 
             if (Mathf.Abs(curr_angle) < Mathf.Abs(next_angle)) has_increased = true;
             
+            // Break if Higher point found
             if (has_increased && Mathf.Abs(curr_angle) >= Mathf.Abs(next_angle)) break;
 
+            // Break if no higher point (ex: loop)
             if (Mathf.Abs(curr_angle) > Mathf.PI * 2) break;
 
+            // Set new values to currents
             curr_angle_accel = next_angle_accel;
             curr_angle_vel = next_angle_vel;
             curr_angle = next_angle;
-
-            i++;
         }
 
         return Mathf.Abs(curr_angle);
     }
 
-    private void ReleaseLiane()
-    {
-        liane.Release();
-    }
+    
 
-    // Check liane
+    // Release liane on ground hit
     private void OnCollisionStay(Collision collision)
     {
         if (!liane.isLianeFixed()) return;
@@ -380,7 +370,76 @@ public class Player : MonoBehaviour
         if (((1 << collision.gameObject.layer) & platformMask) > 0) ReleaseLiane();
     }
 
-    // ============================== Inputs
+
+    // ==================================== INPUT METHODS ===========================================
+
+    private void Jump()
+    {
+        if (liane.isLianeFixed()) // TODO : Boost end velocity
+        {
+            ReleaseLiane();
+            //lianeAcceleration = 100000;
+            //acceleration = _rb.velocity.x / 1000;
+        }
+        else if (!_canJump)
+        {
+            // Reset Jump buffering coroutine
+            if (_jumpBufferCoroutine != null)
+            {
+                StopCoroutine(_jumpBufferCoroutine);
+                _jumpBufferCoroutine = null;
+            }
+            _jumpBufferCoroutine = StartCoroutine(JumpBufferCoroutine());
+
+            return;
+        }
+
+        // Jump
+        _rb.velocity = new Vector3(_rb.velocity.x, jumpForce, 0);
+        GetComponent<AudioSource>().Play();
+
+        _canJump = false;
+    }
+
+    private void LaunchLiane()
+    {
+        if (lastDir == 1)
+        {
+            liane.Extend(1); // Right
+        }
+        else
+        {
+            liane.Extend(3); // Left
+        }
+
+        if (!liane.isLianeFixed()) return;
+
+
+        /*
+        // TEST : Set default liane angle velocity
+        Vector3 playerLianeDir = PerpendicularClockwise(liane.GetLianeDir().normalized);
+
+        Debug.DrawLine(transform.position, transform.position + playerLianeDir, Color.red, 1f);
+        float vel = Vector3.Dot(_rb.velocity, playerLianeDir);
+        */
+
+        // Set default liane angle velocity
+        float vel = _rb.velocity.x;
+        _angleVelocity = vel / liane.GetLianeLength();
+
+        // Reset linear velocity
+        _rb.velocity = Vector3.zero;
+
+        // Set default angle
+        _angle = Mathf.Deg2Rad * Vector3.SignedAngle(Vector3.down, -liane.GetLianeDir().normalized, Vector3.forward);
+    }
+
+    private void ReleaseLiane()
+    {
+        liane.Release();
+    }
+
+    // ==================================== INPUTS ===========================================
 
     public void OnMovement(InputAction.CallbackContext callback)
     {
@@ -406,7 +465,7 @@ public class Player : MonoBehaviour
     {
         if (!callback.started) return;
 
-        if (onGround) return; // TODO: Check this
+        if (onGround) return; // TODO: Check this (passthrough platform)
 
         if (!liane.isLianeFixed()) LaunchLiane();
         else ReleaseLiane();

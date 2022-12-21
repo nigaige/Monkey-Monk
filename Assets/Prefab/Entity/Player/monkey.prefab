@@ -73,7 +73,7 @@ Transform:
   - {fileID: 7925084796213150508}
   - {fileID: 5368244036304838587}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8884808085109925187
 MeshFilter:
@@ -136,8 +136,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.06960319, y: 0.121735394, z: 0.15841767}
-  m_Center: {x: -0.0023396313, y: 0.058733463, z: -0.006807551}
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &599859582340476481
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,23 +150,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13f0846637f424641b304d395e92eebe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  horizontalAcceleration: 20
-  horizontalMaxVelocity: 1.1
-  fallMultiplier: 1
-  lowJumpMultiplier: 3
-  jumpForce: 2.3
-  vSpeed: 0
-  maxFallVelocity: 2
-  MaxJump: 2
-  nbJump: 1
-  onGround: 0
-  RayCast_Dir: {x: 0, y: 0, z: 0}
+  maxHeathPoint: 10
+  invulnerabilityDuration: 0.5
+  horizontalMaxVelocity: 6
+  maxFallVelocity: 20
+  gravityMultiplier: 1.5
   platformMask:
     serializedVersion: 2
     m_Bits: 64
+  onGround: 1
+  horizontalAcceleration: 60
+  airHorizontalAcceleration: 20
+  fallMultiplier: 2
+  lowJumpMultiplier: 4
+  jumpForce: 8
   liane: {fileID: 5328522932286767545}
-  lianeSpeed: 2
-  minlianeSpeed: 1
+  lianeSpeed: 1.5
+  lianeMaxAngle: 60
+  maxJump: 2
+  nbJump: 2
 --- !u!54 &1152359394223405359
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -175,7 +177,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1723195303924927862}
   serializedVersion: 2
-  m_Mass: 0.2
+  m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -601,11 +603,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   liane: {fileID: 4920997721104621800}
-  lianeSpeed: 10
+  monkeyHand: {fileID: 1118875606611223152}
   platformMask:
     serializedVersion: 2
     m_Bits: 64
-  monkeyHand: {fileID: 1118875606611223152}
 --- !u!1 &4276516316550841185
 GameObject:
   m_ObjectHideFlags: 0
@@ -650,12 +651,24 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
       propertyPath: m_LocalPosition.z
