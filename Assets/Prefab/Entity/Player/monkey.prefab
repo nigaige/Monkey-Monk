@@ -164,11 +164,12 @@ MonoBehaviour:
   fallMultiplier: 2
   lowJumpMultiplier: 4
   jumpForce: 8
+  coyoteJumpDelay: 0.1
+  jumpBufferingDelay: 0.1
   liane: {fileID: 5328522932286767545}
   lianeSpeed: 1.5
+  lianeVerticalSpeed: 2
   lianeMaxAngle: 60
-  maxJump: 2
-  nbJump: 2
 --- !u!54 &1152359394223405359
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -35,6 +35,8 @@ public class Player : Entity
     [Header("Liane")]
     [SerializeField] private Liane liane;
     [SerializeField] private float lianeSpeed;
+    [SerializeField] private float lianeHorizontalSpeed = 0.2f;
+    [SerializeField] private float lianeVerticalSpeed = 1;
     [SerializeField] private float lianeMaxAngle = 90;
 
     private float _angleAcceleration;
@@ -51,6 +53,7 @@ public class Player : Entity
 
     [Header("Inputs")]
     private Vector2 _movementInput;
+    private Vector2 _clampedMovementInput;
     private bool _jumpInput;
 
 
@@ -62,6 +65,8 @@ public class Player : Entity
 
     private void FixedUpdate()
     {
+        liane.SetPointerDir(_clampedMovementInput);
+
         // Rotate player
         if (_movementInput.x < 0) transform.rotation = Quaternion.Euler(0, 180, 0);
         else if (_movementInput.x > 0) transform.rotation = Quaternion.Euler(0, 0, 0);
@@ -142,7 +147,7 @@ public class Player : Entity
         if (!onGround) FallMovement();
 
         // Set last direction
-        if (_movementInput.x != 0 && _movementInput.x != lastDir) lastDir = (int)_movementInput.x;
+        if (_clampedMovementInput.x != 0 && _clampedMovementInput.x != lastDir) lastDir = (int)_clampedMovementInput.x;
 
         // Ground / Air Movement switcher
         if (onGround) GroundMovement();
@@ -169,10 +174,10 @@ public class Player : Entity
 
     private void GroundMovement()
     {
-        float acceleration = horizontalAcceleration * _movementInput.x;
+        float acceleration = horizontalAcceleration * _clampedMovementInput.x;
 
         float newHVelocity;
-        if (_movementInput.x == 0) // Deceleration
+        if (_clampedMovementInput.x == 0) // Deceleration
         {
             if (_rb.velocity.x == 0) // End of decel
             {
@@ -203,10 +208,10 @@ public class Player : Entity
 
     private void AirMovement()
     {
-        float acceleration = airHorizontalAcceleration * _movementInput.x;
+        float acceleration = airHorizontalAcceleration * _clampedMovementInput.x;
 
         float newHVelocity;
-        if (_movementInput.x == 0) // Deceleration
+        if (_clampedMovementInput.x == 0) // Deceleration
         {
             if (_rb.velocity.x == 0) // End of decel
             {
@@ -250,20 +255,20 @@ public class Player : Entity
         //Debug.DrawRay(transform.position, Vector3.Cross(-liane.GetLianeDir().normalized, -Vector3.forward) * _angleAcceleration, Color.red);
 
         // Accel / Decel
-        if (_movementInput.x != 0)
+        if (_clampedMovementInput.x != 0)
         {
-            if (Mathf.Sign(_angleVelocity) == Mathf.Sign(_movementInput.x)) // acceleration
+            if (Mathf.Sign(_angleVelocity) == Mathf.Sign(_clampedMovementInput.x)) // acceleration
             {
-                float newPredAngleAccel = _angleAcceleration + Mathf.Sign(_angleVelocity) * 0.2f * Mathf.Abs(Mathf.Cos(_angle));
+                float newPredAngleAccel = _angleAcceleration + Mathf.Sign(_angleVelocity) * lianeHorizontalSpeed * Mathf.Abs(Mathf.Cos(_angle));
                 float newPredAngleVel = _angleVelocity + newPredAngleAccel * Time.deltaTime * lianeSpeed;
 
                 float higherA = GetPredictedHigherAngle(newPredAngleAccel, newPredAngleVel, _angle + newPredAngleVel * lianeSpeed * Time.deltaTime);
 
                 if (higherA < Mathf.Deg2Rad * lianeMaxAngle) _angleAcceleration = newPredAngleAccel;
             }
-            else if (Mathf.Sign(_angleVelocity) != Mathf.Sign(_movementInput.x)) // deceleration
+            else if (Mathf.Sign(_angleVelocity) != Mathf.Sign(_clampedMovementInput.x)) // deceleration
             {
-                _angleAcceleration -= Mathf.Sign(_angleVelocity) * 0.2f * Mathf.Abs(Mathf.Cos(_angle));
+                _angleAcceleration -= Mathf.Sign(_angleVelocity) * lianeHorizontalSpeed * Mathf.Abs(Mathf.Cos(_angle));
             }
         }
 
@@ -271,14 +276,20 @@ public class Player : Entity
 
         _angleVelocity = newAngleVel;
 
-        if (_movementInput.x == 0) _angleVelocity *= 0.995f; // Loss
+        if (_clampedMovementInput.x == 0) _angleVelocity *= 0.995f; // Loss
 
         _angle += _angleVelocity * lianeSpeed * Time.deltaTime;
-
 
         // Move to next pos
         Vector3 target = liane.LianePosition + liane.GetLianeLength() * new Vector3(Mathf.Sin(_angle), -Mathf.Cos(_angle), 0);
         _rb.velocity = (target - _rb.position) / Time.deltaTime;
+
+        // Vertical Liane Movement
+        if (_clampedMovementInput == Vector2.up || _clampedMovementInput == Vector2.down)
+        {
+            _rb.velocity += _clampedMovementInput.y * (liane.LianePosition - transform.position).normalized * lianeVerticalSpeed;
+            liane.SetLianeLength(liane.GetLianeLength() - _clampedMovementInput.y * lianeVerticalSpeed * Time.deltaTime);
+        }
     }
 
 
@@ -378,8 +389,8 @@ public class Player : Entity
         if (liane.isLianeFixed()) // TODO : Boost end velocity
         {
             ReleaseLiane();
-            //lianeAcceleration = 100000;
-            //acceleration = _rb.velocity.x / 1000;
+
+            return;
         }
         else if (!_canJump)
         {
@@ -403,28 +414,26 @@ public class Player : Entity
 
     private void LaunchLiane()
     {
-        if (lastDir == 1)
-        {
-            liane.Extend(1); // Right
-        }
-        else
-        {
-            liane.Extend(3); // Left
-        }
+        float launchLianeDir = Mathf.Abs(Mathf.Atan2(_clampedMovementInput.y, _clampedMovementInput.x) * Mathf.Rad2Deg);
+
+        if (_clampedMovementInput.x > 0) liane.Extend(1); // Right
+        else if (_clampedMovementInput.x < 0) liane.Extend(3); // Left
+        else liane.Extend(2); // Up
+
 
         if (!liane.isLianeFixed()) return;
 
 
-        /*
+        
         // TEST : Set default liane angle velocity
         Vector3 playerLianeDir = PerpendicularClockwise(liane.GetLianeDir().normalized);
 
-        Debug.DrawLine(transform.position, transform.position + playerLianeDir, Color.red, 1f);
+        //Debug.DrawLine(transform.position, transform.position + playerLianeDir, Color.red, 1f);
         float vel = Vector3.Dot(_rb.velocity, playerLianeDir);
-        */
+        
 
         // Set default liane angle velocity
-        float vel = _rb.velocity.x;
+        //float vel = _rb.velocity.x;
         _angleVelocity = vel / liane.GetLianeLength();
 
         // Reset linear velocity
@@ -445,11 +454,49 @@ public class Player : Entity
     {
         _movementInput = callback.ReadValue<Vector2>();
 
-        if (_movementInput.x > 0) _movementInput.x = 1;
-        else if (_movementInput.x < 0) _movementInput.x = -1;
+        _clampedMovementInput = Vector2.zero;
+        if (_movementInput == Vector2.zero) return;
 
-        if (_movementInput.y > 0) _movementInput.y = 1;
-        else if (_movementInput.y < 0) _movementInput.y = -1;
+        float movementAngleDeg = Mathf.Atan2(_movementInput.y, _movementInput.x) * Mathf.Rad2Deg;
+
+        if (movementAngleDeg >= 157.5 || movementAngleDeg <= -157.5)
+        {
+            _clampedMovementInput = new Vector2(-1, 0);
+        }
+        else if (movementAngleDeg > 112.5)
+        {
+            _clampedMovementInput = new Vector2(-1, 1);
+        }
+        else if (movementAngleDeg > 67.5)
+        {
+            _clampedMovementInput = new Vector2(0, 1);
+        }
+        else if (movementAngleDeg > 22.5)
+        {
+            _clampedMovementInput = new Vector2(1, 1);
+        }
+        else if (movementAngleDeg < -112.5)
+        {
+            _clampedMovementInput = new Vector2(-1, -1);
+        }
+        else if (movementAngleDeg < -67.5)
+        {
+            _clampedMovementInput = new Vector2(0, -1);
+        }
+        else if (movementAngleDeg < -22.5)
+        {
+            _clampedMovementInput = new Vector2(1, -1);
+        }
+        else
+        {
+            _clampedMovementInput = new Vector2(1, 0);
+        }
+        /*
+        if (_clampedMovementInput.x > 0) _clampedMovementInput.x = 1;
+        else if (_clampedMovementInput.x < 0) _clampedMovementInput.x = -1;
+
+        if (_clampedMovementInput.y > 0) _clampedMovementInput.y = 1;
+        else if (_clampedMovementInput.y < 0) _clampedMovementInput.y = -1;*/
     }
 
     public void OnJump(InputAction.CallbackContext callback)
