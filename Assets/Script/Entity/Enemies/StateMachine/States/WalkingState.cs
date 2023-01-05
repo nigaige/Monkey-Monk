@@ -16,8 +16,8 @@ namespace MonkeyMonk.Enemies.StateMachine
         private Rigidbody _rb;
         private Collider _collider;
 
-        private LayerMask _cliffHitMaskLayer;
-        private LayerMask _hitMaskLayer;
+        [SerializeField] private LayerMask groundLayer;
+        [SerializeField] private LayerMask wallLayer;
 
         public override void Initialize(EnemyStateMachine stateMachine)
         {
@@ -25,9 +25,6 @@ namespace MonkeyMonk.Enemies.StateMachine
 
             _rb = Entity.GetComponent<Rigidbody>();
             _collider = Entity.GetComponent<Collider>();
-
-            _cliffHitMaskLayer = LayerMask.GetMask("Block");
-            _hitMaskLayer = LayerMask.GetMask("Block", "Enemy");
 
             walkableZone.Init(stateMachine);
         }
@@ -56,9 +53,9 @@ namespace MonkeyMonk.Enemies.StateMachine
         void CheckLedge()
         {
             // Check if near cliff
-            bool IsNearCliff = Physics.Raycast(Entity.transform.position + new Vector3(_walkingDirection * _collider.bounds.extents.x, -_collider.bounds.extents.y, 0) + new Vector3(_walkingDirection * 0.1f, 0.1f, 0), Vector3.down, 0.2f, _cliffHitMaskLayer);
+            bool IsNearCliff = Physics.Raycast(Entity.transform.position + new Vector3(_walkingDirection * _collider.bounds.extents.x, -_collider.bounds.extents.y, 0) + new Vector3(_walkingDirection * 0.1f, 0.1f, 0), Vector3.down, 0.2f, groundLayer);
 
-            bool IsNearWall = Physics.Raycast(Entity.transform.position + new Vector3(_walkingDirection * (_collider.bounds.extents.x - 0.05f), 0, 0), Vector3.right * _walkingDirection, 0.1f, _hitMaskLayer);
+            bool IsNearWall = Physics.Raycast(Entity.transform.position + new Vector3(_walkingDirection * (_collider.bounds.extents.x - 0.05f), 0, 0), Vector3.right * _walkingDirection, 0.1f, wallLayer);
 
             // Switch dir if near cliff
             if (!IsNearCliff && Entity.IsGrounded)

@@ -6,13 +6,15 @@ using UnityEngine.InputSystem;
 
 public class Player : Entity
 {
+    private bool _onGround = false;
+    private bool _isTouchingWall = false;
+
     [Header("Movement")]
     [SerializeField] float horizontalMaxVelocity = 1f;
     [SerializeField] private float maxFallVelocity = 20f;
     [SerializeField] private float gravityMultiplier;
 
     [SerializeField] private LayerMask platformMask;
-    [SerializeField] private bool onGround = false;
 
     [Header("Ground Movement")]
     [SerializeField] private float horizontalAcceleration = 1f;
@@ -38,6 +40,7 @@ public class Player : Entity
     [SerializeField] private float lianeHorizontalSpeed = 0.2f;
     [SerializeField] private float lianeVerticalSpeed = 1;
     [SerializeField] private float lianeMaxAngle = 90;
+    [SerializeField] private float maxLianeLength = 10;
 
     private float _angleAcceleration;
     private float _angleVelocity;
@@ -65,23 +68,26 @@ public class Player : Entity
 
     private void FixedUpdate()
     {
-        liane.SetPointerDir(_clampedMovementInput);
-
         // Rotate player
         if (_movementInput.x < 0) transform.rotation = Quaternion.Euler(0, 180, 0);
         else if (_movementInput.x > 0) transform.rotation = Quaternion.Euler(0, 0, 0);
 
         // Set OnGround
-        Checkground();
+        if (!liane.isLianeFixed()) GroundCheck();
+        WallCheck();
 
         // Liane / Basic Movement switcher
         if (liane.isLianeFixed()) LianeMovement();
         else Movement();
+
+        // Dirty fix of ground tripping
+        if (_onGround) _rb.useGravity = false;
+        else _rb.useGravity = true;
     }
 
     // ==================================== CHECK ===========================================
 
-    private void Checkground()
+    private void GroundCheck()
     {
         Vector3 RayStart1;
         Vector3 RayStart2;
@@ -89,14 +95,14 @@ public class Player : Entity
         float rayDist = 0.1f;
 
         RayStart1 = new Vector3(
-            transform.position.x - _collider.bounds.extents.x,
-            transform.position.y - _collider.bounds.extents.y + rayDist,
-            transform.position.z
+            _collider.bounds.center.x - _collider.bounds.extents.x,
+            _collider.bounds.center.y - _collider.bounds.extents.y + rayDist,
+            _collider.bounds.center.z
             );
         RayStart2 = new Vector3(
-            transform.position.x + _collider.bounds.extents.x,
-            transform.position.y - _collider.bounds.extents.y + rayDist,
-            transform.position.z
+            _collider.bounds.center.x + _collider.bounds.extents.x,
+            _collider.bounds.center.y - _collider.bounds.extents.y + rayDist,
+            _collider.bounds.center.z
             );
 
         float dist1 = CastARay(RayStart1, transform.TransformDirection(Vector3.down), rayDist * 2f, platformMask);
@@ -105,7 +111,7 @@ public class Player : Entity
         if (_rb.velocity.y <= 0 && (dist1 > 0 || dist2 > 0)) // On Ground
         {
             _canJump = true;
-            onGround = true;
+            _onGround = true;
 
             // Jump buffering
             if (_isJumpBufferCall)
@@ -123,7 +129,7 @@ public class Player : Entity
         }
         else // On Air
         {
-            if (onGround && _canJump)
+            if (_onGround && _canJump)
             {
                 // Start Coyote jump coroutine
                 if (_coyoteJumpCoroutine != null) 
@@ -134,8 +140,51 @@ public class Player : Entity
                 _coyoteJumpCoroutine = StartCoroutine(CoyoteJumpCoroutine());
             }
 
-            onGround = false;
+            _onGround = false;
         }
+
+        if (_onGround) // Dirty fix of ground tripping
+        {
+            float minDist;
+            if (dist1 == -1) minDist = dist2 - rayDist;
+            else if (dist2 == -1) minDist = dist1 - rayDist;
+            else minDist = Mathf.Min(dist1, dist2) - rayDist;
+
+            if (minDist > 0.02 || minDist < 0)
+            {
+                transform.position += Vector3.down * minDist + Vector3.up * 0.01f;
+            }
+        }
+
+    }
+
+    private void WallCheck()
+    {
+        if(_clampedMovementInput.x == 0)
+        {
+            _isTouchingWall = false;
+            return;
+        }
+
+        float halfRayLength = 0.1f;
+
+        Vector3 UpRay = new Vector3(
+            _collider.bounds.center.x + (_collider.bounds.extents.x - halfRayLength) * Mathf.Sign(_clampedMovementInput.x),
+            _collider.bounds.center.y + _collider.bounds.extents.y,
+            _collider.bounds.center.z
+            );
+        Vector3 BottomRay = new Vector3(
+            _collider.bounds.center.x + (_collider.bounds.extents.x - halfRayLength) * Mathf.Sign(_clampedMovementInput.x),
+            _collider.bounds.center.y - (_collider.bounds.extents.y - 0.1f),
+            _collider.bounds.center.z
+            );
+
+        float dist1 = CastARay(UpRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength * 2f, platformMask);
+        float dist2 = CastARay(BottomRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength * 2f, platformMask);
+
+        _isTouchingWall = (dist1 > 0) || (dist2 > 0);
+
+
     }
 
     // ==================================== MOVEMENT ===========================================
@@ -144,13 +193,13 @@ public class Player : Entity
     private void Movement()
     {
         // Fall movement
-        if (!onGround) FallMovement();
+        if (!_onGround) FallMovement();
 
         // Set last direction
         if (_clampedMovementInput.x != 0 && _clampedMovementInput.x != lastDir) lastDir = (int)_clampedMovementInput.x;
 
         // Ground / Air Movement switcher
-        if (onGround) GroundMovement();
+        if (_onGround) GroundMovement();
         else AirMovement();
     }
 
@@ -203,7 +252,7 @@ public class Player : Entity
         else if (newHVelocity < -horizontalMaxVelocity) newHVelocity = -horizontalMaxVelocity;
 
         // Set Velocity
-        _rb.velocity = new Vector3(newHVelocity, _rb.velocity.y, 0);
+        _rb.velocity = new Vector3(newHVelocity, 0, 0);
     }
 
     private void AirMovement()
@@ -251,7 +300,7 @@ public class Player : Entity
     private void LianeMovement()
     {
         // Calculate angle
-        _angleAcceleration = Physics.gravity.y * Mathf.Sin(_angle) / liane.GetLianeLength();
+        _angleAcceleration = Physics.gravity.y * (gravityMultiplier - 1) * Mathf.Sin(_angle) /*/ liane.GetLianeLength()*/;
         //Debug.DrawRay(transform.position, Vector3.Cross(-liane.GetLianeDir().normalized, -Vector3.forward) * _angleAcceleration, Color.red);
 
         // Accel / Decel
@@ -287,8 +336,16 @@ public class Player : Entity
         // Vertical Liane Movement
         if (_clampedMovementInput == Vector2.up || _clampedMovementInput == Vector2.down)
         {
-            _rb.velocity += _clampedMovementInput.y * (liane.LianePosition - transform.position).normalized * lianeVerticalSpeed;
-            liane.SetLianeLength(liane.GetLianeLength() - _clampedMovementInput.y * lianeVerticalSpeed * Time.deltaTime);
+            if (liane.GetLianeLength() - _clampedMovementInput.y * lianeVerticalSpeed * Time.deltaTime > liane.MaxLength) // end of the rope
+            {
+                _rb.velocity -= (liane.LianePosition - transform.position).normalized * (liane.MaxLength - liane.GetLianeLength());
+                liane.SetLianeLength(liane.MaxLength);
+            }
+            else
+            {
+                _rb.velocity += _clampedMovementInput.y * (liane.LianePosition - transform.position).normalized * lianeVerticalSpeed;
+                liane.SetLianeLength(liane.GetLianeLength() - _clampedMovementInput.y * lianeVerticalSpeed * Time.deltaTime);
+            }
         }
     }
 
@@ -312,13 +369,14 @@ public class Player : Entity
     }
 
 
-    float CastARay(Vector3 pos,Vector3 dir, float length, LayerMask mask){
+    float CastARay(Vector3 pos, Vector3 dir, float length, LayerMask mask){
         RaycastHit hit;
 
-        Debug.DrawRay(pos, dir * length);
-        bool hitPlateform = Physics.Raycast(pos, transform.TransformDirection(dir), out hit, length, mask);  
-        
-        if(hitPlateform) return hit.distance;
+        bool hitPlateform = Physics.Raycast(pos, dir, out hit, length, mask);
+        if (hitPlateform) Debug.DrawRay(pos, dir * length, Color.green);
+        else Debug.DrawRay(pos, dir * length, Color.red);
+
+        if (hitPlateform) return hit.distance;
         return -1;
     }
 
@@ -350,7 +408,7 @@ public class Player : Entity
         while (true)
         {
             // Compute new pendulum values
-            float next_angle_accel = Physics.gravity.y * Mathf.Sin(curr_angle) / liane.GetLianeLength();
+            float next_angle_accel = Physics.gravity.y * (gravityMultiplier - 1) * Mathf.Sin(curr_angle) / liane.GetLianeLength();
             float next_angle_vel = curr_angle_vel + curr_angle_accel * Time.fixedDeltaTime * lianeSpeed;
             float next_angle = curr_angle + next_angle_vel * lianeSpeed * Time.fixedDeltaTime;
 
@@ -414,14 +472,14 @@ public class Player : Entity
 
     private void LaunchLiane()
     {
-        float launchLianeDir = Mathf.Abs(Mathf.Atan2(_clampedMovementInput.y, _clampedMovementInput.x) * Mathf.Rad2Deg);
-
         if (_clampedMovementInput.x > 0) liane.Extend(1); // Right
         else if (_clampedMovementInput.x < 0) liane.Extend(3); // Left
         else liane.Extend(2); // Up
 
 
         if (!liane.isLianeFixed()) return;
+
+        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("PassthroughPlatform"), true);
 
 
         
@@ -446,6 +504,7 @@ public class Player : Entity
     private void ReleaseLiane()
     {
         liane.Release();
+        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("PassthroughPlatform"), false);
     }
 
     // ==================================== INPUTS ===========================================
@@ -512,7 +571,7 @@ public class Player : Entity
     {
         if (!callback.started) return;
 
-        if (onGround) return; // TODO: Check this (passthrough platform)
+        if (_onGround || _isTouchingWall) return; // TODO: Check this (passthrough platform)
 
         if (!liane.isLianeFixed()) LaunchLiane();
         else ReleaseLiane();

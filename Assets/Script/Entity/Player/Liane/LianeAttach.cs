@@ -12,15 +12,15 @@ public class LianeAttach : MonoBehaviour
     private void Awake()
     {
         _points = new Vector2[4];
-        _points[0] = transform.position + transform.rotation * new Vector2(-halfExtends.x, halfExtends.y);
-        _points[1] = transform.position + transform.rotation * new Vector2(halfExtends.x, halfExtends.y);
-        _points[2] = transform.position + transform.rotation * new Vector2(halfExtends.x, -halfExtends.y);
-        _points[3] = transform.position + transform.rotation * new Vector2(-halfExtends.x, -halfExtends.y);
+        _points[0] = transform.position + transform.rotation * new Vector2(-halfExtends.x * transform.lossyScale.x, halfExtends.y * transform.lossyScale.y);
+        _points[1] = transform.position + transform.rotation * new Vector2(halfExtends.x * transform.lossyScale.x, halfExtends.y * transform.lossyScale.y);
+        _points[2] = transform.position + transform.rotation * new Vector2(halfExtends.x * transform.lossyScale.x, -halfExtends.y * transform.lossyScale.y);
+        _points[3] = transform.position + transform.rotation * new Vector2(-halfExtends.x * transform.lossyScale.x, -halfExtends.y * transform.lossyScale.y);
     }
 
 
     private void OnDrawGizmosSelected()
     {
-        DebugUtils.DrawBox(transform.position, halfExtends, transform.rotation, Color.green, 0);
+        DebugUtils.DrawBox(transform.position, halfExtends * transform.lossyScale, transform.rotation, Color.green, 0);
     }
 }

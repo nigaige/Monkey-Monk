@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Liane : MonoBehaviour
@@ -18,53 +17,40 @@ public class Liane : MonoBehaviour
 
     Vector3 lianeDir = new Vector3(0,0,0);  
 
-    
     //liane
     [SerializeField] private LineRenderer liane;
-    private bool lianeFixed = false;
-    private Vector3 lianePos = new Vector3(0,0,0);
-
     [SerializeField] private GameObject monkeyHand;
     [SerializeField] private LayerMask platformMask;
+
+    [SerializeField] private float maxLength = 10;
+    public float MaxLength { get => maxLength; }
+
+    private bool lianeFixed = false;
+    private Vector3 lianePos = new Vector3(0, 0, 0);
 
     private float _lianeLength;
 
     public Vector3 LianePosition { get => lianePos; }
 
-    // TEST
-    private Vector2 _pointerDir;
-    private Vector3? _pointerPos;
-
-    public void SetPointerDir(Vector2 dir)
-    {
-        _pointerDir = dir.normalized;
-    }
-
-    private void FixedUpdate()
-    {
-        _pointerPos = GetAimAssistPoint(_pointerDir);
-    }
-
     private Vector3? GetAimAssistPoint(Vector3 aimDir)
     {
         RaycastHit hit;
-        if (Physics.Raycast(monkeyHand.transform.position, aimDir, out hit, float.MaxValue, platformMask))
+        if (Physics.Raycast(monkeyHand.transform.position, aimDir, out hit, maxLength, platformMask) && hit.collider.GetComponent<LianeAttach>() != null)
         {
             return hit.point;
         }
         else
         // Test
         {
-            float lianeMaxExtend = 10;
             float lianeMaxHalfAngle = 20;
 
-            //Debug.DrawRay(monkeyHand.transform.position, aimDir * lianeMaxExtend, Color.red);
-            DebugUtils.DrawArc(monkeyHand.transform.position, aimDir * lianeMaxExtend, lianeMaxHalfAngle, Color.red, 0);
+            Debug.DrawRay(monkeyHand.transform.position, aimDir * maxLength, Color.red);
+            DebugUtils.DrawArc(monkeyHand.transform.position, aimDir * maxLength, lianeMaxHalfAngle, Color.red, 0);
 
-            Vector3 origin = monkeyHand.transform.position + aimDir * lianeMaxExtend / 2f;
+            Vector3 origin = monkeyHand.transform.position + aimDir * maxLength / 2f;
 
-            Collider[] c = Physics.OverlapBox(origin, new Vector3(lianeMaxExtend / 2f, Mathf.Sin(lianeMaxHalfAngle * Mathf.Deg2Rad) * lianeMaxExtend, 0.1f), Quaternion.Euler(0, 0, Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg));
-            //DebugUtils.DrawBox(origin, new Vector3(lianeMaxExtend / 2f, Mathf.Sin(lianeMaxHalfAngle * Mathf.Deg2Rad) * lianeMaxExtend, 0.1f), Quaternion.Euler(0, 0, Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg), Color.blue, 0);
+            Collider[] c = Physics.OverlapBox(origin, new Vector3(maxLength / 2f, Mathf.Sin(lianeMaxHalfAngle * Mathf.Deg2Rad) * maxLength, 0.1f), Quaternion.Euler(0, 0, Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg));
+            DebugUtils.DrawBox(origin, new Vector3(maxLength / 2f, Mathf.Sin(lianeMaxHalfAngle * Mathf.Deg2Rad) * maxLength, 0.1f), Quaternion.Euler(0, 0, Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg), Color.blue, 0);
 
             // Find attach
             List<LianeAttach> atts = new();
@@ -119,11 +105,6 @@ public class Liane : MonoBehaviour
 
             return minPoint;
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        if(_pointerPos.HasValue) Gizmos.DrawCube(_pointerPos.Value, Vector3.one * 0.1f);
     }
 
     void Update()

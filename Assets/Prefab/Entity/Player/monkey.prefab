@@ -42,13 +42,13 @@ GameObject:
   - component: {fileID: 2477755069874244458}
   - component: {fileID: 8884808085109925187}
   - component: {fileID: 477539950342490091}
-  - component: {fileID: 1155384860913265623}
   - component: {fileID: 599859582340476481}
   - component: {fileID: 1152359394223405359}
   - component: {fileID: 3914884982506606422}
   - component: {fileID: 2755170884234709601}
   - component: {fileID: 3132293133421404436}
   - component: {fileID: 304948565}
+  - component: {fileID: 60313676}
   m_Layer: 7
   m_Name: monkey
   m_TagString: Player
@@ -125,19 +125,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &1155384860913265623
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1723195303924927862}
-  m_Material: {fileID: 13400000, guid: 16ad6e643c8d53c48a68f0333dd1841f, type: 2}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &599859582340476481
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,8 +144,7 @@ MonoBehaviour:
   gravityMultiplier: 1.5
   platformMask:
     serializedVersion: 2
-    m_Bits: 64
-  onGround: 1
+    m_Bits: 1088
   horizontalAcceleration: 60
   airHorizontalAcceleration: 20
   fallMultiplier: 2
@@ -167,9 +153,11 @@ MonoBehaviour:
   coyoteJumpDelay: 0.1
   jumpBufferingDelay: 0.1
   liane: {fileID: 5328522932286767545}
-  lianeSpeed: 1.5
+  lianeSpeed: 1
+  lianeHorizontalSpeed: 1
   lianeVerticalSpeed: 2
-  lianeMaxAngle: 60
+  lianeMaxAngle: 70
+  maxLianeLength: 10
 --- !u!54 &1152359394223405359
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -185,7 +173,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 120
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!114 &3914884982506606422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,11 +186,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b7d3edccc674954c91aa35d23bd040e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 3
+  force: 10
   heavyGrabParent: {fileID: 2097675438146791031}
   lightGrabParent: {fileID: 2097675438146791031}
   catchBoxPosition: {fileID: 5368244036304838587}
-  catchBoxBoundsExtents: {x: 0.1, y: 0.1, z: 0.1}
+  catchBoxBoundsExtents: {x: 1, y: 1, z: 1}
 --- !u!114 &2755170884234709601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,7 +204,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1723195303924927862}
-  reboundForce: 2.8
+  reboundForce: 8
 --- !u!114 &3132293133421404436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -455,6 +443,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!65 &60313676
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1723195303924927862}
+  m_Material: {fileID: 13400000, guid: 16ad6e643c8d53c48a68f0333dd1841f, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.66, y: 1.33, z: 0.66}
+  m_Center: {x: 0, y: 0.15, z: 0}
 --- !u!1 &2921056848561087320
 GameObject:
   m_ObjectHideFlags: 0
@@ -608,6 +609,7 @@ MonoBehaviour:
   platformMask:
     serializedVersion: 2
     m_Bits: 64
+  maxLength: 10
 --- !u!1 &4276516316550841185
 GameObject:
   m_ObjectHideFlags: 0
@@ -632,7 +634,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4276516316550841185}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0827, y: 0.0564, z: 0}
+  m_LocalPosition: {x: 0.45, y: 0.0564, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
