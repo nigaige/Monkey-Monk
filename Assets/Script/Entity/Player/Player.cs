@@ -14,7 +14,7 @@ public class Player : Entity
     [SerializeField] private float maxFallVelocity = 20f;
     [SerializeField] private float gravityMultiplier;
 
-    [SerializeField] private LayerMask platformMask;
+    [SerializeField] private LayerMask groundMask;
 
     [Header("Ground Movement")]
     [SerializeField] private float horizontalAcceleration = 1f;
@@ -81,8 +81,8 @@ public class Player : Entity
         else Movement();
 
         // Dirty fix of ground tripping
-        if (_onGround) _rb.useGravity = false;
-        else _rb.useGravity = true;
+        /*if (_onGround) _rb.useGravity = false;
+        else _rb.useGravity = true;*/
     }
 
     // ==================================== CHECK ===========================================
@@ -105,8 +105,8 @@ public class Player : Entity
             _collider.bounds.center.z
             );
 
-        float dist1 = CastARay(RayStart1, transform.TransformDirection(Vector3.down), rayDist * 2f, platformMask);
-        float dist2 = CastARay(RayStart2, transform.TransformDirection(Vector3.down), rayDist * 2f, platformMask);
+        float dist1 = CastARay(RayStart1, transform.TransformDirection(Vector3.down), rayDist * 2f, groundMask);
+        float dist2 = CastARay(RayStart2, transform.TransformDirection(Vector3.down), rayDist * 2f, groundMask);
 
         if (_rb.velocity.y <= 0 && (dist1 > 0 || dist2 > 0)) // On Ground
         {
@@ -143,7 +143,7 @@ public class Player : Entity
             _onGround = false;
         }
 
-        if (_onGround) // Dirty fix of ground tripping
+        /*if (_onGround) // Dirty fix of ground tripping
         {
             float minDist;
             if (dist1 == -1) minDist = dist2 - rayDist;
@@ -152,9 +152,9 @@ public class Player : Entity
 
             if (minDist > 0.02 || minDist < 0)
             {
-                transform.position += Vector3.down * minDist + Vector3.up * 0.01f;
+                transform.position += Vector3.down * minDist + Vector3.up * 0.05f;
             }
-        }
+        }*/
 
     }
 
@@ -179,12 +179,52 @@ public class Player : Entity
             _collider.bounds.center.z
             );
 
-        float dist1 = CastARay(UpRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength * 2f, platformMask);
-        float dist2 = CastARay(BottomRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength * 2f, platformMask);
+        float dist1 = CastARay(UpRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength * 2f, groundMask);
+        float dist2 = CastARay(BottomRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength * 2f, groundMask);
 
         _isTouchingWall = (dist1 > 0) || (dist2 > 0);
 
 
+    }
+
+    private bool StepCheck()
+    {
+        if (_clampedMovementInput.x == 0) return false;
+
+        float halfRayLength = 0.1f;
+
+        Vector3 bottomRay = new Vector3(
+            _collider.bounds.center.x + (_collider.bounds.extents.x - halfRayLength) * Mathf.Sign(_clampedMovementInput.x),
+            _collider.bounds.center.y - _collider.bounds.extents.y,
+            _collider.bounds.center.z
+            );
+
+        Vector3 upRay = new Vector3(
+            _collider.bounds.center.x + (_collider.bounds.extents.x - halfRayLength) * Mathf.Sign(_clampedMovementInput.x),
+            _collider.bounds.center.y - (_collider.bounds.extents.y - 0.1f),
+            _collider.bounds.center.z
+            );
+        
+        float dist1 = CastARay(bottomRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength + _rb.velocity.x * Time.fixedDeltaTime, groundMask);
+
+        if(dist1 != -1)
+        {
+            float dist2 = CastARay(upRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength + _rb.velocity.x * Time.fixedDeltaTime + 0.1f, groundMask);
+
+
+            if(dist2 == -1)
+            {
+
+                float dist3 = 0.1f - CastARay(upRay + Vector3.right * Mathf.Sign(_clampedMovementInput.x) * (halfRayLength + _rb.velocity.x * Time.fixedDeltaTime + 0.1f), Vector3.down, 0.15f, groundMask);
+
+                transform.position += Vector3.up * dist3;
+
+                return true;
+            }
+
+        }
+
+        return false;
     }
 
     // ==================================== MOVEMENT ===========================================
@@ -201,6 +241,19 @@ public class Player : Entity
         // Ground / Air Movement switcher
         if (_onGround) GroundMovement();
         else AirMovement();
+
+        if (_rb.velocity.y < 0)
+        {
+            RaycastHit hit;
+            bool hasHit = Physics.BoxCast(_collider.bounds.center, _collider.bounds.size / 2f, Vector3.down, out hit, Quaternion.identity, -_rb.velocity.y * Time.fixedDeltaTime, groundMask);
+
+            if (hasHit)
+            {
+                DebugUtils.DrawBox(_collider.bounds.center, _collider.bounds.size / 2f, Quaternion.identity, Color.green, 0);
+                _rb.velocity = new Vector3(_rb.velocity.x, -hit.distance / Time.fixedDeltaTime, _rb.velocity.z);
+            }
+            else DebugUtils.DrawBox(_collider.bounds.center, _collider.bounds.size / 2f, Quaternion.identity, Color.red, 0);
+        }
     }
 
     private void FallMovement()
@@ -219,6 +272,8 @@ public class Player : Entity
 
         // Clamp fall velocity
         if (_rb.velocity.y < -maxFallVelocity) _rb.velocity = new Vector3(_rb.velocity.x, -maxFallVelocity, 0);
+
+        
     }
 
     private void GroundMovement()
@@ -252,7 +307,10 @@ public class Player : Entity
         else if (newHVelocity < -horizontalMaxVelocity) newHVelocity = -horizontalMaxVelocity;
 
         // Set Velocity
-        _rb.velocity = new Vector3(newHVelocity, 0, 0);
+        _rb.velocity = new Vector3(newHVelocity, _rb.velocity.y, 0);
+
+        // Step detection
+        StepCheck();
     }
 
     private void AirMovement()
@@ -436,7 +494,7 @@ public class Player : Entity
     {
         if (!liane.isLianeFixed()) return;
 
-        if (((1 << collision.gameObject.layer) & platformMask) > 0) ReleaseLiane();
+        if (((1 << collision.gameObject.layer) & groundMask) > 0) ReleaseLiane();
     }
 
 
