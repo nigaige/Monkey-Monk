@@ -46,15 +46,7 @@ public class PlayerGrab : MonoBehaviour
                 // Grab first grabbable
                 if (collider.TryGetComponent(out Grabbable grab) && grab.IsGrabbable())
                 {
-                    grab.OnGrabbed(this);
-
-                    if (grab.IsHeavy()) collider.transform.SetParent(heavyGrabParent, false);
-                    else collider.transform.SetParent(lightGrabParent, false);
-
-                    collider.transform.localPosition = Vector3.zero;
-
-                    _grabbedObj = collider.gameObject;
-
+                    GrabObject(grab);
                     break;
                 }
             }
@@ -78,6 +70,22 @@ public class PlayerGrab : MonoBehaviour
             _grabbedObj = null;
         }
         
+    }
+
+    public void GrabObject(Grabbable grab)
+    {
+        if (!grab.IsGrabbable()) return;
+
+        Collider collider = grab.gameObject.GetComponent<Collider>();
+
+        grab.OnGrabbed(this);
+
+        if (grab.IsHeavy()) collider.transform.SetParent(heavyGrabParent, false);
+        else collider.transform.SetParent(lightGrabParent, false);
+
+        collider.transform.localPosition = Vector3.zero;
+
+        _grabbedObj = collider.gameObject;
     }
 
     private void OnDrawGizmosSelected()
