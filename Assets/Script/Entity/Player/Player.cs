@@ -4,280 +4,622 @@ using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
 
-public class Player : MonoBehaviour{
+public class Player : Entity
+{
+    private bool _onGround = false;
+    private bool _isTouchingWall = false;
 
-    [SerializeField] float hspeed = 1f;
-    [SerializeField] float hmaxSpeed =1f;
+    [Header("Movement")]
+    [SerializeField] float horizontalMaxVelocity = 1f;
+    [SerializeField] private float maxFallVelocity = 20f;
+    [SerializeField] private float gravityMultiplier;
 
-    float velocity = 0;
-    float acceleration = 0;
+    [SerializeField] private LayerMask groundMask;
 
+    [Header("Ground Movement")]
+    [SerializeField] private float horizontalAcceleration = 1f;
 
-    [SerializeField] float jumpSpeed = 0.4f;
+    [Header("Air Movement")]
+    [SerializeField] private float airHorizontalAcceleration = 1f;
 
-    [SerializeField] float vSpeed = 0f;
-    [SerializeField] float maxFallSpeed = -1;
-    private Animator anim;
-    private SpriteRenderer sp;
- 
+    [Header("Jump")]
+    [SerializeField] private float fallMultiplier;
+    [SerializeField] private float lowJumpMultiplier;
+    [SerializeField] private float jumpForce = 0.4f;
+    [SerializeField] private float coyoteJumpDelay = 0.1f;
+    [SerializeField] private float jumpBufferingDelay = 0.1f;
 
+    private Coroutine _coyoteJumpCoroutine;
+    private bool _canJump = false;
+    private Coroutine _jumpBufferCoroutine;
+    private bool _isJumpBufferCall = false;
 
-    KeyCode vkLeft = KeyCode.LeftArrow;
-    KeyCode vkRight = KeyCode.RightArrow;
-    KeyCode vkUp = KeyCode.UpArrow;
-    KeyCode vkDown = KeyCode.DownArrow;
-    KeyCode vkJump = KeyCode.Space;
-    KeyCode vkLiane = KeyCode.A; //touche Q TODO gestion des clavier
-    KeyCode vkcheat2 = KeyCode.Z;
-    KeyCode vkcheat3 = KeyCode.E;
-
-
-
-    Collider m_Collider;
-
-
-    Rigidbody rb;
-    private int dir;
-    private int lastDir = 1;
-
-    [SerializeField] int MaxJump = 2;
-    public int nbJump = 1;
-
-    [SerializeField] public bool onGround = false ;
-    public Vector3 RayCast_Dir;
-    
-    [SerializeField] private LayerMask platformMask;
-
-    //liane
+    [Header("Liane")]
     [SerializeField] private Liane liane;
     [SerializeField] private float lianeSpeed;
-    private float lianeAcceleration = 100000;
-    [SerializeField] private float minlianeSpeed = 1;
-    
+    [SerializeField] private float lianeHorizontalSpeed = 0.2f;
+    [SerializeField] private float lianeVerticalSpeed = 1;
+    [SerializeField] private float lianeMaxAngle = 90;
+    [SerializeField] private float maxLianeLength = 10;
 
+    private float _angleAcceleration;
+    private float _angleVelocity;
+    private float _angle = 0;
+
+    [Header("Others")]
+    private int lastDir = 1;
+
+
+    [Header("Components")]
+    private Rigidbody _rb;
+    private Collider _collider;
+
+    [Header("Inputs")]
     private Vector2 _movementInput;
+    private Vector2 _clampedMovementInput;
+    private bool _jumpInput;
 
 
-    void Jump()
+    protected override void Awake()
     {
-
-        if (liane.isLianeFixed())
-        {
-            liane.resetLiane();
-            lianeAcceleration = 100000;
-            acceleration = rb.velocity.x / 1000;
-            onGround = true;//WILL ALLOW THE JUMP
-            nbJump = 1;
-        }
-
-        if (nbJump <= 0) return;
-
-        Vector3 direction = Vector3.up * jumpSpeed;
-        Vector3 velo = rb.velocity;
-        velo.y = 0;
-        rb.velocity = velo;
-        rb.AddForceAtPosition(direction, transform.position);
-        nbJump--;
-        GetComponent<AudioSource>().Play();
+        _rb = GetComponent<Rigidbody>();
+        _collider = GetComponent<Collider>();
     }
 
-    void vMovment() {
+    private void FixedUpdate()
+    {
+        // Rotate player
+        if (_movementInput.x < 0) transform.rotation = Quaternion.Euler(0, 180, 0);
+        else if (_movementInput.x > 0) transform.rotation = Quaternion.Euler(0, 0, 0);
 
-        //clamp la velocité de chute
-        if(rb.velocity.y <= maxFallSpeed){
-            Vector3 velo = rb.velocity;
-            velo.y = maxFallSpeed;
-            rb.velocity = velo;
-        }
+        // Set OnGround
+        if (!liane.isLianeFixed()) GroundCheck();
+        WallCheck();
 
+        // Liane / Basic Movement switcher
+        if (liane.isLianeFixed()) LianeMovement();
+        else Movement();
 
+        // Dirty fix of ground tripping
+        /*if (_onGround) _rb.useGravity = false;
+        else _rb.useGravity = true;*/
     }
 
-    void hMovment(float hinput) {
+    // ==================================== CHECK ===========================================
 
-        if (hinput > 0) dir = 1;
-        else if (hinput < 0) dir = -1;
-        else dir = 0;
-
-        if (dir != 0 && dir != lastDir)
-        {
-            lastDir = dir;
-        }
-
-        if (!onGround) return;
-
-        velocity = hspeed * dir;
-        acceleration += velocity * Time.deltaTime;
-
-        if (acceleration > hmaxSpeed) { acceleration = hmaxSpeed; }
-        if (acceleration < -hmaxSpeed) { acceleration = -hmaxSpeed; }
-        if (dir == 0) { acceleration = 0; }
-
-        //déplacement selon la velocité
-        rb.velocity = new Vector3(acceleration, rb.velocity.y, 0);
-
-    }
-
-
-    //orthogonal vector
-    public Vector3 PerpendicularClockwise(Vector3 vect){
-        return new Vector3(vect.y, -vect.x,0);
-    }
-    public Vector3 PerpendicularCounterClockwise(Vector3 vect){
-        return new Vector3(-vect.y, vect.x,0);
-    }
-
-
-    void CatchAcceleration(){
-
-    }
-
-    private void setLianeAcceleration(Vector3 dir, Vector3 lianeDir){
-        lianeAcceleration = Vector3.Dot(dir, lianeDir) ;
-        if (lianeAcceleration < minlianeSpeed) {lianeAcceleration = minlianeSpeed;}
-        if (!liane.isLeftOfFixed()){
-            lianeAcceleration *= -1;
-        }
-    }
-
-    private void lianeMovment(){
-        Vector3 lianeDir = liane.getLianeDir();
-
-        if (lianeAcceleration == 100000) {
-            setLianeAcceleration(rb.velocity, lianeDir);
-        }
-        
-        Debug.Log(lianeAcceleration);
-        
-
-        
-        rb.velocity = PerpendicularCounterClockwise(lianeDir)*lianeAcceleration * lianeSpeed;
-
-    }
-
-
-    float CastARay(Vector3 pos,Vector3 dir,float length, LayerMask mask){
-        RaycastHit Hit;
-
-        Debug.DrawRay(pos, dir * length);
-        bool hitPlateform = Physics.Raycast(pos, transform.TransformDirection( dir), out Hit, length, mask);  
-        
-        if(hitPlateform) return Hit.distance;
-        return -1;
-    }
-
-
-
-
-    void Checkground(){
-        m_Collider = GetComponent<Collider>();
-
-
+    private void GroundCheck()
+    {
         Vector3 RayStart1;
         Vector3 RayStart2;
 
         float rayDist = 0.1f;
 
-
-        float rayDir = (vSpeed > 0) ? 1 : -1;
-
-
         RayStart1 = new Vector3(
-            transform.position.x - m_Collider.bounds.extents.x,
-            transform.position.y + (m_Collider.bounds.extents.y - rayDist) * rayDir,
-            transform.position.z
+            _collider.bounds.center.x - _collider.bounds.extents.x,
+            _collider.bounds.center.y - _collider.bounds.extents.y + rayDist,
+            _collider.bounds.center.z
             );
         RayStart2 = new Vector3(
-            transform.position.x + m_Collider.bounds.extents.x,
-            transform.position.y + (m_Collider.bounds.extents.y - rayDist) * rayDir,
-            transform.position.z
+            _collider.bounds.center.x + _collider.bounds.extents.x,
+            _collider.bounds.center.y - _collider.bounds.extents.y + rayDist,
+            _collider.bounds.center.z
             );
 
-        
-        float raySize = (0.1f);
+        float dist1 = CastARay(RayStart1, transform.TransformDirection(Vector3.down), rayDist * 2f, groundMask);
+        float dist2 = CastARay(RayStart2, transform.TransformDirection(Vector3.down), rayDist * 2f, groundMask);
 
-        RayCast_Dir = Vector3.down;
-        if(rayDir >0){
-            RayCast_Dir=Vector3.up;
-            raySize = (0.2f);
+        if (_rb.velocity.y <= 0 && (dist1 > 0 || dist2 > 0)) // On Ground
+        {
+            _canJump = true;
+            _onGround = true;
+
+            // Jump buffering
+            if (_isJumpBufferCall)
+            {
+                Jump();
+                _isJumpBufferCall = false;
+            }
+
+            // Reset Coyote coroutine
+            if (_coyoteJumpCoroutine != null)
+            {
+                StopCoroutine(_coyoteJumpCoroutine);
+                _coyoteJumpCoroutine = null;
+            }
+        }
+        else // On Air
+        {
+            if (_onGround && _canJump)
+            {
+                // Start Coyote jump coroutine
+                if (_coyoteJumpCoroutine != null) 
+                {
+                    StopCoroutine(_coyoteJumpCoroutine);
+                    _coyoteJumpCoroutine = null;
+                }
+                _coyoteJumpCoroutine = StartCoroutine(CoyoteJumpCoroutine());
+            }
+
+            _onGround = false;
         }
 
-        float dist1 = CastARay(RayStart1, transform.TransformDirection( RayCast_Dir),raySize, platformMask);
-        float dist2 = CastARay(RayStart2, transform.TransformDirection( RayCast_Dir),raySize, platformMask);
+        /*if (_onGround) // Dirty fix of ground tripping
+        {
+            float minDist;
+            if (dist1 == -1) minDist = dist2 - rayDist;
+            else if (dist2 == -1) minDist = dist1 - rayDist;
+            else minDist = Mathf.Min(dist1, dist2) - rayDist;
 
-        if (dist1 > 0 || dist2 > 0) {
-            float dist = (dist1 + dist2) / 2;
-
-            onGround = true;
-            nbJump = MaxJump;
-        }else {
-            onGround = false;
-        }
+            if (minDist > 0.02 || minDist < 0)
+            {
+                transform.position += Vector3.down * minDist + Vector3.up * 0.05f;
+            }
+        }*/
 
     }
 
-
-    void startLiane(){
-
-        // Quit liane
-        if (liane.isLianeFixed() || liane.getIsExtending())
+    private void WallCheck()
+    {
+        if(_clampedMovementInput.x == 0)
         {
-            //rb.velocity = new Vector3();
-            //rb.AddForceAtPosition(PerpendicularCounterClockwise(liane.getLianeDir())*Math.Sign(lianeAcceleration) * minlianeSpeed, transform.position);
-            liane.resetLiane();
-            lianeAcceleration = 100000;
-           // acceleration = rb.velocity.x / 1000;
-
-            
+            _isTouchingWall = false;
+            return;
         }
-        else // Start liane
+
+        float halfRayLength = 0.1f;
+
+        Vector3 UpRay = new Vector3(
+            _collider.bounds.center.x + (_collider.bounds.extents.x - halfRayLength) * Mathf.Sign(_clampedMovementInput.x),
+            _collider.bounds.center.y + _collider.bounds.extents.y,
+            _collider.bounds.center.z
+            );
+        Vector3 BottomRay = new Vector3(
+            _collider.bounds.center.x + (_collider.bounds.extents.x - halfRayLength) * Mathf.Sign(_clampedMovementInput.x),
+            _collider.bounds.center.y - (_collider.bounds.extents.y - 0.1f),
+            _collider.bounds.center.z
+            );
+
+        float dist1 = CastARay(UpRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength * 2f, groundMask);
+        float dist2 = CastARay(BottomRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength * 2f, groundMask);
+
+        _isTouchingWall = (dist1 > 0) || (dist2 > 0);
+
+
+    }
+
+    private bool StepCheck()
+    {
+        if (_clampedMovementInput.x == 0) return false;
+
+        float halfRayLength = 0.1f;
+
+        Vector3 bottomRay = new Vector3(
+            _collider.bounds.center.x + (_collider.bounds.extents.x - halfRayLength) * Mathf.Sign(_clampedMovementInput.x),
+            _collider.bounds.center.y - _collider.bounds.extents.y,
+            _collider.bounds.center.z
+            );
+
+        Vector3 upRay = new Vector3(
+            _collider.bounds.center.x + (_collider.bounds.extents.x - halfRayLength) * Mathf.Sign(_clampedMovementInput.x),
+            _collider.bounds.center.y - (_collider.bounds.extents.y - 0.1f),
+            _collider.bounds.center.z
+            );
+        
+        float dist1 = CastARay(bottomRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength + _rb.velocity.x * Time.fixedDeltaTime, groundMask);
+
+        if(dist1 != -1)
         {
-            //TODO 8 DIRECTION
-            if (lastDir == 1)
-            {//right
-                liane.startExtend(1);
+            float dist2 = CastARay(upRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength + _rb.velocity.x * Time.fixedDeltaTime + 0.1f, groundMask);
+
+
+            if(dist2 == -1)
+            {
+
+                float dist3 = 0.1f - CastARay(upRay + Vector3.right * Mathf.Sign(_clampedMovementInput.x) * (halfRayLength + _rb.velocity.x * Time.fixedDeltaTime + 0.1f), Vector3.down, 0.15f, groundMask);
+
+                transform.position += Vector3.up * dist3;
+
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+
+    // ==================================== MOVEMENT ===========================================
+#region Movement
+
+    private void Movement()
+    {
+        // Fall movement
+        if (!_onGround) FallMovement();
+
+        // Set last direction
+        if (_clampedMovementInput.x != 0 && _clampedMovementInput.x != lastDir) lastDir = (int)_clampedMovementInput.x;
+
+        // Ground / Air Movement switcher
+        if (_onGround) GroundMovement();
+        else AirMovement();
+
+        if (_rb.velocity.y < 0)
+        {
+            RaycastHit hit;
+            bool hasHit = Physics.BoxCast(_collider.bounds.center, _collider.bounds.size / 2f, Vector3.down, out hit, Quaternion.identity, -_rb.velocity.y * Time.fixedDeltaTime, groundMask);
+
+            if (hasHit)
+            {
+                DebugUtils.DrawBox(_collider.bounds.center, _collider.bounds.size / 2f, Quaternion.identity, Color.green, 0);
+                _rb.velocity = new Vector3(_rb.velocity.x, -hit.distance / Time.fixedDeltaTime, _rb.velocity.z);
+            }
+            else DebugUtils.DrawBox(_collider.bounds.center, _collider.bounds.size / 2f, Quaternion.identity, Color.red, 0);
+        }
+    }
+
+    private void FallMovement()
+    {
+        // Global Gravity Multiplier
+        _rb.velocity += Vector3.up * (Physics.gravity.y * (gravityMultiplier - 1) * Time.deltaTime);
+
+        if (_rb.velocity.y < 0) // Fall multiplier
+        {
+            _rb.velocity += Vector3.up * (Physics.gravity.y * (fallMultiplier - 1) * Time.deltaTime);
+        }
+        else if (_rb.velocity.y > 0 && !_jumpInput) // LowJump multiplier
+        {
+            _rb.velocity += Vector3.up * (Physics.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime);
+        }
+
+        // Clamp fall velocity
+        if (_rb.velocity.y < -maxFallVelocity) _rb.velocity = new Vector3(_rb.velocity.x, -maxFallVelocity, 0);
+
+        
+    }
+
+    private void GroundMovement()
+    {
+        float acceleration = horizontalAcceleration * _clampedMovementInput.x;
+
+        float newHVelocity;
+        if (_clampedMovementInput.x == 0) // Deceleration
+        {
+            if (_rb.velocity.x == 0) // End of decel
+            {
+                newHVelocity = 0;
+            }
+            else if (_rb.velocity.x > 0) // Pos decel
+            {
+                newHVelocity = _rb.velocity.x - horizontalAcceleration * Time.deltaTime;
+                if (newHVelocity < 0) newHVelocity = 0;
+            }
+            else // Neg decel
+            {
+                newHVelocity = _rb.velocity.x + horizontalAcceleration * Time.deltaTime;
+                if (newHVelocity > 0) newHVelocity = 0;
+            }
+        }
+        else // Acceleration
+            newHVelocity = _rb.velocity.x + acceleration * Time.deltaTime;
+
+
+        // Clamp Velocity (see horizontalMaxVelocity)
+        if (newHVelocity > horizontalMaxVelocity) newHVelocity = horizontalMaxVelocity;
+        else if (newHVelocity < -horizontalMaxVelocity) newHVelocity = -horizontalMaxVelocity;
+
+        // Set Velocity
+        _rb.velocity = new Vector3(newHVelocity, _rb.velocity.y, 0);
+
+        // Step detection
+        StepCheck();
+    }
+
+    private void AirMovement()
+    {
+        float acceleration = airHorizontalAcceleration * _clampedMovementInput.x;
+
+        float newHVelocity;
+        if (_clampedMovementInput.x == 0) // Deceleration
+        {
+            if (_rb.velocity.x == 0) // End of decel
+            {
+                newHVelocity = 0;
+            }
+            else if (_rb.velocity.x > 0) // Pos decel
+            {
+                newHVelocity = _rb.velocity.x - airHorizontalAcceleration * Time.deltaTime;
+                if (newHVelocity < 0) newHVelocity = 0;
+            }
+            else // Neg decel
+            {
+                newHVelocity = _rb.velocity.x + airHorizontalAcceleration * Time.deltaTime;
+                if (newHVelocity > 0) newHVelocity = 0;
+            }
+        }
+        else // Acceleration
+            newHVelocity = _rb.velocity.x + acceleration * Time.deltaTime;
+
+
+        // Clamp Velocity (see horizontalMaxVelocity) execpt if already over the threshold (used to keep liane propulsion inertia)
+        if (newHVelocity > horizontalMaxVelocity)
+        {
+            if (_rb.velocity.x <= horizontalMaxVelocity) newHVelocity = horizontalMaxVelocity;
+            else if (newHVelocity > _rb.velocity.x) newHVelocity = _rb.velocity.x;
+        }
+        else if (newHVelocity < -horizontalMaxVelocity)
+        {
+            if (_rb.velocity.x >= -horizontalMaxVelocity) newHVelocity = -horizontalMaxVelocity;
+            else if (newHVelocity < _rb.velocity.x) newHVelocity = _rb.velocity.x;
+        }
+
+        // Set Velocity
+        _rb.velocity = new Vector3(newHVelocity, _rb.velocity.y, 0);
+    }
+
+    private void LianeMovement()
+    {
+        // Calculate angle
+        _angleAcceleration = Physics.gravity.y * (gravityMultiplier - 1) * Mathf.Sin(_angle) /*/ liane.GetLianeLength()*/;
+        //Debug.DrawRay(transform.position, Vector3.Cross(-liane.GetLianeDir().normalized, -Vector3.forward) * _angleAcceleration, Color.red);
+
+        // Accel / Decel
+        if (_clampedMovementInput.x != 0)
+        {
+            if (Mathf.Sign(_angleVelocity) == Mathf.Sign(_clampedMovementInput.x)) // acceleration
+            {
+                float newPredAngleAccel = _angleAcceleration + Mathf.Sign(_angleVelocity) * lianeHorizontalSpeed * Mathf.Abs(Mathf.Cos(_angle));
+                float newPredAngleVel = _angleVelocity + newPredAngleAccel * Time.deltaTime * lianeSpeed;
+
+                float higherA = GetPredictedHigherAngle(newPredAngleAccel, newPredAngleVel, _angle + newPredAngleVel * lianeSpeed * Time.deltaTime);
+
+                if (higherA < Mathf.Deg2Rad * lianeMaxAngle) _angleAcceleration = newPredAngleAccel;
+            }
+            else if (Mathf.Sign(_angleVelocity) != Mathf.Sign(_clampedMovementInput.x)) // deceleration
+            {
+                _angleAcceleration -= Mathf.Sign(_angleVelocity) * lianeHorizontalSpeed * Mathf.Abs(Mathf.Cos(_angle));
+            }
+        }
+
+        float newAngleVel = _angleVelocity + _angleAcceleration * Time.deltaTime * lianeSpeed;
+
+        _angleVelocity = newAngleVel;
+
+        if (_clampedMovementInput.x == 0) _angleVelocity *= 0.995f; // Loss
+
+        _angle += _angleVelocity * lianeSpeed * Time.deltaTime;
+
+        // Move to next pos
+        Vector3 target = liane.LianePosition + liane.GetLianeLength() * new Vector3(Mathf.Sin(_angle), -Mathf.Cos(_angle), 0);
+        _rb.velocity = (target - _rb.position) / Time.deltaTime;
+
+        // Vertical Liane Movement
+        if (_clampedMovementInput == Vector2.up || _clampedMovementInput == Vector2.down)
+        {
+            if (liane.GetLianeLength() - _clampedMovementInput.y * lianeVerticalSpeed * Time.deltaTime > liane.MaxLength) // end of the rope
+            {
+                _rb.velocity -= (liane.LianePosition - transform.position).normalized * (liane.MaxLength - liane.GetLianeLength());
+                liane.SetLianeLength(liane.MaxLength);
             }
             else
             {
-                liane.startExtend(3);
+                _rb.velocity += _clampedMovementInput.y * (liane.LianePosition - transform.position).normalized * lianeVerticalSpeed;
+                liane.SetLianeLength(liane.GetLianeLength() - _clampedMovementInput.y * lianeVerticalSpeed * Time.deltaTime);
             }
-
         }
     }
 
-    // Start is called before the first frame update
-    void Start(){
-        rb = GetComponent<Rigidbody>();
+
+    #endregion
+
+    // ==================================== UTILITES ===========================================
+
+    private IEnumerator JumpBufferCoroutine()
+    {
+        _isJumpBufferCall = true;
+        yield return new WaitForSeconds(jumpBufferingDelay);
+        _isJumpBufferCall = false;
     }
 
-    // Update is called once per frame
-    void FixedUpdate(){
+    IEnumerator CoyoteJumpCoroutine()
+    {
+        yield return new WaitForSeconds(coyoteJumpDelay);
+        _canJump = false;
+        _coyoteJumpCoroutine = null;
+    }
 
 
+    float CastARay(Vector3 pos, Vector3 dir, float length, LayerMask mask){
+        RaycastHit hit;
 
-        
-        //extendLiane(new Vector3(0.5f,0.5f,0));
+        bool hitPlateform = Physics.Raycast(pos, dir, out hit, length, mask);
+        if (hitPlateform) Debug.DrawRay(pos, dir * length, Color.green);
+        else Debug.DrawRay(pos, dir * length, Color.red);
 
-        Checkground ();
+        if (hitPlateform) return hit.distance;
+        return -1;
+    }
 
-        if (liane.isLianeFixed()){
-            Debug.Log("liane movment");
-            lianeMovment();    
-        }else {
-            hMovment(_movementInput.x);
-            vMovment();
+
+    //orthogonal vector
+    public Vector3 PerpendicularClockwise(Vector3 vect)
+    {
+        return new Vector3(vect.y, -vect.x, 0);
+    }
+    public Vector3 PerpendicularCounterClockwise(Vector3 vect)
+    {
+        return new Vector3(-vect.y, vect.x, 0);
+    }
+
+    /// <summary>
+    /// Calculate the higher angle of the pendulum depending on the current angle, velocity and acceleration
+    /// </summary>
+    private float GetPredictedHigherAngle(float angleAcceleration, float angleVelocity, float angle) // brute force higher pendulum angle
+    {
+        // init
+        float curr_angle_accel = angleAcceleration;
+        float curr_angle_vel = angleVelocity;
+        float curr_angle = angle;
+
+        // if the angle has already increased in the past (starting from this call)
+        bool has_increased = false;
+
+        // loop
+        while (true)
+        {
+            // Compute new pendulum values
+            float next_angle_accel = Physics.gravity.y * (gravityMultiplier - 1) * Mathf.Sin(curr_angle) / liane.GetLianeLength();
+            float next_angle_vel = curr_angle_vel + curr_angle_accel * Time.fixedDeltaTime * lianeSpeed;
+            float next_angle = curr_angle + next_angle_vel * lianeSpeed * Time.fixedDeltaTime;
+
+            if (Mathf.Abs(curr_angle) < Mathf.Abs(next_angle)) has_increased = true;
+            
+            // Break if Higher point found
+            if (has_increased && Mathf.Abs(curr_angle) >= Mathf.Abs(next_angle)) break;
+
+            // Break if no higher point (ex: loop)
+            if (Mathf.Abs(curr_angle) > Mathf.PI * 2) break;
+
+            // Set new values to currents
+            curr_angle_accel = next_angle_accel;
+            curr_angle_vel = next_angle_vel;
+            curr_angle = next_angle;
         }
+
+        return Mathf.Abs(curr_angle);
+    }
+
+    
+
+    // Release liane on ground hit
+    private void OnCollisionStay(Collision collision)
+    {
+        if (!liane.isLianeFixed()) return;
+
+        if (((1 << collision.gameObject.layer) & groundMask) > 0) ReleaseLiane();
+    }
+
+
+    // ==================================== INPUT METHODS ===========================================
+
+    private void Jump()
+    {
+        if (liane.isLianeFixed()) // TODO : Boost end velocity
+        {
+            ReleaseLiane();
+
+            return;
+        }
+        else if (!_canJump)
+        {
+            // Reset Jump buffering coroutine
+            if (_jumpBufferCoroutine != null)
+            {
+                StopCoroutine(_jumpBufferCoroutine);
+                _jumpBufferCoroutine = null;
+            }
+            _jumpBufferCoroutine = StartCoroutine(JumpBufferCoroutine());
+
+            return;
+        }
+
+        // Jump
+        _rb.velocity = new Vector3(_rb.velocity.x, jumpForce, 0);
+        GetComponent<AudioSource>().Play();
+
+        _canJump = false;
+    }
+
+    private void LaunchLiane()
+    {
+        if (_clampedMovementInput.x > 0) liane.Extend(1); // Right
+        else if (_clampedMovementInput.x < 0) liane.Extend(3); // Left
+        else liane.Extend(2); // Up
+
+
+        if (!liane.isLianeFixed()) return;
+
+        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("PassthroughPlatform"), true);
+
+
+        
+        // TEST : Set default liane angle velocity
+        Vector3 playerLianeDir = PerpendicularClockwise(liane.GetLianeDir().normalized);
+
+        //Debug.DrawLine(transform.position, transform.position + playerLianeDir, Color.red, 1f);
+        float vel = Vector3.Dot(_rb.velocity, playerLianeDir);
         
 
+        // Set default liane angle velocity
+        //float vel = _rb.velocity.x;
+        _angleVelocity = vel / liane.GetLianeLength();
+
+        // Reset linear velocity
+        _rb.velocity = Vector3.zero;
+
+        // Set default angle
+        _angle = Mathf.Deg2Rad * Vector3.SignedAngle(Vector3.down, -liane.GetLianeDir().normalized, Vector3.forward);
     }
+
+    private void ReleaseLiane()
+    {
+        liane.Release();
+        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("PassthroughPlatform"), false);
+    }
+
+    // ==================================== INPUTS ===========================================
 
     public void OnMovement(InputAction.CallbackContext callback)
     {
         _movementInput = callback.ReadValue<Vector2>();
+
+        _clampedMovementInput = Vector2.zero;
+        if (_movementInput == Vector2.zero) return;
+
+        float movementAngleDeg = Mathf.Atan2(_movementInput.y, _movementInput.x) * Mathf.Rad2Deg;
+
+        if (movementAngleDeg >= 157.5 || movementAngleDeg <= -157.5)
+        {
+            _clampedMovementInput = new Vector2(-1, 0);
+        }
+        else if (movementAngleDeg > 112.5)
+        {
+            _clampedMovementInput = new Vector2(-1, 1);
+        }
+        else if (movementAngleDeg > 67.5)
+        {
+            _clampedMovementInput = new Vector2(0, 1);
+        }
+        else if (movementAngleDeg > 22.5)
+        {
+            _clampedMovementInput = new Vector2(1, 1);
+        }
+        else if (movementAngleDeg < -112.5)
+        {
+            _clampedMovementInput = new Vector2(-1, -1);
+        }
+        else if (movementAngleDeg < -67.5)
+        {
+            _clampedMovementInput = new Vector2(0, -1);
+        }
+        else if (movementAngleDeg < -22.5)
+        {
+            _clampedMovementInput = new Vector2(1, -1);
+        }
+        else
+        {
+            _clampedMovementInput = new Vector2(1, 0);
+        }
+        /*
+        if (_clampedMovementInput.x > 0) _clampedMovementInput.x = 1;
+        else if (_clampedMovementInput.x < 0) _clampedMovementInput.x = -1;
+
+        if (_clampedMovementInput.y > 0) _clampedMovementInput.y = 1;
+        else if (_clampedMovementInput.y < 0) _clampedMovementInput.y = -1;*/
     }
 
     public void OnJump(InputAction.CallbackContext callback)
     {
+        _jumpInput = callback.ReadValue<float>() > 0f;
+
         if (!callback.started) return;
 
         Jump();
@@ -287,7 +629,10 @@ public class Player : MonoBehaviour{
     {
         if (!callback.started) return;
 
-        startLiane();
+        if (_onGround || _isTouchingWall) return; // TODO: Check this (passthrough platform)
+
+        if (!liane.isLianeFixed()) LaunchLiane();
+        else ReleaseLiane();
     }
 
 }

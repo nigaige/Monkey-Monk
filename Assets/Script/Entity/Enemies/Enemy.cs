@@ -21,9 +21,9 @@ namespace MonkeyMonk.Enemies
 
         [SerializeField] private LinkedVariable<bool> _isKnockedLink;
 
-        private Collider _collider;
+        [SerializeField] private LayerMask groundMask;
 
-        private LayerMask _groundMask;
+        private Collider _collider;
 
         public event Action OnDestroyEvent;
 
@@ -38,7 +38,6 @@ namespace MonkeyMonk.Enemies
             _isKnockedLink.Init(enemyStateMachine);
 
             _collider = GetComponent<Collider>();
-            _groundMask = LayerMask.GetMask("Block");
         }
 
         public void Knock()
@@ -58,9 +57,9 @@ namespace MonkeyMonk.Enemies
 
             Debug.DrawRay(transform.position + new Vector3(0, -_collider.bounds.extents.y + 0.05f), Vector3.down * raySize);
 
-            IsGrounded = Physics.Raycast(new Ray(transform.position + new Vector3(0, -_collider.bounds.extents.y + 0.05f), Vector3.down), raySize, _groundMask)
-                    || Physics.Raycast(new Ray(transform.position + new Vector3(-_collider.bounds.extents.x, -_collider.bounds.extents.y + 0.05f), Vector3.down), raySize, _groundMask)
-                    || Physics.Raycast(new Ray(transform.position + new Vector3(_collider.bounds.extents.x, -_collider.bounds.extents.y + 0.05f), Vector3.down), raySize, _groundMask);
+            IsGrounded = Physics.Raycast(new Ray(transform.position + new Vector3(0, -_collider.bounds.extents.y + 0.05f), Vector3.down), raySize, groundMask)
+                    || Physics.Raycast(new Ray(transform.position + new Vector3(-_collider.bounds.extents.x, -_collider.bounds.extents.y + 0.05f), Vector3.down), raySize, groundMask)
+                    || Physics.Raycast(new Ray(transform.position + new Vector3(_collider.bounds.extents.x, -_collider.bounds.extents.y + 0.05f), Vector3.down), raySize, groundMask);
         }
 
 

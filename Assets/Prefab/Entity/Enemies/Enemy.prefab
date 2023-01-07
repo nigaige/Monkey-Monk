@@ -37,7 +37,7 @@ Transform:
   m_Children:
   - {fileID: 854407930968045606}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7045210275351237427
 MeshFilter:
@@ -107,6 +107,9 @@ MonoBehaviour:
   isJumpable: 1
   _isKnockedLink:
     variableName: IsKnocked
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1088
 --- !u!114 &1820019637486271226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,3 +328,9 @@ MonoBehaviour:
   speed: 1
   walkableZone:
     variableName: WalkableZone
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 1088
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 320
