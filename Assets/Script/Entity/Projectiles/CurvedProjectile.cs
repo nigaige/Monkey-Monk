@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class CurvedProjectile : Projectile
 {
+    [SerializeField] private float force = 1;
 
-    public override void Initialize(Vector2 direction, float speed, GameObject launcher)
+    public override void Initialize(Vector2 direction, GameObject launcher)
     {
-        base.Initialize(direction, speed, launcher);
+        base.Initialize(direction, launcher);
 
-        _rb.velocity = _direction * _speed;
+        _rb.velocity = _direction * force;
     }
 
 }

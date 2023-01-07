@@ -9,7 +9,6 @@ namespace MonkeyMonk.Enemies.StateMachine
         [SerializeField] private GameObject projectile;
         [SerializeField] private float beforeShootDuration = 1.0f;
         [SerializeField] private float cooldown = 1.0f;
-        [SerializeField] private float speed = 1.0f;
 
         private Coroutine _shootCoroutine;
 
@@ -26,7 +25,7 @@ namespace MonkeyMonk.Enemies.StateMachine
 
             // Shoot
             Projectile proj = Instantiate(projectile, transform.position, Quaternion.identity).GetComponent<Projectile>();
-            proj.Initialize(Entity.LookDirection * Vector2.right, speed, Entity.gameObject);
+            proj.Initialize(Entity.LookDirection * Vector2.right, Entity.gameObject);
 
             yield return new WaitForSeconds(cooldown);
 
