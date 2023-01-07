@@ -322,10 +322,6 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 599859582340476481, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
-      propertyPath: groundMask.m_Bits
-      value: 1088
-      objectReference: {fileID: 0}
     - target: {fileID: 1723195303924927862, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_Name
       value: monkey
@@ -340,7 +336,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2477755069874244458, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.28
+      value: 1.586
       objectReference: {fileID: 0}
     - target: {fileID: 2477755069874244458, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -373,10 +369,6 @@ PrefabInstance:
     - target: {fileID: 2477755069874244458, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7925084796213150508, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.772
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
@@ -497,6 +489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48e48e8474a0b55419cfcd3f7ece62cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectPrefab: {fileID: 7878328018461680629, guid: aaace313011159d418aa6f5b323ef0c3, type: 3}
 --- !u!65 &1357816854
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -568,7 +561,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1357816852}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.82, y: 0.846, z: 0}
+  m_LocalPosition: {x: 1.373, y: 0.846, z: 0}
   m_LocalScale: {x: 0.66412, y: 0.66412, z: 0.66412}
   m_ConstrainProportionsScale: 0
   m_Children: []

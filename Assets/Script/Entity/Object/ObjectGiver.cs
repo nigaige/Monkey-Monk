@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class ObjectGiver : MonoBehaviour
 {
+
+    [SerializeField] private GameObject objectPrefab;
+
     void Start()
     {
         Activate();
@@ -11,6 +14,7 @@ public class ObjectGiver : MonoBehaviour
 
     private void Activate()
     {
-
+        GameObject handedObject = Instantiate(objectPrefab);
+        FindObjectOfType<Player>().GetComponent<PlayerGrab>().GrabObject(handedObject.GetComponent<Grabbable>());
     }
 }
