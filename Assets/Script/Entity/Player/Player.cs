@@ -634,5 +634,4 @@ public class Player : Entity
         if (!liane.isLianeFixed()) LaunchLiane();
         else ReleaseLiane();
     }
-
 }

@@ -100,7 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockingLayers:
     serializedVersion: 2
-    m_Bits: 577
+    m_Bits: 576
   speed: 10
 --- !u!65 &4610373023990281721
 BoxCollider:

@@ -18,6 +18,8 @@ public class PlayerGrab : MonoBehaviour
 
     private Vector2 _pointerPos;
 
+    private List<InputActivable> _inputActivables = new();
+
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
@@ -34,9 +36,44 @@ public class PlayerGrab : MonoBehaviour
     public void OnGrab(InputAction.CallbackContext obj)
     {
         if (!obj.started) return;
+
         //grabbing
         if (_grabbedObj == null)
         {
+            // input activables
+            if (_inputActivables.Count > 0) // TODO : write this better
+            {
+                float minDist = float.MaxValue;
+                InputActivable closest = null;
+
+                for (int i = _inputActivables.Count - 1; i >= 0; i--)
+                {
+                    InputActivable curr = _inputActivables[i];
+
+                    if (curr == null)
+                    {
+                        _inputActivables.RemoveAt(i);
+                        continue;
+                    }
+
+                    float currDist = Vector2.Distance(transform.position, curr.transform.position);
+
+                    if (currDist < minDist)
+                    {
+                        closest = curr;
+                        minDist = currDist;
+                    }
+                }
+
+                if (closest != null)
+                {
+                    closest.Activate();
+                    return;
+                }
+
+            }
+
+            // check grab
             _overlappingColliders = Physics.OverlapBox(catchBoxPosition.position, catchBoxBoundsExtents);
 
             for (int i = 0; i < _overlappingColliders.Length; i++)
@@ -98,5 +135,18 @@ public class PlayerGrab : MonoBehaviour
     public void OnPointer(InputAction.CallbackContext callback)
     {
         _pointerPos = callback.ReadValue<Vector2>();
+    }
+
+
+    // Input activables
+
+    private void OnTriggerEnter(Collider other) // TODO : opti this
+    {
+        if (other.TryGetComponent(out InputActivable activable)) _inputActivables.Add(activable);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.TryGetComponent(out InputActivable activable)) _inputActivables.Remove(activable);
     }
 }
