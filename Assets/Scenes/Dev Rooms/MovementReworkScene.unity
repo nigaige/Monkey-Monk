@@ -1275,18 +1275,6 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 599859582340476481, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
-      propertyPath: groundMask.m_Bits
-      value: 1088
-      objectReference: {fileID: 0}
-    - target: {fileID: 1152359394223405359, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
-      propertyPath: m_Interpolate
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1152359394223405359, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1723195303924927862, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_Name
       value: monkey
@@ -1334,10 +1322,6 @@ PrefabInstance:
     - target: {fileID: 2477755069874244458, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5328522932286767545, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
-      propertyPath: platformMask.m_Bits
-      value: 320
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []

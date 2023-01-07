@@ -142,7 +142,7 @@ MonoBehaviour:
   horizontalMaxVelocity: 6
   maxFallVelocity: 20
   gravityMultiplier: 1.5
-  platformMask:
+  groundMask:
     serializedVersion: 2
     m_Bits: 1088
   horizontalAcceleration: 60
@@ -173,7 +173,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 120
-  m_CollisionDetection: 3
+  m_CollisionDetection: 0
 --- !u!114 &3914884982506606422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -608,7 +608,7 @@ MonoBehaviour:
   monkeyHand: {fileID: 1118875606611223152}
   platformMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 320
   maxLength: 10
 --- !u!1 &4276516316550841185
 GameObject:
