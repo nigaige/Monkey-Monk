@@ -11,23 +11,16 @@ public abstract class Projectile : Grabbable
 
     protected bool _isPlayerProj = false;
     protected Vector2 _direction;
-    protected float _speed;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
     }
 
-    public virtual void Initialize(Vector2 direction, float speed, GameObject launcher)
-    {
-        _direction = direction;
-        _speed = speed;
-        _isPlayerProj = launcher.tag == "Player";
-    }
-
     public virtual void Initialize(Vector2 direction, GameObject launcher)
     {
-        Initialize(direction, _speed, launcher);
+        _direction = direction;
+        _isPlayerProj = launcher.tag == "Player";
     }
 
     private void OnTriggerEnter(Collider other)

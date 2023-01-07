@@ -101,6 +101,7 @@ MonoBehaviour:
   blockingLayers:
     serializedVersion: 2
     m_Bits: 577
+  force: 10
 --- !u!65 &4610373023990281721
 BoxCollider:
   m_ObjectHideFlags: 0
