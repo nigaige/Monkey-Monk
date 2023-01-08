@@ -79,10 +79,6 @@ public class Player : Entity
         // Liane / Basic Movement switcher
         if (liane.isLianeFixed()) LianeMovement();
         else Movement();
-
-        // Dirty fix of ground tripping
-        /*if (_onGround) _rb.useGravity = false;
-        else _rb.useGravity = true;*/
     }
 
     // ==================================== CHECK ===========================================
@@ -95,12 +91,12 @@ public class Player : Entity
         float rayDist = 0.1f;
 
         RayStart1 = new Vector3(
-            _collider.bounds.center.x - _collider.bounds.extents.x,
+            _collider.bounds.center.x - (_collider.bounds.extents.x - 0.01f),
             _collider.bounds.center.y - _collider.bounds.extents.y + rayDist,
             _collider.bounds.center.z
             );
         RayStart2 = new Vector3(
-            _collider.bounds.center.x + _collider.bounds.extents.x,
+            _collider.bounds.center.x + (_collider.bounds.extents.x - 0.01f),
             _collider.bounds.center.y - _collider.bounds.extents.y + rayDist,
             _collider.bounds.center.z
             );
@@ -142,20 +138,6 @@ public class Player : Entity
 
             _onGround = false;
         }
-
-        /*if (_onGround) // Dirty fix of ground tripping
-        {
-            float minDist;
-            if (dist1 == -1) minDist = dist2 - rayDist;
-            else if (dist2 == -1) minDist = dist1 - rayDist;
-            else minDist = Mathf.Min(dist1, dist2) - rayDist;
-
-            if (minDist > 0.02 || minDist < 0)
-            {
-                transform.position += Vector3.down * minDist + Vector3.up * 0.05f;
-            }
-        }*/
-
     }
 
     private void WallCheck()
@@ -183,8 +165,6 @@ public class Player : Entity
         float dist2 = CastARay(BottomRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength * 2f, groundMask);
 
         _isTouchingWall = (dist1 > 0) || (dist2 > 0);
-
-
     }
 
     private bool StepCheck()
@@ -242,17 +222,65 @@ public class Player : Entity
         if (_onGround) GroundMovement();
         else AirMovement();
 
+
+        // Fix Y wall stick
         if (_rb.velocity.y < 0)
         {
-            RaycastHit hit;
-            bool hasHit = Physics.BoxCast(_collider.bounds.center, _collider.bounds.size / 2f, Vector3.down, out hit, Quaternion.identity, -_rb.velocity.y * Time.fixedDeltaTime, groundMask);
+            Vector3 LeftRay = new Vector3(
+                _collider.bounds.center.x - (_collider.bounds.extents.x - 0.01f),
+                _collider.bounds.center.y - _collider.bounds.extents.y,
+                _collider.bounds.center.z
+                );
+            Vector3 RightRay = new Vector3(
+                _collider.bounds.center.x + (_collider.bounds.extents.x - 0.01f),
+                _collider.bounds.center.y - _collider.bounds.extents.y,
+                _collider.bounds.center.z
+                );
 
-            if (hasHit)
+            float dist1 = CastARay(LeftRay, Vector3.down, -_rb.velocity.y * Time.fixedDeltaTime, groundMask);
+            float dist2 = CastARay(RightRay, Vector3.down, -_rb.velocity.y * Time.fixedDeltaTime, groundMask);
+
+            if (dist1 != -1 || dist2 != -1)
             {
-                DebugUtils.DrawBox(_collider.bounds.center, _collider.bounds.size / 2f, Quaternion.identity, Color.green, 0);
-                _rb.velocity = new Vector3(_rb.velocity.x, -hit.distance / Time.fixedDeltaTime, _rb.velocity.z);
+                float dist;
+
+                if (dist1 == -1) dist = dist2;
+                else if (dist2 == -1) dist = dist1;
+                else dist = Mathf.Min(dist1, dist2);
+
+                _rb.velocity = new Vector3(_rb.velocity.x, -dist / Time.fixedDeltaTime, _rb.velocity.z);
             }
-            else DebugUtils.DrawBox(_collider.bounds.center, _collider.bounds.size / 2f, Quaternion.identity, Color.red, 0);
+        }
+
+        // Fix X wall stick
+        if (_rb.velocity.x != 0)
+        {
+            Vector3 UpRay = new Vector3(
+                _collider.bounds.center.x + (_collider.bounds.extents.x) * Mathf.Sign(_rb.velocity.x),
+                _collider.bounds.center.y + _collider.bounds.extents.y,
+                _collider.bounds.center.z
+            );
+            Vector3 BottomRay = new Vector3(
+                _collider.bounds.center.x + (_collider.bounds.extents.x) * Mathf.Sign(_rb.velocity.x),
+                _collider.bounds.center.y - (_collider.bounds.extents.y - 0.1f/*step size*/),
+                _collider.bounds.center.z
+            );
+
+            RaycastHit hit1, hit2;
+
+            bool hasHit1 = Physics.Raycast(UpRay, Vector3.right * Mathf.Sign(_rb.velocity.x), out hit1, Mathf.Abs(_rb.velocity.x) * Time.fixedDeltaTime, groundMask);
+            bool hasHit2 = Physics.Raycast(BottomRay, Vector3.right * Mathf.Sign(_rb.velocity.x), out hit2, Mathf.Abs(_rb.velocity.x) * Time.fixedDeltaTime, groundMask);
+
+            if ((hasHit1 && !Physics.GetIgnoreCollision(_collider, hit1.collider)) || (hasHit2 && !Physics.GetIgnoreCollision(_collider, hit2.collider)))
+            {
+                float dist;
+
+                if (!hasHit1) dist = hit2.distance;
+                else if (!hasHit2) dist = hit1.distance;
+                else dist = Mathf.Min(hit1.distance, hit2.distance);
+
+                _rb.velocity = new Vector3(dist * Mathf.Sign(_rb.velocity.x) / Time.fixedDeltaTime, _rb.velocity.y, _rb.velocity.z);
+            }
         }
     }
 
