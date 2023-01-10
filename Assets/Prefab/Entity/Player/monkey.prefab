@@ -145,8 +145,8 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 1088
-  horizontalAcceleration: 60
-  airHorizontalAcceleration: 20
+  horizontalAcceleration: 65
+  airHorizontalAcceleration: 25
   fallMultiplier: 2
   lowJumpMultiplier: 4
   jumpForce: 8

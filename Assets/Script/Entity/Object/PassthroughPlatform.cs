@@ -7,6 +7,8 @@ public class PassthroughPlatform : MonoBehaviour
 {
     private Player _player;
 
+    private Coroutine _ignoreCoroutine;
+
     private void Awake()
     {
         _player = FindObjectOfType<Player>();
@@ -14,6 +16,8 @@ public class PassthroughPlatform : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_ignoreCoroutine != null) return;
+
         if (_player.GetComponent<Collider>().bounds.min.y < GetComponent<Collider>().bounds.max.y - 0.1f)
         {
             Physics.IgnoreCollision(_player.GetComponent<Collider>(), GetComponent<Collider>(), true);
@@ -23,4 +27,18 @@ public class PassthroughPlatform : MonoBehaviour
             Physics.IgnoreCollision(_player.GetComponent<Collider>(), GetComponent<Collider>(), false);
         }
     }
+
+    public void IgnorePlayerForSeconds(float seconds)
+    {
+        _ignoreCoroutine = StartCoroutine(IgnorePlayerForSecondsCoroutine(seconds));
+    }
+
+    private IEnumerator IgnorePlayerForSecondsCoroutine(float seconds)
+    {
+        Physics.IgnoreCollision(_player.GetComponent<Collider>(), GetComponent<Collider>(), true);
+        yield return new WaitForSeconds(seconds);
+        Physics.IgnoreCollision(_player.GetComponent<Collider>(), GetComponent<Collider>(), false);
+        _ignoreCoroutine = null;
+    }
+
 }

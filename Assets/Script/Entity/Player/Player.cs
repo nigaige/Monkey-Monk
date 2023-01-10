@@ -237,16 +237,18 @@ public class Player : Entity
                 _collider.bounds.center.z
                 );
 
-            float dist1 = CastARay(LeftRay, Vector3.down, -_rb.velocity.y * Time.fixedDeltaTime, groundMask);
-            float dist2 = CastARay(RightRay, Vector3.down, -_rb.velocity.y * Time.fixedDeltaTime, groundMask);
+            RaycastHit hit1, hit2;
 
-            if (dist1 != -1 || dist2 != -1)
+            bool hasHit1 = Physics.Raycast(LeftRay, Vector3.down, out hit1, -_rb.velocity.y * Time.fixedDeltaTime, groundMask);
+            bool hasHit2 = Physics.Raycast(RightRay, Vector3.down, out hit2, -_rb.velocity.y * Time.fixedDeltaTime, groundMask);
+
+            if ((hasHit1 && !Physics.GetIgnoreCollision(_collider, hit1.collider)) || (hasHit2 && !Physics.GetIgnoreCollision(_collider, hit2.collider)))
             {
                 float dist;
 
-                if (dist1 == -1) dist = dist2;
-                else if (dist2 == -1) dist = dist1;
-                else dist = Mathf.Min(dist1, dist2);
+                if (!hasHit1) dist = hit2.distance;
+                else if (!hasHit2) dist = hit1.distance;
+                else dist = Mathf.Min(hit1.distance, hit2.distance);
 
                 _rb.velocity = new Vector3(_rb.velocity.x, -dist / Time.fixedDeltaTime, _rb.velocity.z);
             }
@@ -300,8 +302,6 @@ public class Player : Entity
 
         // Clamp fall velocity
         if (_rb.velocity.y < -maxFallVelocity) _rb.velocity = new Vector3(_rb.velocity.x, -maxFallVelocity, 0);
-
-        
     }
 
     private void GroundMovement()
@@ -556,6 +556,19 @@ public class Player : Entity
         _canJump = false;
     }
 
+    private void JumpDown()
+    {
+        Collider[] colls = Physics.OverlapBox(_collider.bounds.center - Vector3.up * 0.1f, _collider.bounds.extents, Quaternion.identity, LayerMask.GetMask("PassthroughPlatform"));
+
+        foreach (Collider col in colls)
+        {
+            if (col.TryGetComponent(out PassthroughPlatform platform))
+            {
+                platform.IgnorePlayerForSeconds(0.5f);
+            }
+        }
+    }
+
     private void LaunchLiane()
     {
         if (_clampedMovementInput.x > 0) liane.Extend(1); // Right
@@ -650,7 +663,8 @@ public class Player : Entity
 
         if (!callback.started) return;
 
-        Jump();
+        if (_clampedMovementInput != Vector2.down) Jump();
+        else JumpDown();
     }
 
     public void OnLiane(InputAction.CallbackContext callback)
