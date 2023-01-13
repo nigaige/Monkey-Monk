@@ -9,6 +9,8 @@ public class Player : Entity
     private bool _onGround = false;
     private bool _isTouchingWall = false;
 
+    private bool _isOnSolidGround;
+
     [Header("Movement")]
     [SerializeField] float horizontalMaxVelocity = 1f;
     [SerializeField] private float maxFallVelocity = 20f;
@@ -101,13 +103,19 @@ public class Player : Entity
             _collider.bounds.center.z
             );
 
-        float dist1 = CastARay(RayStart1, transform.TransformDirection(Vector3.down), rayDist * 2f, groundMask);
-        float dist2 = CastARay(RayStart2, transform.TransformDirection(Vector3.down), rayDist * 2f, groundMask);
+        RaycastHit hit1, hit2;
 
-        if (_rb.velocity.y <= 0 && (dist1 > 0 || dist2 > 0)) // On Ground
+        bool hasHit1 = Physics.Raycast(RayStart1, Vector3.down, out hit1, rayDist * 2f, groundMask);
+        bool hasHit2 = Physics.Raycast(RayStart2, Vector3.down, out hit2, rayDist * 2f, groundMask);
+
+        if (_rb.velocity.y <= 0 && (hasHit1 || hasHit2)) // On Ground
         {
             _canJump = true;
             _onGround = true;
+
+            _isOnSolidGround = ((hasHit1 && hit1.collider.gameObject.layer == LayerMask.NameToLayer("Block")) 
+                || (hasHit2 && hit2.collider.gameObject.layer == LayerMask.NameToLayer("Block")));
+
 
             // Jump buffering
             if (_isJumpBufferCall)
@@ -125,6 +133,8 @@ public class Player : Entity
         }
         else // On Air
         {
+            _isOnSolidGround = false;
+
             if (_onGround && _canJump)
             {
                 // Start Coyote jump coroutine
@@ -602,6 +612,8 @@ public class Player : Entity
 
     private void ReleaseLiane()
     {
+        //_rb.velocity = Vector3.zero;
+
         liane.Release();
         Physics.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("PassthroughPlatform"), false);
     }
@@ -671,7 +683,7 @@ public class Player : Entity
     {
         if (!callback.started) return;
 
-        if (_onGround || _isTouchingWall) return; // TODO: Check this (passthrough platform)
+        if (_isOnSolidGround || _isTouchingWall) return;
 
         if (!liane.isLianeFixed()) LaunchLiane();
         else ReleaseLiane();
