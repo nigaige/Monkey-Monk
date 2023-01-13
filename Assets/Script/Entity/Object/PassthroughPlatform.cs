@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
+using MonkeyMonk.Player;
 
 public class PassthroughPlatform : MonoBehaviour
 {
