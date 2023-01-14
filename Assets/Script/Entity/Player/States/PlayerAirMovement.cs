@@ -106,7 +106,7 @@ namespace MonkeyMonk.Player
         {
             base.OnJumpInput();
 
-            _movement.Jump(); // Can jump if coyote
+            _movement.TryJump(); // Can jump if coyote
         }
 
         public override void OnLianeInput()
@@ -115,7 +115,7 @@ namespace MonkeyMonk.Player
 
             if (_movement.IsTouchingWall) return;
 
-            _movement.LaunchLiane();
+            _movement.TryLaunchLiane();
         }
     }
 }

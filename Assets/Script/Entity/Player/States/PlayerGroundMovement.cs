@@ -129,7 +129,7 @@ namespace MonkeyMonk.Player
         {
             base.OnJumpInput();
 
-            if (_movement.ClampedMovementInput != Vector2.down) _movement.Jump();
+            if (_movement.ClampedMovementInput != Vector2.down) _movement.TryJump();
             else JumpDown();
         }
 
@@ -139,7 +139,7 @@ namespace MonkeyMonk.Player
 
             if (_movement.IsOnSolidGround) return;
 
-            _movement.LaunchLiane();
+            _movement.TryLaunchLiane();
         }
     }
 }

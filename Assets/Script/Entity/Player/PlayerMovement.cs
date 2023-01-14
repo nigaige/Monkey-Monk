@@ -53,26 +53,25 @@ namespace MonkeyMonk.Player
 
         
         private bool _isOnGround = false;
-        private bool _isTouchingWall = false;
-
         private bool _isOnSolidGround;
+        private bool _isTouchingWall = false;
 
 
         public bool JumpInput { get => _jumpInput; }
         public Vector2 ClampedMovementInput { get => _clampedMovementInput; }
 
         public bool IsOnGround { get => _isOnGround; }
-        public bool IsTouchingWall { get => _isTouchingWall; }
         public bool IsOnSolidGround { get => _isOnSolidGround; }
+        public bool IsTouchingWall { get => _isTouchingWall; }
 
 
 
         #endregion
 
+        // =============================== Movement
+        #region Movement
 
-        #region old
-
-        // ==================================== CHECK ===========================================
+        #region Checks
 
         public void GroundCheck()
         {
@@ -109,7 +108,7 @@ namespace MonkeyMonk.Player
                 // Jump buffering
                 if (_isJumpBufferCall)
                 {
-                    Jump();
+                    TryJump();
                     _isJumpBufferCall = false;
                 }
 
@@ -165,6 +164,10 @@ namespace MonkeyMonk.Player
 
             _isTouchingWall = (dist1 > 0) || (dist2 > 0);
         }
+
+        #endregion
+
+        #region Physics Fix
 
         public void FixVerticalPenetration()
         {
@@ -232,7 +235,9 @@ namespace MonkeyMonk.Player
             }
         }
 
-        // ==================================== UTILITES ===========================================
+        #endregion
+
+        #region Better feel
 
         private IEnumerator JumpBufferCoroutine()
         {
@@ -248,37 +253,11 @@ namespace MonkeyMonk.Player
             _coyoteJumpCoroutine = null;
         }
 
+        #endregion
 
-        float CastARay(Vector3 pos, Vector3 dir, float length, LayerMask mask)
-        {
-            RaycastHit hit;
+        #region Actions
 
-            bool hitPlateform = Physics.Raycast(pos, dir, out hit, length, mask);
-            if (hitPlateform) Debug.DrawRay(pos, dir * length, Color.green);
-            else Debug.DrawRay(pos, dir * length, Color.red);
-
-            if (hitPlateform) return hit.distance;
-            return -1;
-        }
-
-        public void ReevaluateMovementType()
-        {
-            if (_isOnGround) SwitchState(PlayerMovementType.Ground);
-            else SwitchState(PlayerMovementType.Air);
-        }
-
-        // Release liane on ground hit
-        private void OnCollisionStay(Collision collision)
-        {
-            if (!(_currentStateType == PlayerMovementType.Liane)) return;
-
-            if (((1 << collision.gameObject.layer) & groundMask) > 0) ReevaluateMovementType();
-        }
-
-
-        // ==================================== INPUT METHODS ===========================================
-
-        public void Jump()
+        public void TryJump()
         {
             if (!_canJump)
             {
@@ -300,7 +279,7 @@ namespace MonkeyMonk.Player
             _canJump = false;
         }
 
-        public void LaunchLiane()
+        public void TryLaunchLiane()
         {
             if (_clampedMovementInput.x > 0) liane.Extend(1); // Right
             else if (_clampedMovementInput.x < 0) liane.Extend(3); // Left
@@ -310,7 +289,32 @@ namespace MonkeyMonk.Player
             if (liane.isLianeFixed()) SwitchState(PlayerMovementType.Liane);
         }
 
-        // ==================================== INPUTS ===========================================
+        #endregion
+
+        float CastARay(Vector3 pos, Vector3 dir, float length, LayerMask mask)
+        {
+            RaycastHit hit;
+
+            bool hitPlateform = Physics.Raycast(pos, dir, out hit, length, mask);
+            if (hitPlateform) Debug.DrawRay(pos, dir * length, Color.green);
+            else Debug.DrawRay(pos, dir * length, Color.red);
+
+            if (hitPlateform) return hit.distance;
+            return -1;
+        }
+
+        // Release liane on ground or wall hit
+        private void OnCollisionStay(Collision collision)
+        {
+            if (!(_currentStateType == PlayerMovementType.Liane)) return;
+
+            if (((1 << collision.gameObject.layer) & groundMask) > 0) ReevaluateMovementType();
+        }
+
+        #endregion
+
+        // =============================== Inputs
+        #region Inputs
 
         public void OnMovement(InputAction.CallbackContext callback)
         {
@@ -397,9 +401,15 @@ namespace MonkeyMonk.Player
             _states[PlayerMovementType.Air] = new PlayerAirMovement(this, _rb, airHorizontalAcceleration, maxHorizontalVelocity, gravityMultiplier, fallMultiplier, lowJumpMultiplier, maxFallVelocity);
             _states[PlayerMovementType.Liane] = new PlayerLianeMovement(this, _rb, liane, gravityMultiplier, lianeHorizontalSpeed, lianeSpeed, lianeMaxAngle, lianeVerticalSpeed);
 
-            _currentState = _states[_currentStateType];
+            SwitchState(_currentStateType);
 
             ReevaluateMovementType();
+        }
+
+        public void ReevaluateMovementType()
+        {
+            if (_isOnGround) SwitchState(PlayerMovementType.Ground);
+            else SwitchState(PlayerMovementType.Air);
         }
 
         private void Update()
@@ -433,8 +443,15 @@ namespace MonkeyMonk.Player
             _currentState?.EnterState();
         }
 
-        #endregion
+#if UNITY_EDITOR
+        // Editor fix
+        private void OnValidate()
+        {
+            InitStates();
+        }
+#endif
 
+        #endregion
 
     }
 
