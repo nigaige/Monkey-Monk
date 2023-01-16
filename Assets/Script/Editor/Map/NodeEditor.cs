@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using MonkeyMonk.Map;
 using System.Collections;
 using System.Collections.Generic;
@@ -60,3 +61,4 @@ public class NodeEditor : Editor
         }
     }
 }
+#endif
