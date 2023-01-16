@@ -126,7 +126,7 @@ public class Liane : MonoBehaviour
         liane.SetPosition(1, attachPoint);
         lianePos = attachPoint;
 
-        _lianeLength = Vector3.Distance(transform.position, attachPoint);
+        _lianeLength = Vector3.Distance(monkeyHand.transform.position, attachPoint);
 
         lianeFixed = true;
     }
@@ -158,26 +158,9 @@ public class Liane : MonoBehaviour
         return liane.GetPosition(0).x < liane.GetPosition(1).x;
     }
 
-
-
-
-    float CastARay(Vector3 pos,Vector3 dir,float length, LayerMask mask){
-        RaycastHit Hit;
-
-        Debug.DrawRay(pos, dir * length);
-        bool hitPlateform = Physics.Raycast(pos, transform.TransformDirection( dir), out Hit, length, mask);  
-        
-        if(hitPlateform) return Hit.distance;
-        return -1;
-    }
-
     void UpdateLianePos()
     {
         liane.SetPosition(0, monkeyHand.transform.position);
         if (!lianeFixed) liane.SetPosition(1, monkeyHand.transform.position);
     }
-
-
-
-    
 }

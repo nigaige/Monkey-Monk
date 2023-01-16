@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using MonkeyMonk.Enemies.StateMachine;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,3 +14,4 @@ public class VariableDictValEditor : PropertyDrawer
         EditorGUI.PropertyField(new Rect(position.x + position.width / 2f, position.y, position.width / 2f, position.height), property.FindPropertyRelative("Value"), GUIContent.none);
     }
 }
+#endif

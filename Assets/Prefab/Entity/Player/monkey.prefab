@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1118875606611223152}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.164, y: 0.393, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 8884808085109925187}
   - component: {fileID: 477539950342490091}
   - component: {fileID: 599859582340476481}
+  - component: {fileID: 7581919209272979861}
   - component: {fileID: 1152359394223405359}
   - component: {fileID: 3914884982506606422}
   - component: {fileID: 2755170884234709601}
@@ -73,7 +74,7 @@ Transform:
   - {fileID: 5368244036304838587}
   - {fileID: 7600208825878370843}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8884808085109925187
 MeshFilter:
@@ -139,14 +140,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHeathPoint: 10
   invulnerabilityDuration: 0.5
-  horizontalMaxVelocity: 6
-  maxFallVelocity: 20
+--- !u!114 &7581919209272979861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1723195303924927862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e383793072dc4a042b0048e9306c11a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   gravityMultiplier: 1.5
   groundMask:
     serializedVersion: 2
     m_Bits: 1088
-  horizontalAcceleration: 60
-  airHorizontalAcceleration: 20
+  maxHorizontalVelocity: 6
+  horizontalAcceleration: 65
+  maxFallVelocity: 20
+  airHorizontalAcceleration: 25
   fallMultiplier: 2
   lowJumpMultiplier: 4
   jumpForce: 8
@@ -221,8 +234,8 @@ MonoBehaviour:
   actionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 599859582340476481}
-        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+      - m_Target: {fileID: 7581919209272979861}
+        m_TargetAssemblyTypeName: MonkeyMonk.Player.PlayerMovement, Assembly-CSharp
         m_MethodName: OnMovement
         m_Mode: 0
         m_Arguments:
@@ -269,8 +282,8 @@ MonoBehaviour:
     m_ActionName: Player/Pointer[/Mouse/position]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 599859582340476481}
-        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+      - m_Target: {fileID: 7581919209272979861}
+        m_TargetAssemblyTypeName: MonkeyMonk.Player.PlayerMovement, Assembly-CSharp
         m_MethodName: OnJump
         m_Mode: 0
         m_Arguments:
@@ -333,8 +346,8 @@ MonoBehaviour:
     m_ActionName: UI/Pause[/Keyboard/escape]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 599859582340476481}
-        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+      - m_Target: {fileID: 7581919209272979861}
+        m_TargetAssemblyTypeName: MonkeyMonk.Player.PlayerMovement, Assembly-CSharp
         m_MethodName: OnLiane
         m_Mode: 0
         m_Arguments:
@@ -653,22 +666,6 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0
-      objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fe8180bbbe9ef3e4c85d762957a58a1f, type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.5
@@ -687,7 +684,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fe8180bbbe9ef3e4c85d762957a58a1f, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.7071068
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fe8180bbbe9ef3e4c85d762957a58a1f, type: 3}
       propertyPath: m_LocalRotation.z
@@ -699,7 +696,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fe8180bbbe9ef3e4c85d762957a58a1f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -90
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fe8180bbbe9ef3e4c85d762957a58a1f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -708,6 +705,22 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: fe8180bbbe9ef3e4c85d762957a58a1f, type: 3}
       propertyPath: m_Name
       value: Monkey
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cfeb8f6abcb68a244ae1de6a3e7ab5b7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []

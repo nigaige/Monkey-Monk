@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MonkeyMonk.Player;
 
 public class ObjectGiver : InputActivable
 {
