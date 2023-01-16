@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 8044853939573728466}
   - component: {fileID: 8044853939573728467}
   - component: {fileID: 8044853939573728468}
-  - component: {fileID: 6721307883711488839}
+  - component: {fileID: 6516862133232436494}
   m_Layer: 6
-  m_Name: RisingPlateform
+  m_Name: MovingPlateform
   m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -98,7 +98,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6721307883711488839
+--- !u!114 &6516862133232436494
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -110,5 +110,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98e24ac80fcf37647ae613dc6db952c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  risingHeight: 2
-  risingTime: 0.5
+  risingHeight: 0
+  risingTime: 0
