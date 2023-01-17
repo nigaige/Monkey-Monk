@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PauseMenu : MonoBehaviour
+public class PauseMenu : MenuMaster
 {
     [SerializeField] private CanvasGroup menu;
     [SerializeField] private GameObject confirmationMenuPrefab;
@@ -12,23 +12,26 @@ public class PauseMenu : MonoBehaviour
 
     private bool _isOpen;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         CloseMenu();
     }
 
     public void OpenMenu()
     {
-        menu.gameObject.SetActive(true);
+        gameObject.SetActive(true);
         Time.timeScale = 0;
         InputManager.Instance.SwitchInputMap(InputMap.UI);
+
+        ResetMenu();
 
         _isOpen = true;
     }
 
     public void CloseMenu()
     {
-        menu.gameObject.SetActive(false);
+        gameObject.SetActive(false);
         Time.timeScale = 1;
         InputManager.Instance.SwitchInputMap(InputMap.Game);
 
