@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2459074050506042381}
   - component: {fileID: 4610373023990281721}
   - component: {fileID: 4724043017481772284}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: CurvedProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
