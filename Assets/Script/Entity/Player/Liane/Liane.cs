@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Clipper2Lib;
 using static UnityEditor.Progress;
+using UnityEditor.Experimental.GraphView;
 
 public class Liane : MonoBehaviour
 {
+    public Vector3 LianePosition { get => _lianePos; }
+    public float MaxLength { get => maxLength; }
+
     Vector3[] direction = new [] {
         new Vector3(1.0f,0,0),      //right
         new Vector3(0.5f,0.5f,0),   //up right
@@ -17,22 +21,19 @@ public class Liane : MonoBehaviour
         new Vector3(0.5f,-0.5f,0),  //down right
     };
 
-    Vector3 lianeDir = new Vector3(0,0,0);  
-
     //liane
     [SerializeField] private LineRenderer liane;
     [SerializeField] private GameObject monkeyHand;
     [SerializeField] private LayerMask platformMask;
 
     [SerializeField] private float maxLength = 10;
-    public float MaxLength { get => maxLength; }
 
-    private bool lianeFixed = false;
-    private Vector3 lianePos = new Vector3(0, 0, 0);
+    private bool _lianeFixed = false;
+    private Vector3 _lianePos = new Vector3(0, 0, 0);
 
     private float _lianeLength;
+    private LianeAttach _currentAttach;
 
-    public Vector3 LianePosition { get => lianePos; }
 
     private Vector3? GetAimAssistPoint(Vector3 aimDir)
     {
@@ -150,30 +151,51 @@ public class Liane : MonoBehaviour
 
     public void Extend(int dir)
     {
-        lianeDir = direction[dir];
+        Vector3 lianeDir = direction[dir];
 
         Vector3? point = GetAimAssistPoint(lianeDir);
 
-        if (point.HasValue) Attach(null, point.Value);
+        if (point.HasValue)
+        {
+            // Recover liane attachable
+            LianeAttach attach = null;
+
+            Collider[] colls = Physics.OverlapSphere(point.Value, 0.1f);
+            foreach (var coll in colls)
+            {
+                if (coll.TryGetComponent(out LianeAttach lianeAttach))
+                {
+                    attach = lianeAttach;
+                    break;
+                }
+            }
+
+            Attach(attach, point.Value);
+        }
     }
 
     private void Attach(LianeAttach attach, Vector2 attachPoint)
     {
         liane.SetPosition(1, attachPoint);
-        lianePos = attachPoint;
+        _lianePos = attachPoint;
 
         _lianeLength = Vector3.Distance(monkeyHand.transform.position, attachPoint);
 
-        lianeFixed = true;
+        _lianeFixed = true;
+
+        _currentAttach = attach;
+        _currentAttach.OnAttach();
     }
 
     public void Release()
     {
-        lianeFixed = false;
+        _lianeFixed = false;
+        _currentAttach.OnDetach();
+        _currentAttach = null;
     }
 
     public bool isLianeFixed(){
-        return lianeFixed;
+        return _lianeFixed;
     }
 
     public float GetLianeLength()
@@ -197,6 +219,6 @@ public class Liane : MonoBehaviour
     void UpdateLianePos()
     {
         liane.SetPosition(0, monkeyHand.transform.position);
-        if (!lianeFixed) liane.SetPosition(1, monkeyHand.transform.position);
+        if (!_lianeFixed) liane.SetPosition(1, monkeyHand.transform.position);
     }
 }
