@@ -1,0 +1,25 @@
+using Clipper2Lib;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraZonesManager : MonoBehaviour
+{
+    [SerializeField] private CameraZone[] zones;
+
+    private void Awake()
+    {
+        
+    }
+
+    public CameraZone FindCurrentZone(Transform target)
+    {
+        foreach (var zone in zones)
+        {
+            if (zone.IsPointInsideZone(target.transform.position)) return zone;
+        }
+
+        return null;
+    }
+
+}

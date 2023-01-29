@@ -9,6 +9,7 @@ namespace MonkeyMonk.Inputs
     public class InputManager : MonoBehaviour
     {
         public static InputManager Instance { get; private set; }
+        public PlayerInput PlayerInput { get => playerInput; }
 
         [SerializeField] private PlayerInput playerInput;
         [SerializeField] private EventSystem eventSystem;

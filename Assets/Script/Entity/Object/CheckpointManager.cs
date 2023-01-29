@@ -4,7 +4,6 @@ public class CheckpointManager : ATriggerable
 {
 
     [SerializeField] private GameManager gameManager;
-    public bool IsActive { get; private set; }
 
     // Start is called before the first frame update
     void Start()

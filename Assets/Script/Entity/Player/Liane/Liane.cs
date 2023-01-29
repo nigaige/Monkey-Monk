@@ -1,9 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Clipper2Lib;
+using static UnityEditor.Progress;
+using UnityEditor.Experimental.GraphView;
 
 public class Liane : MonoBehaviour
 {
+    public Vector3 LianePosition { get => _lianePos; }
+    public float MaxLength { get => maxLength; }
+
     Vector3[] direction = new [] {
         new Vector3(1.0f,0,0),      //right
         new Vector3(0.5f,0.5f,0),   //up right
@@ -15,22 +21,19 @@ public class Liane : MonoBehaviour
         new Vector3(0.5f,-0.5f,0),  //down right
     };
 
-    Vector3 lianeDir = new Vector3(0,0,0);  
-
     //liane
     [SerializeField] private LineRenderer liane;
     [SerializeField] private GameObject monkeyHand;
     [SerializeField] private LayerMask platformMask;
 
     [SerializeField] private float maxLength = 10;
-    public float MaxLength { get => maxLength; }
 
-    private bool lianeFixed = false;
-    private Vector3 lianePos = new Vector3(0, 0, 0);
+    private bool _lianeFixed = false;
+    private Vector3 _lianePos = new Vector3(0, 0, 0);
 
     private float _lianeLength;
+    private LianeAttach _currentAttach;
 
-    public Vector3 LianePosition { get => lianePos; }
 
     private Vector3? GetAimAssistPoint(Vector3 aimDir)
     {
@@ -40,70 +43,104 @@ public class Liane : MonoBehaviour
             return hit.point;
         }
         else
-        // Test
         {
+            // === Find attachs with appriximation
             float lianeMaxHalfAngle = 20;
 
-            Debug.DrawRay(monkeyHand.transform.position, aimDir * maxLength, Color.red);
-            DebugUtils.DrawArc(monkeyHand.transform.position, aimDir * maxLength, lianeMaxHalfAngle, Color.red, 0);
+            //Debug.DrawRay(monkeyHand.transform.position, aimDir * maxLength, Color.red, 5);
+            //DebugUtils.DrawArc(monkeyHand.transform.position, aimDir * maxLength, lianeMaxHalfAngle, Color.red, 5);
 
             Vector3 origin = monkeyHand.transform.position + aimDir * maxLength / 2f;
 
             Collider[] c = Physics.OverlapBox(origin, new Vector3(maxLength / 2f, Mathf.Sin(lianeMaxHalfAngle * Mathf.Deg2Rad) * maxLength, 0.1f), Quaternion.Euler(0, 0, Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg));
-            DebugUtils.DrawBox(origin, new Vector3(maxLength / 2f, Mathf.Sin(lianeMaxHalfAngle * Mathf.Deg2Rad) * maxLength, 0.1f), Quaternion.Euler(0, 0, Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg), Color.blue, 0);
+            //DebugUtils.DrawBox(origin, new Vector3(maxLength / 2f, Mathf.Sin(lianeMaxHalfAngle * Mathf.Deg2Rad) * maxLength, 0.1f), Quaternion.Euler(0, 0, Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg), Color.blue, 5);
 
-            // Find attach
+            // Find attachs
             List<LianeAttach> atts = new();
             foreach (var item in c)
             {
                 if (item.TryGetComponent(out LianeAttach attach)) atts.Add(attach);
             }
 
-            // Correct aproximation by checking the angle
-            for (int i = atts.Count - 1; i >= 0; i--)
+            // === Correct approximation by checking the angle
+            
+            // Create autolock zone path
+            float dirAngleRad = Mathf.Atan2(aimDir.y, aimDir.x);
+
+            PathD path = new PathD();
+            const float angleOffsetRad = Mathf.PI / 32f;
+
+            float currAngleRad = dirAngleRad - lianeMaxHalfAngle * Mathf.Deg2Rad;
+            float targetAngleRad = dirAngleRad + lianeMaxHalfAngle * Mathf.Deg2Rad;
+            float nextAngleRad = currAngleRad + angleOffsetRad;
+
+            while (nextAngleRad <= targetAngleRad)
             {
-                LianeAttach item = atts[i];
-                bool isKeeping = false;
+                Vector3 currPos = monkeyHand.transform.position + new Vector3(Mathf.Cos(currAngleRad), Mathf.Sin(currAngleRad), 0) * maxLength;
 
-                foreach (var vec in item.Points)
-                {
-                    Vector2 dir = (vec - (Vector2)monkeyHand.transform.position).normalized;
+                path.Add(new PointD(currPos.x, currPos.y));
 
-                    if (Vector2.Angle(aimDir, dir) < lianeMaxHalfAngle) // Keep item
-                    {
-                        isKeeping = true;
-                        break;
-                    }
-                }
-
-                if (!isKeeping) atts.RemoveAt(i);
+                currAngleRad = nextAngleRad;
+                nextAngleRad += angleOffsetRad;
             }
+            Vector3 lastPos = monkeyHand.transform.position + new Vector3(Mathf.Cos(targetAngleRad), Mathf.Sin(targetAngleRad), 0) * maxLength;
+            path.Add(new PointD(lastPos.x, lastPos.y));
+            path.Add(new PointD(monkeyHand.transform.position.x, monkeyHand.transform.position.y));
 
-            if (atts.Count == 0) return null;
+            /*
+            // Debug autolock zone
+            for (int i = 0; i < path.Count - 1; i++)
+            {
+                Debug.DrawLine(new Vector3((float)path[i].x, (float)path[i].y, 0), new Vector3((float)path[i + 1].x, (float)path[i + 1].y, 0), Color.red, 5);
+            }
+            Debug.DrawLine(new Vector3((float)path[0].x, (float)path[0].y, 0), new Vector3((float)path[path.Count - 1].x, (float)path[path.Count - 1].y, 0), Color.red, 5);
+            */
 
-            // Get min angle
-            LianeAttach minAttach = null;
-            Vector2 minPoint = Vector2.zero;
-            float minAngle = float.MaxValue;
-
+            PathsD subject = new PathsD { path }; // autolock zone path
+            PathsD clip = new PathsD(); // attachs path 
             foreach (var item in atts)
             {
-                foreach (var vec in item.Points)
+                clip.Add(item.ClipperPath);
+            }
+
+            // Find intersection
+            PathsD ress = Clipper.Intersect(subject, clip, FillRule.NonZero);
+
+            /*
+            // Debug intersection
+            foreach (var res in ress)
+            {
+                for (int i = 0; i < res.Count - 1; i++)
                 {
-                    Vector2 dir = (vec - (Vector2)monkeyHand.transform.position).normalized;
+                    Debug.DrawLine(new Vector3((float)res[i].x, (float)res[i].y, 0), new Vector3((float)res[i + 1].x, (float)res[i + 1].y, 0), Color.blue, 10);
+                }
+                Debug.DrawLine(new Vector3((float)res[0].x, (float)res[0].y, 0), new Vector3((float)res[^1].x, (float)res[^1].y, 0), Color.blue, 10);
+            }
+            */
+
+            // Find closest angle point
+            float minAngle = float.MaxValue;
+            Vector2? minPoint = null;
+            foreach (var res in ress)
+            {
+                for (int i = 0; i < res.Count; i++)
+                {
+                    Vector2 point = new Vector2((float)res[i].x, (float)res[i].y);
+                    Vector2 dir = (point - (Vector2)monkeyHand.transform.position).normalized;
 
                     if (Vector2.Angle(aimDir, dir) < minAngle) // Keep item
                     {
                         minAngle = Vector2.Angle(aimDir, dir);
-                        minAttach = item;
-                        minPoint = vec;
+                        minPoint = point;
                     }
                 }
-
-
             }
 
-            return minPoint;
+
+            if (minPoint.HasValue) 
+                return minPoint;
+            else
+                return null;
         }
     }
 
@@ -114,30 +151,51 @@ public class Liane : MonoBehaviour
 
     public void Extend(int dir)
     {
-        lianeDir = direction[dir];
+        Vector3 lianeDir = direction[dir];
 
         Vector3? point = GetAimAssistPoint(lianeDir);
 
-        if (point.HasValue) Attach(null, point.Value);
+        if (point.HasValue)
+        {
+            // Recover liane attachable
+            LianeAttach attach = null;
+
+            Collider[] colls = Physics.OverlapSphere(point.Value, 0.1f);
+            foreach (var coll in colls)
+            {
+                if (coll.TryGetComponent(out LianeAttach lianeAttach))
+                {
+                    attach = lianeAttach;
+                    break;
+                }
+            }
+
+            Attach(attach, point.Value);
+        }
     }
 
     private void Attach(LianeAttach attach, Vector2 attachPoint)
     {
         liane.SetPosition(1, attachPoint);
-        lianePos = attachPoint;
+        _lianePos = attachPoint;
 
         _lianeLength = Vector3.Distance(monkeyHand.transform.position, attachPoint);
 
-        lianeFixed = true;
+        _lianeFixed = true;
+
+        _currentAttach = attach;
+        _currentAttach.OnAttach();
     }
 
     public void Release()
     {
-        lianeFixed = false;
+        _lianeFixed = false;
+        _currentAttach.OnDetach();
+        _currentAttach = null;
     }
 
     public bool isLianeFixed(){
-        return lianeFixed;
+        return _lianeFixed;
     }
 
     public float GetLianeLength()
@@ -161,6 +219,6 @@ public class Liane : MonoBehaviour
     void UpdateLianePos()
     {
         liane.SetPosition(0, monkeyHand.transform.position);
-        if (!lianeFixed) liane.SetPosition(1, monkeyHand.transform.position);
+        if (!_lianeFixed) liane.SetPosition(1, monkeyHand.transform.position);
     }
 }

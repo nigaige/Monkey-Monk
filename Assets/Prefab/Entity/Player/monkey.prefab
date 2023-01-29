@@ -74,7 +74,7 @@ Transform:
   - {fileID: 5368244036304838587}
   - {fileID: 7600208825878370843}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8884808085109925187
 MeshFilter:
@@ -170,7 +170,7 @@ MonoBehaviour:
   lianeHorizontalSpeed: 1
   lianeVerticalSpeed: 2
   lianeMaxAngle: 70
-  maxLianeLength: 10
+  maxLianeLength: 8
 --- !u!54 &1152359394223405359
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -622,7 +622,7 @@ MonoBehaviour:
   platformMask:
     serializedVersion: 2
     m_Bits: 320
-  maxLength: 10
+  maxLength: 8
 --- !u!1 &4276516316550841185
 GameObject:
   m_ObjectHideFlags: 0

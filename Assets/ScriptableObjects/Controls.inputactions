@@ -644,7 +644,7 @@
                     "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
                     "action": "Navigate",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -655,7 +655,7 @@
                     "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
                     "action": "Navigate",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -666,7 +666,7 @@
                     "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
                     "action": "Navigate",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -677,7 +677,7 @@
                     "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
                     "action": "Navigate",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -688,7 +688,7 @@
                     "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
                     "action": "Navigate",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -699,7 +699,7 @@
                     "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
                     "action": "Navigate",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -710,7 +710,7 @@
                     "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
                     "action": "Navigate",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -721,7 +721,7 @@
                     "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
                     "action": "Navigate",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -732,7 +732,7 @@
                     "path": "*/{Submit}",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR;KeyboardMouse;Controller",
+                    "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR;KeyboardMouse;Controller;KeyboardPreset1;KeyboardPreset2",
                     "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -743,7 +743,7 @@
                     "path": "*/{Cancel}",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR;KeyboardMouse;Controller",
+                    "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR;KeyboardMouse;Controller;KeyboardPreset1;KeyboardPreset2",
                     "action": "Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -754,7 +754,7 @@
                     "path": "<Mouse>/position",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
                     "action": "Point",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -765,7 +765,7 @@
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
                     "action": "Click",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -776,7 +776,7 @@
                     "path": "<Mouse>/scroll",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset2;KeyboardPreset1",
                     "action": "ScrollWheel",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -787,7 +787,7 @@
                     "path": "<Mouse>/middleButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset2;KeyboardPreset1",
                     "action": "MiddleClick",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -798,7 +798,7 @@
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;KeyboardMouse",
+                    "groups": "Keyboard&Mouse;KeyboardMouse;KeyboardPreset2;KeyboardPreset1",
                     "action": "RightClick",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -809,7 +809,7 @@
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
-                    "groups": "KeyboardMouse",
+                    "groups": "KeyboardMouse;KeyboardPreset2;KeyboardPreset1",
                     "action": "Pause",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -853,6 +853,11 @@
                     "devicePath": "<Keyboard>",
                     "isOptional": false,
                     "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": true,
+                    "isOR": false
                 }
             ]
         },
@@ -863,6 +868,11 @@
                 {
                     "devicePath": "<Keyboard>",
                     "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": true,
                     "isOR": false
                 }
             ]
