@@ -52,7 +52,7 @@ public class CameraMovement : MonoBehaviour
             targetPosition.y += (y_offset + maxOffset.y);
         }
 
-        if(_currentZone!= null)
+        if(_currentZone != null)
         {
             // Clamp target by zone limit
             Vector2 camB = GetCameraViewBounds(Mathf.Abs(target.transform.position.z - targetPosition.z)) / 2.0f;
@@ -68,6 +68,8 @@ public class CameraMovement : MonoBehaviour
 
     private void SearchNewCamZone()
     {
+        if (zonesManager == null) return;
+
         CameraZone newCam = zonesManager.FindCurrentZone(target);
         if (newCam != null) _currentZone = newCam;
     }
