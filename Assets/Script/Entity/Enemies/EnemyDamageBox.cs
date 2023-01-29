@@ -1,3 +1,4 @@
+using MonkeyMonk.Player;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,7 +22,7 @@ namespace MonkeyMonk.Enemies
 
             for (int i = 0; i < n; i++)
             {
-                if (_collisions[i].TryGetComponent(out TEST_PlayerMovement player)) player.Damage(1);
+                if (_collisions[i].TryGetComponent(out Player.Player player)) player.Damage(1);
             }
         }
 

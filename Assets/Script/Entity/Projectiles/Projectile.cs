@@ -1,4 +1,5 @@
 using MonkeyMonk.Enemies;
+using MonkeyMonk.Player;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,7 +30,7 @@ public abstract class Projectile : Grabbable
 
         if (!_isPlayerProj)
         {
-            if(other.tag == "Player" && other.TryGetComponent(out TEST_PlayerMovement player))
+            if (other.tag == "Player" && other.TryGetComponent(out Player player))
             {
                 player.Damage(1);
                 Destroy(gameObject);

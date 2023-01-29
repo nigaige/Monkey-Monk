@@ -1,18 +1,14 @@
 using UnityEngine;
 
-public class CheckpointManager : ATriggerable
+public class Checkpoint : ATriggerable
 {
-
-    [SerializeField] private GameManager gameManager;
-
-    // Start is called before the first frame update
     void Start()
     {
         IsActive = false;
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (IsActive == false)
+        if (IsActive == false && other.tag == "Player")
         {
             ActivateTrigger(true);
         }
@@ -29,7 +25,7 @@ public class CheckpointManager : ATriggerable
 
     public override void TriggerAction()
     {
-        gameManager.SetRespawnPoint(gameObject.transform.position);
+        GameManager.Instance.SetRespawnPoint(gameObject.transform.position);
         var checkpointRanderer = gameObject.transform.GetChild(0).gameObject.GetComponent<Renderer>();
         checkpointRanderer.material.SetColor("_Color", Color.green);
     }

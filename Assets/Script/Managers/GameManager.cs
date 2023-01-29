@@ -4,31 +4,29 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+
     private Vector3 _respawnPoint;
 
     [SerializeField] GameObject monkey;
 
-    // Start is called before the first frame update
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     void Start()
     {
-        _respawnPoint = new Vector3(-4.83f, -3.2f, 0f);
+        _respawnPoint = monkey.transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        IsFallingToDeath();
+        
     }
 
-    private void IsFallingToDeath()
-    {
-        if (monkey.gameObject.transform.position.y < -4)
-        {
-            RespawnMonkey();
-        }
-    }
-
-    private void RespawnMonkey()
+    public void RespawnMonkey()
     {
         monkey.gameObject.transform.position = _respawnPoint;
         monkey.GetComponent<Rigidbody>().velocity = new Vector3(0,0,0);
