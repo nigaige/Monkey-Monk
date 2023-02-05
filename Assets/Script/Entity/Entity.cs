@@ -17,12 +17,15 @@ public abstract class Entity : MonoBehaviour
 
     [SerializeField] private float invulnerabilityDuration;
 
+    private Rigidbody _rb;
+
     private bool _invulnerable;
 
 
     protected virtual void Awake()
     {
         HealthPoints = maxHeathPoint;
+        _rb = GetComponent<Rigidbody>();
     }
 
     private void OnEnable()
@@ -30,9 +33,9 @@ public abstract class Entity : MonoBehaviour
         _invulnerable = false;
     }
 
-    public void Damage(int damage)
+    public bool Damage(int damage)
     {
-        if (_invulnerable) return;
+        if (_invulnerable) return false;
 
         if (HealthPoints - damage > 0)
         {
@@ -49,6 +52,14 @@ public abstract class Entity : MonoBehaviour
             OnDamage();
             OnDeath();
         }
+
+        return true;
+    }
+
+    public void DamageWithKnockback(int damage, Vector2 dir, float force)
+    {
+        if (Damage(damage)) 
+            _rb.velocity = dir.normalized * force;
     }
 
     public void DamageWithoutInvulnerability(int damage)

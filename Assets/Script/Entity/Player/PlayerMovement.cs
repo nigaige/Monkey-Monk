@@ -22,6 +22,10 @@ namespace MonkeyMonk.Player
         [SerializeField] private float maxFallVelocity = 20f;
         [SerializeField] private float airHorizontalAcceleration = 1f;
 
+        [Header("Hang Movement")]
+        [SerializeField] private float hangSpeed = 20f;
+        [SerializeField] private LayerMask hangMask;
+
         [Header("Jump")]
         [SerializeField] private float fallMultiplier;
         [SerializeField] private float lowJumpMultiplier;
@@ -50,15 +54,18 @@ namespace MonkeyMonk.Player
         private Vector2 _movementInput;
         private Vector2 _clampedMovementInput;
         private bool _jumpInput;
+        private bool _hangInput;
 
-        
+
+
         private bool _isOnGround = false;
         private bool _isOnSolidGround;
         private bool _isTouchingWall = false;
 
 
-        public bool JumpInput { get => _jumpInput; }
         public Vector2 ClampedMovementInput { get => _clampedMovementInput; }
+        public bool JumpInput { get => _jumpInput; }
+        public bool HangInput { get => _hangInput; }
 
         public bool IsOnGround { get => _isOnGround; }
         public bool IsOnSolidGround { get => _isOnSolidGround; }
@@ -163,6 +170,41 @@ namespace MonkeyMonk.Player
             float dist2 = CastARay(BottomRay, Vector3.right * Mathf.Sign(_clampedMovementInput.x), halfRayLength * 2f, groundMask);
 
             _isTouchingWall = (dist1 > 0) || (dist2 > 0);
+        }
+
+        public bool HangCheck()
+        {
+            if (!_hangInput) return false;
+
+            return TopHangCheck();
+        }
+
+        public bool TopHangCheck()
+        {
+            if(_rb.velocity.y < 0) return false;
+
+            Vector3 RayStart1;
+            Vector3 RayStart2;
+
+            float rayDist = 0.1f;
+
+            RayStart1 = new Vector3(
+                _collider.bounds.center.x - (_collider.bounds.extents.x - 0.01f),
+                _collider.bounds.center.y + _collider.bounds.extents.y - rayDist,
+                _collider.bounds.center.z
+                );
+            RayStart2 = new Vector3(
+                _collider.bounds.center.x + (_collider.bounds.extents.x - 0.01f),
+                _collider.bounds.center.y + _collider.bounds.extents.y - rayDist,
+                _collider.bounds.center.z
+                );
+
+            RaycastHit hit1, hit2;
+
+            bool hasHit1 = Physics.Raycast(RayStart1, Vector3.up, out hit1, rayDist * 2f, hangMask);
+            bool hasHit2 = Physics.Raycast(RayStart2, Vector3.up, out hit2, rayDist * 2f, hangMask);
+
+            return hasHit1 || hasHit2;
         }
 
         #endregion
@@ -375,11 +417,18 @@ namespace MonkeyMonk.Player
             _currentState?.OnLianeInput();
         }
 
+        public void OnHang(InputAction.CallbackContext callback)
+        {
+            if(callback.started || callback.canceled) _hangInput = callback.ReadValue<float>() > 0f;
+        }
+
         #endregion
 
 
         // =============================== State machine
         #region StateMachine
+
+        public PlayerMovementType CurrentMovementType { get => _currentStateType; }
 
         private Dictionary<PlayerMovementType, PlayerState> _states = new();
 
@@ -400,6 +449,7 @@ namespace MonkeyMonk.Player
             _states[PlayerMovementType.Ground] = new PlayerGroundMovement(this, _rb, _collider, horizontalAcceleration, maxHorizontalVelocity, groundMask);
             _states[PlayerMovementType.Air] = new PlayerAirMovement(this, _rb, airHorizontalAcceleration, maxHorizontalVelocity, gravityMultiplier, fallMultiplier, lowJumpMultiplier, maxFallVelocity);
             _states[PlayerMovementType.Liane] = new PlayerLianeMovement(this, _rb, liane, gravityMultiplier, lianeHorizontalSpeed, lianeSpeed, lianeMaxAngle, lianeVerticalSpeed);
+            _states[PlayerMovementType.Hang] = new PlayerHangMovement(this, _rb, _collider, hangMask, hangSpeed);
 
             SwitchState(_currentStateType);
 
@@ -460,6 +510,7 @@ namespace MonkeyMonk.Player
         None,
         Ground,
         Air,
-        Liane
+        Liane,
+        Hang
     }
 }

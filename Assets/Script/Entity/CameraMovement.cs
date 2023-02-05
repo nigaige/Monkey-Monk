@@ -19,6 +19,8 @@ public class CameraMovement : MonoBehaviour
 
     void LateUpdate()
     {
+        if (target == null) return;
+
         if(_currentZone == null || !_currentZone.IsPointInsideZone(target.transform.position))
         {
             SearchNewCamZone();

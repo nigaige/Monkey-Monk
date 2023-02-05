@@ -1,3 +1,5 @@
+
+using MonkeyMonk.Player;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +11,7 @@ public class HealthBar : MonoBehaviour
     private void Start()
     {
         // Temp
-        LinkHealthBar(FindObjectOfType<TEST_PlayerMovement>());
+        LinkHealthBar(FindObjectOfType<Player>());
     }
 
     public void LinkHealthBar(Entity entity)

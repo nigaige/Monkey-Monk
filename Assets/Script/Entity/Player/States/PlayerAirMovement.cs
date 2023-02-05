@@ -33,6 +33,12 @@ namespace MonkeyMonk.Player
             _movement.GroundCheck();
             _movement.WallCheck();
 
+            if (_movement.HangCheck())
+            {
+                _movement.HotFixedUpdateSwitchState(PlayerMovementType.Hang);
+                return;
+            }
+
             if (_movement.IsOnGround)
             {
                 _movement.HotFixedUpdateSwitchState(PlayerMovementType.Ground);

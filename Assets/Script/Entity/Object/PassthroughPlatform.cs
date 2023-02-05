@@ -12,12 +12,13 @@ public class PassthroughPlatform : MonoBehaviour
 
     private void Awake()
     {
-        _player = FindObjectOfType<Player>();
+        _player = FindObjectOfType<Player>(); // TODO : Opti this
     }
 
     private void FixedUpdate()
     {
         if (_ignoreCoroutine != null) return;
+        if (_player == null) return;
 
         if (_player.GetComponent<Collider>().bounds.min.y < GetComponent<Collider>().bounds.max.y - 0.1f)
         {
@@ -36,9 +37,9 @@ public class PassthroughPlatform : MonoBehaviour
 
     private IEnumerator IgnorePlayerForSecondsCoroutine(float seconds)
     {
-        Physics.IgnoreCollision(_player.GetComponent<Collider>(), GetComponent<Collider>(), true);
+        if (_player != null) Physics.IgnoreCollision(_player.GetComponent<Collider>(), GetComponent<Collider>(), true);
         yield return new WaitForSeconds(seconds);
-        Physics.IgnoreCollision(_player.GetComponent<Collider>(), GetComponent<Collider>(), false);
+        if (_player != null) Physics.IgnoreCollision(_player.GetComponent<Collider>(), GetComponent<Collider>(), false);
         _ignoreCoroutine = null;
     }
 

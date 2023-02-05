@@ -22,7 +22,10 @@ namespace MonkeyMonk.Enemies
 
             for (int i = 0; i < n; i++)
             {
-                if (_collisions[i].TryGetComponent(out Player.Player player)) player.Damage(1);
+                if (_collisions[i].TryGetComponent(out Player.Player player))
+                {
+                    player.DamageWithKnockback(1, new Vector2(Mathf.Sign(player.transform.position.x - enemy.transform.position.x), 1), 10);
+                }
             }
         }
 

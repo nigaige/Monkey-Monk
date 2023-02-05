@@ -140,6 +140,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHeathPoint: 10
   invulnerabilityDuration: 0.5
+  playerMovement: {fileID: 7581919209272979861}
 --- !u!114 &7581919209272979861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,6 +161,10 @@ MonoBehaviour:
   horizontalAcceleration: 65
   maxFallVelocity: 20
   airHorizontalAcceleration: 25
+  hangSpeed: 20
+  hangMask:
+    serializedVersion: 2
+    m_Bits: 2147483647
   fallMultiplier: 2
   lowJumpMultiplier: 4
   jumpForce: 8
@@ -216,7 +221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0611882d8aeabf41b404ec6c4e61f26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1723195303924927862}
+  player: {fileID: 599859582340476481}
   reboundForce: 8
 --- !u!114 &3132293133421404436
 MonoBehaviour:
@@ -360,6 +365,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 4fcaa6a3-ebc8-48fa-9e97-b3fbb780b80e
     m_ActionName: Player/Liane
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7581919209272979861}
+        m_TargetAssemblyTypeName: MonkeyMonk.Player.PlayerMovement, Assembly-CSharp
+        m_MethodName: OnHang
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: fe9ea85a-c790-4ab5-ba6d-d21f28964b5d
+    m_ActionName: Player/Hang[/Mouse/rightButton]
 --- !u!82 &304948565
 AudioSource:
   m_ObjectHideFlags: 0

@@ -58,6 +58,12 @@ namespace MonkeyMonk.Player
         {
             base.FixedUpdate();
 
+            if (_movement.HangCheck())
+            {
+                _movement.HotFixedUpdateSwitchState(PlayerMovementType.Hang);
+                return;
+            }
+
             // Calculate angle
             _angleAcceleration = Physics.gravity.y * (_gravityMultiplier - 1) * Mathf.Sin(_angle) /*/ liane.GetLianeLength()*/;
             //Debug.DrawRay(transform.position, Vector3.Cross(-liane.GetLianeDir().normalized, -Vector3.forward) * _angleAcceleration, Color.red);
