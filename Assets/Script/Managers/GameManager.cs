@@ -1,3 +1,4 @@
+using MonkeyMonk.Player;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,9 +7,12 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    public Player Player { get => monkey; }
+
+    [SerializeField] private Player monkey;
+
     private Vector3 _respawnPoint;
 
-    [SerializeField] GameObject monkey;
 
     private void Awake()
     {
@@ -18,12 +22,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         _respawnPoint = monkey.transform.position;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void RespawnMonkey()

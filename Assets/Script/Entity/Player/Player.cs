@@ -20,7 +20,6 @@ namespace MonkeyMonk.Player
         protected override void OnDeath()
         {
             base.OnDeath();
-            SceneMaster.Instance.LoadHubWorld();
         }
 
     }
