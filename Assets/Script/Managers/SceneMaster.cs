@@ -8,7 +8,10 @@ public class SceneMaster : MonoBehaviour
 {
     public static SceneMaster Instance { get; private set; }
 
+    public LevelSO CurrentLevel { get; private set; } 
+
     [SerializeField] private LoadingScreen loadingScreen;
+
 
     private void Awake()
     {
@@ -23,6 +26,7 @@ public class SceneMaster : MonoBehaviour
 
     public void LoadHubWorld()
     {
+        CurrentLevel = null;
         StartCoroutine(LoadHubWorldCoroutine());
     }
 
@@ -49,6 +53,7 @@ public class SceneMaster : MonoBehaviour
 
     public void LoadLevel(LevelSO level)
     {
+        CurrentLevel = level;
         StartCoroutine(LoadLevelCoroutine(level));
     }
 

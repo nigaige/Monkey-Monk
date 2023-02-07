@@ -773,7 +773,7 @@ MonoBehaviour:
   southPath: {fileID: 0}
   westPath: {fileID: 549707340}
   eastPath: {fileID: 693697837}
-  level: {fileID: 0}
+  level: {fileID: 11400000, guid: 57d32b3f99d6e5e4abe0066060d9a144, type: 2}
 --- !u!65 &716997382
 BoxCollider:
   m_ObjectHideFlags: 0
