@@ -18,4 +18,15 @@ public class DeathZone : MonoBehaviour
             }
         }
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (TryGetComponent(out BoxCollider collider))
+        {
+            Gizmos.color = new Color(255, 0, 0, 0.5f);
+            Gizmos.DrawCube(transform.position + collider.center, new Vector3(collider.size.x * transform.lossyScale.x, collider.size.y * transform.lossyScale.y, collider.size.z * transform.lossyScale.z));
+        }
+    }
+#endif
 }

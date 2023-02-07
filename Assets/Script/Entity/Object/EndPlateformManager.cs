@@ -7,10 +7,13 @@ public class EndPlateformManager : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        // Change the end totem visual
-        var totemRanderer = gameObject.transform.GetChild(2).gameObject.GetComponent<Renderer>();
-        totemRanderer.material.SetColor("_Color", Color.green);
+        if (other.tag == "Player")
+        {
+            // Change the end totem visual
+            var totemRanderer = gameObject.transform.GetChild(2).gameObject.GetComponent<Renderer>();
+            totemRanderer.material.SetColor("_Color", Color.green);
 
-        SceneMaster.Instance.LoadHubWorld();
+            SceneMaster.Instance.LoadHubWorld();
+        }
     }
 }
