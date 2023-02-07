@@ -1,3 +1,4 @@
+using MonkeyMonk.Enemies;
 using MonkeyMonk.Player;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,6 +17,10 @@ public class DeathZone : MonoBehaviour
             {
                 GameManager.Instance.RespawnMonkey();
             }
+        }
+        else if (other.TryGetComponent(out Enemy entity))
+        {
+            entity.DamageWithoutInvulnerability(999);
         }
     }
 

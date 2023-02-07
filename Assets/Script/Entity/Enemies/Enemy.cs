@@ -12,6 +12,7 @@ namespace MonkeyMonk.Enemies
         [SerializeField] private EnemyStateMachine enemyStateMachine;
 
         [SerializeField] private bool isJumpable = false;
+        [SerializeField] private bool isStartDirectionRight;
 
         public EnemyStateMachine StateMachine { get => enemyStateMachine; }
         public bool IsKnocked { get => _isKnockedLink.Value; private set => _isKnockedLink.Value = value; }
@@ -32,6 +33,8 @@ namespace MonkeyMonk.Enemies
         protected override void Awake()
         {
             base.Awake();
+
+            ChangeDirection(isStartDirectionRight ? 1 : -1);
 
             enemyStateMachine.Initialize(this);
 
