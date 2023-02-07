@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: 5774455541536500961}
   - component: {fileID: 1928212731694566428}
   - component: {fileID: 5698490467051879946}
+  - component: {fileID: 2190715417431777677}
   m_Layer: 8
   m_Name: ShootingCurveEnemy
   m_TagString: Enemy
@@ -167,6 +168,9 @@ MonoBehaviour:
   isJumpable: 1
   _isKnockedLink:
     variableName: IsKnocked
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &2884010162940389635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,6 +230,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2190715417431777677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3309497429497769367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0deee2f9baa3b2f47a3f2b74005d0a39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  halfExtends: {x: 0, y: 0}
 --- !u!1 &7478683940328266189
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,7 +290,6 @@ MonoBehaviour:
   projectile: {fileID: 7878328018461680629, guid: aaace313011159d418aa6f5b323ef0c3, type: 3}
   beforeShootDuration: 1
   cooldown: 1
-  speed: 10
 --- !u!1 &8948234734056043185
 GameObject:
   m_ObjectHideFlags: 0

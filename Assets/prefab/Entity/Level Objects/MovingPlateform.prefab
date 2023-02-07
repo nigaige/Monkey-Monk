@@ -110,5 +110,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98e24ac80fcf37647ae613dc6db952c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  risingHeight: 0
-  risingTime: 0
+  splineContainer: {fileID: 0}
+  MovingSpeed: 0

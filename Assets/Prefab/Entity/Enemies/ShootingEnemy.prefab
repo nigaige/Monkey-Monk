@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7018562572884819736}
   - component: {fileID: 3136315696447578085}
   - component: {fileID: 9102081758545096179}
+  - component: {fileID: 4952397669004944755}
   m_Layer: 8
   m_Name: ShootingEnemy
   m_TagString: Enemy
@@ -108,6 +109,9 @@ MonoBehaviour:
   isJumpable: 1
   _isKnockedLink:
     variableName: IsKnocked
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &1820019637486271226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,6 +171,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4952397669004944755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2065392604693888622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0deee2f9baa3b2f47a3f2b74005d0a39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  halfExtends: {x: 0, y: 0}
 --- !u!1 &4265335748697337480
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,7 +336,6 @@ MonoBehaviour:
   projectile: {fileID: 7878328018461680629, guid: fa17ecf367bd8a041be488bc27f5e40c, type: 3}
   beforeShootDuration: 1
   cooldown: 1
-  speed: 6
 --- !u!1001 &4959400692433741463
 PrefabInstance:
   m_ObjectHideFlags: 0
