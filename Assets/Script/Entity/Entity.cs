@@ -10,6 +10,7 @@ public abstract class Entity : MonoBehaviour
     public bool IsDead { get => HealthPoints <= 0; }
     
     public event Action OnDamageEvent;
+    public event Action OnHealthChangeEvent;
     public event Action OnDeathEvent;
     
     [Header("Entity Stats")]
@@ -25,10 +26,16 @@ public abstract class Entity : MonoBehaviour
     protected virtual void Awake()
     {
         HealthPoints = maxHeathPoint;
+        OnHealthChangeEvent?.Invoke();
         _rb = GetComponent<Rigidbody>();
     }
 
     private void OnEnable()
+    {
+        _invulnerable = false;
+    }
+
+    private void OnDisable()
     {
         _invulnerable = false;
     }
@@ -88,15 +95,18 @@ public abstract class Entity : MonoBehaviour
 
     protected virtual void OnDamage()
     {
+        OnHealthChangeEvent?.Invoke();
         OnDamageEvent?.Invoke();
     }
 
     protected virtual void OnDeath()
     {
         OnDeathEvent?.Invoke();
-        Destroy(gameObject);
     }
 
-
-
+    public virtual void Reset()
+    {
+        HealthPoints = MaxHeathPoint;
+        OnHealthChangeEvent?.Invoke();
+    }
 }

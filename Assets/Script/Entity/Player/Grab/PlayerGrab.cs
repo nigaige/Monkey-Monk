@@ -1,3 +1,4 @@
+using MonkeyMonk.Player;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class PlayerGrab : MonoBehaviour
     [SerializeField] private Vector3 catchBoxBoundsExtents;
 
     private Rigidbody _rb;
+    private PlayerMovement _movement;
 
     private Collider[] _overlappingColliders = new Collider[6];
     private GameObject _grabbedObj;
@@ -23,14 +25,7 @@ public class PlayerGrab : MonoBehaviour
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
-    }
-
-    private void Update()
-    {
-        /*
-        if (_rb.velocity.x > 0) catchBoxPosition.localPosition = new Vector3(1, 0, 0);
-        if (_rb.velocity.x < 0) catchBoxPosition.localPosition = new Vector3(-1, 0, 0);
-        */
+        _movement = GetComponent<PlayerMovement>();
     }
 
     public void OnGrab(InputAction.CallbackContext obj)
@@ -91,7 +86,7 @@ public class PlayerGrab : MonoBehaviour
         //launching
         else
         {
-            Vector2 shotDir = ((Vector3)_pointerPos - UnityEngine.Camera.main.WorldToScreenPoint(transform.position)).normalized;
+            Vector2 shotDir = _movement.LastLookingDirection;
             _grabbedObj.transform.SetParent(null);
             _grabbedObj.GetComponent<Grabbable>().OnUnGrabbed(this);
 

@@ -11,7 +11,7 @@ public class DeathZone : MonoBehaviour
         if (other.tag == "Player")
         {
             Player player = other.GetComponent<Player>();
-            player.DamageWithoutInvulnerability(1);
+            player.DamageWithoutInvulnerability(999);
             
             if (!player.IsDead)
             {

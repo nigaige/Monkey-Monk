@@ -27,7 +27,17 @@ namespace MonkeyMonk.Enemies
             _spawnEnemy.OnDestroyEvent += RespawnEvent;
         }
 
+        public void Reset()
+        {
+            if (_spawnEnemy != null)
+            {
+                _spawnEnemy.OnDestroyEvent -= RespawnEvent;
+                Destroy(_spawnEnemy.gameObject);
+                _spawnEnemy = null;
+            }
 
+            RespawnEnemy();
+        }
 
         private void OnDestroy()
         {

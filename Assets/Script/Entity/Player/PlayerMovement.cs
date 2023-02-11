@@ -62,7 +62,7 @@ namespace MonkeyMonk.Player
         private bool _isOnSolidGround;
         private bool _isTouchingWall = false;
 
-
+        public Vector2 LastLookingDirection { get; private set; }
         public Vector2 ClampedMovementInput { get => _clampedMovementInput; }
         public bool JumpInput { get => _jumpInput; }
         public bool HangInput { get => _hangInput; }
@@ -399,6 +399,10 @@ namespace MonkeyMonk.Player
             {
                 _clampedMovementInput = new Vector2(1, 0);
             }
+
+            if (_clampedMovementInput == new Vector2(0, 1)) LastLookingDirection = new Vector2(0, 1);
+            else if(_clampedMovementInput.x < 0) LastLookingDirection = new Vector2(-1, 1).normalized;
+            else if (_clampedMovementInput.x > 0) LastLookingDirection = new Vector2(1, 1).normalized;
         }
 
         public void OnJump(InputAction.CallbackContext callback)
@@ -424,6 +428,13 @@ namespace MonkeyMonk.Player
 
         #endregion
 
+        public void Reset()
+        {
+            _movementInput = Vector2.zero;
+            _clampedMovementInput = Vector2.zero;
+            _jumpInput = false;
+            _hangInput = false;
+        }
 
         // =============================== State machine
         #region StateMachine
@@ -437,6 +448,8 @@ namespace MonkeyMonk.Player
 
         private void Awake()
         {
+            LastLookingDirection = new Vector2(1, 1).normalized;
+
             _rb = GetComponent<Rigidbody>();
             _collider = GetComponent<Collider>();
 

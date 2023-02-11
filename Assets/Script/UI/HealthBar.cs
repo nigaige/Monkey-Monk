@@ -10,13 +10,12 @@ public class HealthBar : MonoBehaviour
 
     private void Start()
     {
-        // Temp
-        LinkHealthBar(FindObjectOfType<Player>());
+        LinkHealthBar(GameManager.Instance.Player);
     }
 
     public void LinkHealthBar(Entity entity)
     {
-        if(_entity != null) _entity.OnDamageEvent -= UpdateBar;
+        if(_entity != null) _entity.OnHealthChangeEvent -= UpdateBar;
 
         _entity = entity;
 
@@ -35,7 +34,7 @@ public class HealthBar : MonoBehaviour
             Instantiate(transform.GetChild(0), transform);
         }
 
-        _entity.OnDamageEvent += UpdateBar;
+        _entity.OnHealthChangeEvent += UpdateBar;
     }
 
     public void UpdateBar()

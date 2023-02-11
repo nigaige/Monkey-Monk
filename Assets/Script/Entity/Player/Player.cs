@@ -19,7 +19,15 @@ namespace MonkeyMonk.Player
 
         protected override void OnDeath()
         {
+            gameObject.SetActive(false);
             base.OnDeath();
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
+            playerMovement.Reset();
+            playerMovement.ReevaluateMovementType();
         }
 
     }

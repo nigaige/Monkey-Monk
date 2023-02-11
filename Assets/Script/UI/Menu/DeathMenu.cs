@@ -1,8 +1,6 @@
 using MonkeyMonk.Inputs;
-using MonkeyMonk.Player;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class DeathMenu : Menu
@@ -10,7 +8,7 @@ public class DeathMenu : Menu
     public void Awake()
     {
         CloseMenu();
-        GameManager.Instance.Player.OnDeathEvent += OpenMenu;
+        GameManager.Instance.OnLoseEvent += OpenMenu;
     }
 
     public override void OpenMenu()
@@ -29,6 +27,7 @@ public class DeathMenu : Menu
 
     public void RetryLevel()
     {
+        GameMaster.Instance.GiveLives();
         SceneMaster.Instance.LoadLevel(SceneMaster.Instance.CurrentLevel);
     }
 }

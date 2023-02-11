@@ -65,18 +65,12 @@ namespace MonkeyMonk.Enemies
                     || Physics.Raycast(new Ray(transform.position + new Vector3(_collider.bounds.extents.x, -_collider.bounds.extents.y + 0.05f), Vector3.down), raySize, groundMask);
         }
 
-
-
-        float CastARay(Vector3 pos, Vector3 dir, float length, LayerMask mask)
+        protected override void OnDeath()
         {
-            RaycastHit Hit;
-
-            Debug.DrawRay(pos, dir * length);
-            bool hitPlateform = Physics.Raycast(pos, transform.TransformDirection(dir), out Hit, length, mask);
-
-            if (hitPlateform) return Hit.distance;
-            return -1;
+            base.OnDeath();
+            Destroy(gameObject);
         }
+
         private void OnDestroy()
         {
             OnDestroyEvent?.Invoke();
