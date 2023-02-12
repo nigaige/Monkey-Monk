@@ -22,4 +22,15 @@ public class CameraZonesManager : MonoBehaviour
         return null;
     }
 
+    public List<CameraZone> FindCurrentZones(Transform target)
+    {
+        List<CameraZone> insideZones = new();
+        foreach (var zone in zones)
+        {
+            if (zone.IsPointInsideZone(target.transform.position)) insideZones.Add(zone);
+        }
+
+        return insideZones;
+    }
+
 }
