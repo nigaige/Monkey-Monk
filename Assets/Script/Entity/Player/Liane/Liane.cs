@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Clipper2Lib;
+using Clipper2Lib;/*
 using static UnityEditor.Progress;
 using UnityEditor.Experimental.GraphView;
-
+*/
 public class Liane : MonoBehaviour
 {
     public Vector3 LianePosition { get => _lianePos; }
