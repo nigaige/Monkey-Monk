@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -319,6 +319,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall
       objectReference: {fileID: 0}
+    - target: {fileID: 1187721222394722066, guid: 8dfda13da62dcb643a1a82dc0d15c2c6, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
     - target: {fileID: 8160750805778118345, guid: 8dfda13da62dcb643a1a82dc0d15c2c6, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -736,6 +740,10 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 477539950342490091, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
     - target: {fileID: 1723195303924927862, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_Name
       value: monkey
@@ -804,6 +812,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall2
       objectReference: {fileID: 0}
+    - target: {fileID: 1187721222394722066, guid: 8dfda13da62dcb643a1a82dc0d15c2c6, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
     - target: {fileID: 8160750805778118345, guid: 8dfda13da62dcb643a1a82dc0d15c2c6, type: 3}
       propertyPath: m_RootOrder
       value: 8
@@ -1339,6 +1351,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   monkey: {fileID: 304948558}
+  lifeText: {fileID: 0}
 --- !u!4 &1351557278
 Transform:
   m_ObjectHideFlags: 0
@@ -1973,8 +1986,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eed0b88de250ea043bc805b58f1e89d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 304948558}
-  MaxOffset: {x: 0, y: 0, z: 0}
+  zonesManager: {fileID: 0}
+  target: {fileID: 0}
+  maxOffset: {x: 0, y: 0, z: 0}
+  camSmooth: 0
 --- !u!1 &2006650742
 GameObject:
   m_ObjectHideFlags: 0

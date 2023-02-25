@@ -74,7 +74,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8044853939573728470, guid: 9b52b3a559875a7449b98c05bb4cee58, type: 3}
       propertyPath: m_Name
-      value: plateform (6)
+      value: plateform_paththrought
       objectReference: {fileID: 0}
     - target: {fileID: 8044853939573728470, guid: 9b52b3a559875a7449b98c05bb4cee58, type: 3}
       propertyPath: m_Layer
