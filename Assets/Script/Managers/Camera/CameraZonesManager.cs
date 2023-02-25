@@ -27,6 +27,7 @@ public class CameraZonesManager : MonoBehaviour
         List<CameraZone> insideZones = new();
         foreach (var zone in zones)
         {
+            if (!zone.Activated) continue;
             if (zone.IsPointInsideZone(target.transform.position)) insideZones.Add(zone);
         }
 

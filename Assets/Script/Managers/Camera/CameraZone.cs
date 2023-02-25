@@ -1,12 +1,11 @@
-using Clipper2Lib;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraZone : MonoBehaviour
 {
     [SerializeField] private Vector2 halfzoneSize;
     public Vector2 HalfZoneSize { get => halfzoneSize; }
+
+    public bool Activated { get; private set; } = true;
 
     [Min(0)]
     [SerializeField] private float newCameraZ = 15;
@@ -20,6 +19,10 @@ public class CameraZone : MonoBehaviour
             && point.y <= transform.position.y + halfzoneSize.y;
     }
 
+    public void Deactivate()
+    {
+        Activated = false;
+    }
 
     private void OnDrawGizmosSelected()
     {
