@@ -1,10 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Clipper2Lib;/*
-using static UnityEditor.Progress;
-using UnityEditor.Experimental.GraphView;
-*/
+using Clipper2Lib;
+
 public class Liane : MonoBehaviour
 {
     public Vector3 LianePosition { get => _lianePos; }
@@ -29,10 +27,12 @@ public class Liane : MonoBehaviour
     [SerializeField] private float maxLength = 10;
 
     private bool _lianeFixed = false;
-    private Vector3 _lianePos = new Vector3(0, 0, 0);
 
+    private Vector3 _lianePos = new Vector3(0, 0, 0);
     private float _lianeLength;
+
     private LianeAttach _currentAttach;
+    private Vector2 _attachOffset;
 
 
     private Vector3? GetAimAssistPoint(Vector3 aimDir)
@@ -176,6 +176,7 @@ public class Liane : MonoBehaviour
 
     private void Attach(LianeAttach attach, Vector2 attachPoint)
     {
+        if (!attach) return;
         liane.SetPosition(1, attachPoint);
         _lianePos = attachPoint;
 
@@ -184,6 +185,7 @@ public class Liane : MonoBehaviour
         _lianeFixed = true;
 
         _currentAttach = attach;
+        _attachOffset = (Vector2)attach.transform.position - attachPoint;
         _currentAttach.OnAttach();
     }
 
@@ -220,5 +222,10 @@ public class Liane : MonoBehaviour
     {
         liane.SetPosition(0, monkeyHand.transform.position);
         if (!_lianeFixed) liane.SetPosition(1, monkeyHand.transform.position);
+        else
+        {
+            _lianePos = _currentAttach.transform.position + (Vector3)_attachOffset;
+            liane.SetPosition(1, _currentAttach.transform.position + (Vector3)_attachOffset);
+        }
     }
 }
