@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.1838636, g: 0.2286799, b: 0.30120826, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2632,7 +2632,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!108 &547502774
 Light:
   m_ObjectHideFlags: 0
@@ -3102,7 +3102,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!108 &625747008
 Light:
   m_ObjectHideFlags: 0
@@ -3403,7 +3403,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!108 &654881492
 Light:
   m_ObjectHideFlags: 0
@@ -7235,7 +7235,7 @@ GameObject:
   - component: {fileID: 1364195836}
   - component: {fileID: 1364195835}
   m_Layer: 0
-  m_Name: cameraZones
+  m_Name: CameraZones
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8434,7 +8434,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1655576607}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.8, y: 3.09, z: 0}
+  m_LocalPosition: {x: 64.1, y: 3.09, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8453,7 +8453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 544ff280f70e7fb44b7d3b956c571d0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  halfzoneSize: {x: 33.27, y: 7.7}
+  halfzoneSize: {x: 110.6, y: 29}
   newCameraZ: 10
 --- !u!1 &1683690363
 GameObject:

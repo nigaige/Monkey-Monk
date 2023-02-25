@@ -10,7 +10,7 @@ public class Button : ATriggerable
         IsActive = false;
         var buttonBody = gameObject.transform.GetChild(1).gameObject;
         var buttonRenderer = buttonBody.GetComponent<Renderer>();
-        buttonRenderer.material.SetColor("_Color", Color.red);
+        buttonRenderer.material.SetColor("_BaseColor", Color.red);
     }
 
     private void OnTriggerEnter(Collider other)
