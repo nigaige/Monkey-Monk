@@ -10,7 +10,6 @@ public class CameraMovement : MonoBehaviour
     [SerializeField] private float camSmooth;
 
     private List<CameraZone> _insideZones = new();
-    private CameraZone _currentZone;
     private Vector3 _camVel;
 
     private void Awake()
@@ -52,18 +51,26 @@ public class CameraMovement : MonoBehaviour
             targetPosition.y += (y_offset + maxOffset.y);
         }
 
-        if(_currentZone != null)
+        foreach (var currentZone in _insideZones)
         {
             // Clamp target by zone limit
             Vector2 camB = GetCameraViewBounds(Mathf.Abs(target.transform.position.z - targetPosition.z)) / 2.0f;
 
-            if (_currentZone.HalfZoneSize.x <= camB.x) targetPosition.x = _currentZone.transform.position.x;
-            else targetPosition.x = Mathf.Clamp(targetPosition.x, _currentZone.transform.position.x - _currentZone.HalfZoneSize.x + camB.x, _currentZone.transform.position.x + _currentZone.HalfZoneSize.x - camB.x);
-            
-            if (_currentZone.HalfZoneSize.y <= camB.y) targetPosition.y = _currentZone.transform.position.y;
-            else targetPosition.y = Mathf.Clamp(targetPosition.y, _currentZone.transform.position.y - _currentZone.HalfZoneSize.y + camB.y, _currentZone.transform.position.y + _currentZone.HalfZoneSize.y - camB.y);
+            if (currentZone.HalfZoneSize.x <= camB.x) targetPosition.x = currentZone.transform.position.x;
+            else
+            {
+                if (currentZone.LockRight) targetPosition.x = Mathf.Min(targetPosition.x, currentZone.transform.position.x + (currentZone.HalfZoneSize.x - camB.x));
+                if (currentZone.LockLeft) targetPosition.x = Mathf.Max(targetPosition.x, currentZone.transform.position.x - (currentZone.HalfZoneSize.x - camB.x));
+            }
 
-            targetPosition.z = -_currentZone.NewCameraZ;
+            if (currentZone.HalfZoneSize.y <= camB.y) targetPosition.y = currentZone.transform.position.y;
+            else
+            {
+                if (currentZone.LockUp) targetPosition.y = Mathf.Min(targetPosition.y, currentZone.transform.position.y + (currentZone.HalfZoneSize.y - camB.y));
+                if (currentZone.LockDown) targetPosition.y = Mathf.Max(targetPosition.y, currentZone.transform.position.y - (currentZone.HalfZoneSize.y - camB.y));
+            }
+
+            targetPosition.z = -currentZone.NewCameraZ;
         }
 
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _camVel, camSmooth);
@@ -80,25 +87,15 @@ public class CameraMovement : MonoBehaviour
             if (!_insideZones.Contains(zone))
             {
                 _insideZones.Add(zone);
-                _currentZone = zone;
             }
         }
-
-        bool needSwitch = false;
 
         for (int i = _insideZones.Count - 1; i >= 0; i--)
         {
             if (!newZones.Contains(_insideZones[i]))
             {
-                if (_insideZones[i] == _currentZone) needSwitch = true;
                 _insideZones.RemoveAt(i);
             }
-        }
-
-        if (needSwitch)
-        {
-            if(_insideZones.Count > 0) _currentZone = _insideZones[_insideZones.Count - 1];
-            else _currentZone = null;
         }
     }
 
