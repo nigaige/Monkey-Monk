@@ -32,6 +32,7 @@ namespace MonkeyMonk.Player
 
             _movement.GroundCheck();
             _movement.WallCheck();
+            _movement.CanClimbCheck();
 
             if (_movement.IsOnGround)
             {
@@ -116,6 +117,12 @@ namespace MonkeyMonk.Player
             if (_movement.IsTouchingWall) return;
 
             _movement.TryLaunchLiane();
+        }
+        public override void OnClimbInput()
+        {
+            base.OnClimbInput();
+
+            _movement.TryClimbing();
         }
     }
 }

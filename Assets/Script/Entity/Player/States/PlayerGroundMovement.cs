@@ -27,6 +27,7 @@ namespace MonkeyMonk.Player
 
             _movement.GroundCheck();
             _movement.WallCheck();
+            _movement.CanClimbCheck();
 
             if (!_movement.IsOnGround)
             {
