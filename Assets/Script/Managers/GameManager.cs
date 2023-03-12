@@ -15,7 +15,6 @@ public class GameManager : MonoBehaviour
     public event Action OnLoseEvent;
 
     [SerializeField] private Player monkey;
-    [SerializeField] private TMP_Text lifeText;
 
     private Vector3 _respawnPoint;
 
@@ -23,8 +22,6 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-
-        lifeText.gameObject.SetActive(false);
     }
 
     void Start()
@@ -49,23 +46,18 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator PlayerLifeLoss()
     {
-        yield return LoadingScreen.Instance.FadeIn();
-
-        lifeText.text = "Life left : " + GameMaster.Instance.LifeLeft;
-        lifeText.gameObject.SetActive(true);
+        yield return LoadingScreen.Instance.FadeIn(0.3f, LoadingScreen.TransitionType.Round);
 
         // Show Life
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.3f);
 
-        lifeText.gameObject.SetActive(false);
-        
         foreach (var enemySp in FindObjectsOfType<EnemySpawner>()) // TODO : Opti
         {
             enemySp.Reset();
         }
 
         RespawnMonkey();
-        yield return LoadingScreen.Instance.FadeOut();
+        yield return LoadingScreen.Instance.FadeOut(0.3f, LoadingScreen.TransitionType.Round);
     }
 
     public void RespawnMonkey()

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7665992813244337502}
   - component: {fileID: 3078801113359534077}
   - component: {fileID: 6695095403970920203}
-  - component: {fileID: 7799296280945475122}
+  - component: {fileID: -314748636107831460}
   m_Layer: 8
   m_Name: FlyingEnemy
   m_TagString: Enemy
@@ -106,6 +106,7 @@ MonoBehaviour:
   invulnerabilityDuration: 0
   enemyStateMachine: {fileID: 8408350272955851566}
   isJumpable: 1
+  isStartDirectionRight: 0
   _isKnockedLink:
     variableName: IsKnocked
   groundMask:
@@ -157,7 +158,7 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 120
   m_CollisionDetection: 0
---- !u!114 &7799296280945475122
+--- !u!114 &-314748636107831460
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -166,10 +167,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2065392604693888622}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0deee2f9baa3b2f47a3f2b74005d0a39, type: 3}
+  m_Script: {fileID: 11500000, guid: 66fccd5fbc85ac7459116a1a4c0ecace, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   halfExtends: {x: 0.5, y: 0.5}
+  enemyDamageBox: {fileID: 7665992813244337502}
 --- !u!1 &4265335748697337480
 GameObject:
   m_ObjectHideFlags: 0

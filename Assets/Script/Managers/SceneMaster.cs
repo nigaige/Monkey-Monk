@@ -33,7 +33,7 @@ public class SceneMaster : MonoBehaviour
     public IEnumerator LoadHubWorldCoroutine()
     {
         InputManager.Instance.DisableInput();
-        yield return loadingScreen.FadeIn();
+        yield return loadingScreen.FadeIn(1f);
 
         // Unload
         List<AsyncOperation> asyncOps = UnloadLoadedScenes();
@@ -45,7 +45,7 @@ public class SceneMaster : MonoBehaviour
 
         yield return loadingScreen.DisplayLoading(asyncOps.ToArray());
 
-        yield return loadingScreen.FadeOut();
+        yield return loadingScreen.FadeOut(1f);
         InputManager.Instance.SwitchInputMap(InputMap.Map);
     }
 
@@ -60,7 +60,7 @@ public class SceneMaster : MonoBehaviour
     private IEnumerator LoadLevelCoroutine(LevelSO level)
     {
         InputManager.Instance.DisableInput();
-        yield return loadingScreen.FadeIn();
+        yield return loadingScreen.FadeIn(1f);
 
         // Unload
         List<AsyncOperation> asyncOps = UnloadLoadedScenes();
@@ -73,7 +73,7 @@ public class SceneMaster : MonoBehaviour
 
         yield return loadingScreen.DisplayLoading(asyncOps.ToArray());
         
-        yield return loadingScreen.FadeOut();
+        yield return loadingScreen.FadeOut(1f);
         InputManager.Instance.SwitchInputMap(InputMap.Game);
     }
 

@@ -1,24 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Clipper2Lib;/*
-using static UnityEditor.Progress;
+using Clipper2Lib;
 using UnityEditor.Experimental.GraphView;
-*/
+
 public class Liane : MonoBehaviour
 {
     public Vector3 LianePosition { get => _lianePos; }
     public float MaxLength { get => maxLength; }
 
-    Vector3[] direction = new [] {
-        new Vector3(1.0f,0,0),      //right
-        new Vector3(0.5f,0.5f,0),   //up right
-        new Vector3(0,1.0f,0),      //up
-        new Vector3(-0.5f,0.5f,0), //up left
-        new Vector3(-1.0f,0,0),     //left
-        new Vector3(-0.5f,-0.5f,0), //down left
-        new Vector3(0,-1.0f,0),     //down
-        new Vector3(0.5f,-0.5f,0),  //down right
+    Vector2[] direction = new [] {
+        Vector2.right,
+        new Vector2(0.5f, 0.5f).normalized,   //up right
+        Vector2.up,
+        new Vector2(-0.5f, 0.5f).normalized, //up left
+        Vector2.left,
+        new Vector2(-0.5f, -0.5f).normalized, //down left
+        Vector2.down,
+        new Vector2(0.5f, -0.5f).normalized,  //down right
     };
 
     //liane
@@ -29,16 +28,17 @@ public class Liane : MonoBehaviour
     [SerializeField] private float maxLength = 10;
 
     private bool _lianeFixed = false;
-    private Vector3 _lianePos = new Vector3(0, 0, 0);
 
+    private Vector2 _lianePos = Vector2.zero;
     private float _lianeLength;
+
     private LianeAttach _currentAttach;
+    private Vector2 _attachOffset;
 
 
-    private Vector3? GetAimAssistPoint(Vector3 aimDir)
+    private Vector2? GetAimAssistPoint(Vector3 aimDir)
     {
-        RaycastHit hit;
-        if (Physics.Raycast(monkeyHand.transform.position, aimDir, out hit, maxLength, platformMask) && hit.collider.GetComponent<LianeAttach>() != null)
+        if (Physics.Raycast(monkeyHand.transform.position, aimDir, out RaycastHit hit, maxLength, platformMask) && hit.collider.GetComponent<LianeAttach>() != null)
         {
             return hit.point;
         }
@@ -146,14 +146,15 @@ public class Liane : MonoBehaviour
 
     void Update()
     {
-        UpdateLianePos();
+        UpdateLianeRenderPosition();
+        if(_currentAttach) _lianePos = _currentAttach.transform.position + (Vector3)_attachOffset;
     }
 
     public void Extend(int dir)
     {
-        Vector3 lianeDir = direction[dir];
+        Vector2 lianeDir = direction[dir];
 
-        Vector3? point = GetAimAssistPoint(lianeDir);
+        Vector2? point = GetAimAssistPoint(lianeDir);
 
         if (point.HasValue)
         {
@@ -176,14 +177,19 @@ public class Liane : MonoBehaviour
 
     private void Attach(LianeAttach attach, Vector2 attachPoint)
     {
-        liane.SetPosition(1, attachPoint);
-        _lianePos = attachPoint;
+        if (!attach) return;
 
+        _currentAttach = attach;
+        _attachOffset = attachPoint - (Vector2)attach.transform.position;
+        _lianePos = _currentAttach.transform.position + (Vector3)_attachOffset;
         _lianeLength = Vector3.Distance(monkeyHand.transform.position, attachPoint);
+
+        if (_lianePos != attachPoint) Debug.LogError(_lianePos + " " + attachPoint);
 
         _lianeFixed = true;
 
-        _currentAttach = attach;
+        UpdateLianeRenderPosition();
+
         _currentAttach.OnAttach();
     }
 
@@ -216,9 +222,9 @@ public class Liane : MonoBehaviour
         return liane.GetPosition(0).x < liane.GetPosition(1).x;
     }
 
-    void UpdateLianePos()
+    void UpdateLianeRenderPosition()
     {
         liane.SetPosition(0, monkeyHand.transform.position);
-        if (!_lianeFixed) liane.SetPosition(1, monkeyHand.transform.position);
+        liane.SetPosition(1, (_lianeFixed) ? _lianePos : monkeyHand.transform.position);
     }
 }

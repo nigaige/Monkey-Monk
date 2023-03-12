@@ -27,6 +27,6 @@ public class Checkpoint : ATriggerable
     {
         GameManager.Instance.SetRespawnPoint(gameObject.transform.position);
         var checkpointRanderer = gameObject.transform.GetChild(0).gameObject.GetComponent<Renderer>();
-        checkpointRanderer.material.SetColor("_Color", Color.green);
+        checkpointRanderer.material.SetColor("_BaseColor", Color.green);
     }
 }
