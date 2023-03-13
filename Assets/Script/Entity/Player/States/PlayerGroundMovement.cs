@@ -142,5 +142,11 @@ namespace MonkeyMonk.Player
 
             _movement.TryLaunchLiane();
         }
+        public override void OnClimbInput()
+        {
+            Debug.Log("TryClimbing");
+            base.OnClimbInput();
+            _movement.TryClimbing();
+        }
     }
 }

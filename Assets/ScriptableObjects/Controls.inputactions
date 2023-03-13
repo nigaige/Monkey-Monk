@@ -42,15 +42,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Pause",
-                    "type": "Button",
-                    "id": "2af23c6a-2fd8-48b5-b9a4-40f7559252e5",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Liane",
                     "type": "Button",
                     "id": "4fcaa6a3-ebc8-48fa-9e97-b3fbb780b80e",
@@ -63,6 +54,15 @@
                     "name": "Climb",
                     "type": "Button",
                     "id": "6311678a-c17a-4628-b494-5ecf0d34bf19",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "2af23c6a-2fd8-48b5-b9a4-40f7559252e5",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -281,17 +281,6 @@
                 },
                 {
                     "name": "",
-                    "id": "27d35a24-c1a7-417e-b6e3-45f601a1c491",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
-                    "action": "Pause",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "85800f2d-014f-4a46-beac-e4bc5216c635",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
@@ -336,12 +325,23 @@
                 },
                 {
                     "name": "",
-                    "id": "807d1a4e-d1ad-4220-bb13-73635076c07b",
+                    "id": "4d097024-3a27-4552-9e7b-bc39714d46d2",
                     "path": "<Keyboard>/leftShift",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
                     "action": "Climb",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "27d35a24-c1a7-417e-b6e3-45f601a1c491",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse;KeyboardPreset1;KeyboardPreset2",
+                    "action": "Pause",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

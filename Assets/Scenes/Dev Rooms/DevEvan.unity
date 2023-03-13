@@ -528,6 +528,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3132293133421404436, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
+      propertyPath: actions
+      value: 
+      objectReference: {fileID: -944628639613478452, guid: 3a5b9ec4c75fb9a4f9a4137aa19c5f93, type: 3}
+    - target: {fileID: 3132293133421404436, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: actionEvents.Array.size
       value: 18
       objectReference: {fileID: 0}
@@ -891,7 +895,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5509451445497591071, guid: 7d36be961e27e7c46b79ed3304429fdb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.0497997
+      value: 13.89
       objectReference: {fileID: 0}
     - target: {fileID: 5509451445497591071, guid: 7d36be961e27e7c46b79ed3304429fdb, type: 3}
       propertyPath: m_LocalPosition.y
@@ -932,6 +936,10 @@ PrefabInstance:
     - target: {fileID: 5826895295608968237, guid: 7d36be961e27e7c46b79ed3304429fdb, type: 3}
       propertyPath: m_Name
       value: Button
+      objectReference: {fileID: 0}
+    - target: {fileID: 5826895295608968237, guid: 7d36be961e27e7c46b79ed3304429fdb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []

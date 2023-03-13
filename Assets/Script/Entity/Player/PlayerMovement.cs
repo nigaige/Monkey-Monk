@@ -395,8 +395,10 @@ namespace MonkeyMonk.Player
         }
         public void OnClimb(InputAction.CallbackContext callback)
         {
+            Debug.Log("Trying to climb");
             if (!callback.started) return;
 
+            Debug.Log("Trying to climb2");
             _currentState?.OnClimbInput();
         }
         #endregion
