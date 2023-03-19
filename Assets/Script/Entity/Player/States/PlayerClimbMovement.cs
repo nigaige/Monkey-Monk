@@ -100,6 +100,22 @@ namespace MonkeyMonk.Player
             _movement.FixVerticalPenetration();
             _movement.FixHorizontalPenetration();
         }
+        public override void EnterState()
+        {
+            base.EnterState();
+            _movement.EnableGravity(false);
+        }
+        public override void ExitState()
+        {
+            base.ExitState();
+            _movement.EnableGravity(true);
+        }
+        public override void OnJumpInput()
+        {
+            base.OnJumpInput();
+            _movement.TryJumpFromClimb();
+            _movement.HotFixedUpdateSwitchState(PlayerMovementType.Air);
+        }
         public override void OnClimbInput()
         {
             base.OnClimbInput();

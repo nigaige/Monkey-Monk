@@ -314,7 +314,11 @@ namespace MonkeyMonk.Player
         #endregion
 
         #region Actions
-
+        public void TryJumpFromClimb()
+        {
+            _canJump = true;
+            TryJump();
+        }
         public void TryJump()
         {
             if (!_canJump)
@@ -350,14 +354,17 @@ namespace MonkeyMonk.Player
         {
             if (_canClimb && _currentStateType != PlayerMovementType.Climb)
             {
-                _rb.useGravity = false;
                 _rb.velocity = new Vector3(0, 0, 0);
                 SwitchState(PlayerMovementType.Climb);
             } else if(_currentStateType == PlayerMovementType.Climb)
             {
-                _rb.useGravity = true;
                 SwitchState(PlayerMovementType.Air);
             }
+        }
+
+        public void EnableGravity(bool state)
+        {
+            _rb.useGravity = state;
         }
 
         #endregion
