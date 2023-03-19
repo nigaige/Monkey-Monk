@@ -42,5 +42,10 @@ namespace MonkeyMonk.Player
         {
 
         }
+
+        public virtual void OnClimbInput()
+        {
+
+        }
     }
 }

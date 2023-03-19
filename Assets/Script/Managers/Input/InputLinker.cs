@@ -24,7 +24,6 @@ namespace MonkeyMonk.Inputs
             foreach (var item in actionEvents)
             {
                 if (item.GetPersistentEventCount() == 0) continue;
-
                 for (int i = 0; i < item.GetPersistentEventCount(); i++)
                 {
                     InputActionDelegate inputDelegate = (InputActionDelegate)System.Delegate.CreateDelegate(typeof(InputActionDelegate), item.GetPersistentTarget(i), item.GetPersistentMethodName(i));
