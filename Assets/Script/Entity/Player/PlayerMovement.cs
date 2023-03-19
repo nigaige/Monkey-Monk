@@ -62,6 +62,7 @@ namespace MonkeyMonk.Player
         private bool _isOnGround = false;
         private bool _isOnSolidGround;
         private bool _isTouchingWall = false;
+        [SerializeField]
         private bool _canClimb = false;
 
         public Vector2 LastLookingDirection { get; private set; }

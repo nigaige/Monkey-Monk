@@ -340,6 +340,8 @@
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "Hang",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 },
                 {
                     "name": "",
