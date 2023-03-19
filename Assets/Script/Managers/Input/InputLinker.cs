@@ -32,7 +32,6 @@ namespace MonkeyMonk.Inputs
                     _actions.Add(item.actionId, inputAction);
 
                     PlayerInput.GetPlayerByIndex(0).actionEvents.First(x => x.actionId == item.actionId).AddListener(inputAction);
-                    Debug.Log("Test");
                 }
             }
         }

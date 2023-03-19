@@ -144,7 +144,6 @@ namespace MonkeyMonk.Player
         }
         public override void OnClimbInput()
         {
-            Debug.Log("TryClimbing");
             base.OnClimbInput();
             _movement.TryClimbing();
         }

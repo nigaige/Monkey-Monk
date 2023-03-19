@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.1838636, g: 0.2286799, b: 0.30120826, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028331, g: 0.2257133, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -325,6 +325,10 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 4fcaa6a3-ebc8-48fa-9e97-b3fbb780b80e
     m_ActionName: Player/Liane
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6311678a-c17a-4628-b494-5ecf0d34bf19
+    m_ActionName: Player/Climb[/Keyboard/leftShift]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: KeyboardMouse
   m_DefaultActionMap: Player

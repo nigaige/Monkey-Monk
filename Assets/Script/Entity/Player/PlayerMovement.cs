@@ -305,7 +305,16 @@ namespace MonkeyMonk.Player
         }
         public void TryClimbing()
         {
-            if(_canClimb) SwitchState(PlayerMovementType.Climb);
+            if (_canClimb && _currentStateType != PlayerMovementType.Climb)
+            {
+                _rb.useGravity = false;
+                _rb.velocity = new Vector3(0, 0, 0);
+                SwitchState(PlayerMovementType.Climb);
+            } else if(_currentStateType == PlayerMovementType.Climb)
+            {
+                _rb.useGravity = true;
+                SwitchState(PlayerMovementType.Air);
+            }
         }
 
         #endregion
@@ -338,7 +347,7 @@ namespace MonkeyMonk.Player
         public void OnMovement(InputAction.CallbackContext callback)
         {
             _movementInput = callback.ReadValue<Vector2>();
-
+            Debug.Log(_movementInput);
             _clampedMovementInput = Vector2.zero;
             if (_movementInput == Vector2.zero) return;
 
@@ -395,10 +404,8 @@ namespace MonkeyMonk.Player
         }
         public void OnClimb(InputAction.CallbackContext callback)
         {
-            Debug.Log("Trying to climb");
             if (!callback.started) return;
 
-            Debug.Log("Trying to climb2");
             _currentState?.OnClimbInput();
         }
         #endregion
@@ -426,7 +433,7 @@ namespace MonkeyMonk.Player
             _states[PlayerMovementType.Ground] = new PlayerGroundMovement(this, _rb, _collider, horizontalAcceleration, maxHorizontalVelocity, groundMask);
             _states[PlayerMovementType.Air] = new PlayerAirMovement(this, _rb, airHorizontalAcceleration, maxHorizontalVelocity, gravityMultiplier, fallMultiplier, lowJumpMultiplier, maxFallVelocity);
             _states[PlayerMovementType.Liane] = new PlayerLianeMovement(this, _rb, liane, gravityMultiplier, lianeHorizontalSpeed, lianeSpeed, lianeMaxAngle, lianeVerticalSpeed);
-            _states[PlayerMovementType.Climb] = new PlayerClimbMovement(this, _rb, _collider);
+            _states[PlayerMovementType.Climb] = new PlayerClimbMovement(this, _rb, _collider, horizontalAcceleration, maxHorizontalVelocity);
 
 
             SwitchState(_currentStateType);
