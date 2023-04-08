@@ -29,5 +29,6 @@ public class MovingPlateform : AActivable
 
         transform.position = splineContainer.transform.position + (Vector3)splineContainer.Spline.EvaluatePosition((splineDir) ? 0f : 1f);
         MovingCoroutine = null;
+        if (splineContainer.Spline.Closed) MovingCoroutine = StartCoroutine(MoveToNextNode());
     }
 }

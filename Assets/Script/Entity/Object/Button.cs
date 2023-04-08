@@ -31,7 +31,7 @@ public class Button : ATriggerable
             // ButtonAction
             ActivateTrigger(true);
             //Sound of button pressed
-            GetComponent<AudioSource>().Play();
+            //GetComponent<AudioSource>().Play();
         }
 
     }
