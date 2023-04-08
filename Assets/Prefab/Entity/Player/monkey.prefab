@@ -74,7 +74,7 @@ Transform:
   - {fileID: 5368244036304838587}
   - {fileID: 7600208825878370843}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8884808085109925187
 MeshFilter:
@@ -157,6 +157,9 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 1088
+  climbMask:
+    serializedVersion: 2
+    m_Bits: 4096
   maxHorizontalVelocity: 6
   horizontalAcceleration: 65
   maxFallVelocity: 20
@@ -176,6 +179,7 @@ MonoBehaviour:
   lianeVerticalSpeed: 2
   lianeMaxAngle: 70
   maxLianeLength: 8
+  _canClimb: 0
 --- !u!54 &1152359394223405359
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -381,6 +385,10 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: fe9ea85a-c790-4ab5-ba6d-d21f28964b5d
     m_ActionName: Player/Hang[/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6311678a-c17a-4628-b494-5ecf0d34bf19
+    m_ActionName: Player/Climb[/Keyboard/leftShift]
 --- !u!82 &304948565
 AudioSource:
   m_ObjectHideFlags: 0
