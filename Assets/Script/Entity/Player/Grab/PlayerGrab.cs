@@ -110,12 +110,13 @@ public class PlayerGrab : MonoBehaviour
 
         Collider collider = grab.gameObject.GetComponent<Collider>();
 
+        collider.transform.localPosition = Vector3.zero;
+
         grab.OnGrabbed(this);
 
         if (grab.IsHeavy()) collider.transform.SetParent(heavyGrabParent, false);
         else collider.transform.SetParent(lightGrabParent, false);
 
-        collider.transform.localPosition = Vector3.zero;
 
         _grabbedObj = collider.gameObject;
     }

@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 6368484527276591713}
   - component: {fileID: 2149368718352280155}
   - component: {fileID: 6272307091263208462}
-  m_Layer: 0
+  - component: {fileID: 7602294968414636861}
+  m_Layer: 6
   m_Name: Box
-  m_TagString: Untagged
+  m_TagString: Block
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -31,7 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2149368718352280155
 MeshFilter:
@@ -61,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 8748892135801146194, guid: 607506b1b1cf36041819bf87fba3d834, type: 3}
+  - {fileID: 2100000, guid: 38dc8159c7496ce42af98d368b1a65e8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -83,3 +84,16 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &7602294968414636861
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8654884734268479618}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.543236, y: 2.5432363, z: 2.5432363}
+  m_Center: {x: -1.2716182, y: 1.2716181, z: -1.2716181}
