@@ -17,4 +17,7 @@ public class DestroyableWall : AActivable
         }
     }
 
+    public override void ResetActivalble()
+    {
+    }
 }

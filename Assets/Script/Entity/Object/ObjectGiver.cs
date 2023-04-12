@@ -12,4 +12,8 @@ public class ObjectGiver : InputActivable
         GameObject handedObject = Instantiate(objectPrefab);
         FindObjectOfType<Player>().GetComponent<PlayerGrab>().GrabObject(handedObject.GetComponent<Grabbable>());
     }
+
+    public override void ResetActivalble()
+    {
+    }
 }

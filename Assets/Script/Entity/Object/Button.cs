@@ -17,7 +17,7 @@ public class Button : ATriggerable
     {
         if(IsActive == false)
         {
-
+            IsActive= true;
             #region visual
             // Change the button to mark it as activated
             var buttonBody = gameObject.transform.GetChild(1).gameObject;

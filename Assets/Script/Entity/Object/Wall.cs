@@ -22,4 +22,7 @@ public class Wall : AActivable
         fallingCoroutine = null;
     }
 
+    public override void ResetActivalble()
+    {
+    }
 }

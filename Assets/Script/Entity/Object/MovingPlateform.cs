@@ -9,9 +9,16 @@ public class MovingPlateform : AActivable
     Coroutine MovingCoroutine;
     [SerializeField] private SplineContainer splineContainer;
     public float MovingSpeed;
+
+
+    public void Start()
+    {
+       // MovingCoroutine = MoveToNextNode();
+    }
+
     public override void Activate()
     {
-        MovingCoroutine = StartCoroutine(MoveToNextNode());
+       if (MovingCoroutine == null) MovingCoroutine= StartCoroutine(MoveToNextNode());
     }
 
 
@@ -30,5 +37,12 @@ public class MovingPlateform : AActivable
         transform.position = splineContainer.transform.position + (Vector3)splineContainer.Spline.EvaluatePosition((splineDir) ? 0f : 1f);
         MovingCoroutine = null;
         if (splineContainer.Spline.Closed) MovingCoroutine = StartCoroutine(MoveToNextNode());
+    }
+
+    public override void ResetActivalble()
+    {
+        if (MovingCoroutine != null) StopCoroutine(MovingCoroutine);
+        MovingCoroutine = null;
+        transform.position = splineContainer.transform.position+ (Vector3)splineContainer.Spline.EvaluatePosition(0);
     }
 }

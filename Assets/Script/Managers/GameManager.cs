@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
 
     private Vector3 _respawnPoint;
 
+    [SerializeField] private ATriggerable[] _triggersToReset;
+
 
     private void Awake()
     {
@@ -37,9 +39,14 @@ public class GameManager : MonoBehaviour
         if (!GameMaster.Instance.HasLifeLeft())
         {
             OnLoseEvent?.Invoke();
+
         }
         else
         {
+            foreach(ATriggerable triggerToReset in _triggersToReset)
+            {
+                triggerToReset.ResetTriggerAble();
+            }
             StartCoroutine(PlayerLifeLoss());
         }
     }
