@@ -213,6 +213,7 @@ MonoBehaviour:
   coyoteJumpDelay: 0.1
   jumpBufferingDelay: 0.1
   liane: {fileID: 5328522932286767545}
+  handSocket: {fileID: 2097675438146791031}
   lianeSpeed: 1
   lianeHorizontalSpeed: 1
   lianeVerticalSpeed: 2

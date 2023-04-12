@@ -8,6 +8,7 @@ namespace MonkeyMonk.Player
     {
         private Rigidbody _rb;
         private Liane _liane;
+        private Transform _handSocket;
         private float _gravityMultiplier;
         private float _lianeHorizontalSpeed;
         private float _lianeSpeed;
@@ -18,10 +19,11 @@ namespace MonkeyMonk.Player
         private float _angleAcceleration;
         private float _angleVelocity;
 
-        public PlayerLianeMovement(PlayerMovement movement, Rigidbody rb, Liane liane, float gravityMultiplier, float lianeHorizontalSpeed, float lianeSpeed, float lianeMaxAngle, float lianeVerticalSpeed) : base(movement)
+        public PlayerLianeMovement(PlayerMovement movement, Rigidbody rb, Liane liane, Transform handSocket, float gravityMultiplier, float lianeHorizontalSpeed, float lianeSpeed, float lianeMaxAngle, float lianeVerticalSpeed) : base(movement)
         {
             _rb = rb;
             _liane = liane;
+            _handSocket = handSocket;
 
             _gravityMultiplier = gravityMultiplier;
             _lianeHorizontalSpeed = lianeHorizontalSpeed;
@@ -95,7 +97,7 @@ namespace MonkeyMonk.Player
             _angle += _angleVelocity * _lianeSpeed * Time.deltaTime;
 
             // Move to next pos
-            Vector3 target = _liane.LianePosition + _liane.GetLianeLength() * new Vector3(Mathf.Sin(_angle), -Mathf.Cos(_angle), 0);
+            Vector3 target = _liane.LianePosition + _liane.GetLianeLength() * new Vector3(Mathf.Sin(_angle), -Mathf.Cos(_angle), 0) + (_movement.transform.position - _handSocket.position);
             _rb.velocity = (target - _rb.position) / Time.deltaTime;
 
             // Vertical Liane Movement
