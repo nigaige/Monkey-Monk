@@ -203,10 +203,10 @@ MonoBehaviour:
   horizontalAcceleration: 65
   maxFallVelocity: 20
   airHorizontalAcceleration: 25
-  hangSpeed: 20
+  hangSpeed: 5
   hangMask:
     serializedVersion: 2
-    m_Bits: 2147483647
+    m_Bits: 2048
   fallMultiplier: 2
   lowJumpMultiplier: 4
   jumpForce: 8
@@ -248,11 +248,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b7d3edccc674954c91aa35d23bd040e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 10
+  force: 13.96
   heavyGrabParent: {fileID: 2097675438146791031}
   lightGrabParent: {fileID: 2097675438146791031}
   catchBoxPosition: {fileID: 5368244036304838587}
-  catchBoxBoundsExtents: {x: 0.5, y: 1, z: 0.1}
+  catchBoxBoundsExtents: {x: 1.4, y: 1.62, z: 0.1}
 --- !u!114 &2755170884234709601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -536,8 +536,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.66, y: 1.33, z: 0.66}
-  m_Center: {x: 0, y: 0.15, z: 0}
+  m_Size: {x: 0.66, y: 1.946917, z: 0.66}
+  m_Center: {x: 0, y: 0.45845866, z: 0}
 --- !u!1 &2449922444840785134
 GameObject:
   m_ObjectHideFlags: 0

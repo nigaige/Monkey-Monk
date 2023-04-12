@@ -8698,7 +8698,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 473610665}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -10.455681, y: -0.000010967255, z: 0}
+  m_LocalPosition: {x: -8.203417, y: 0.000009059906, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -19749,6 +19749,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: monkey
       objectReference: {fileID: 0}
+    - target: {fileID: 2097675438146791031, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.098
+      objectReference: {fileID: 0}
+    - target: {fileID: 2097675438146791031, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.299
+      objectReference: {fileID: 0}
     - target: {fileID: 2477755069874244458, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_RootOrder
       value: 13
@@ -19833,10 +19841,6 @@ PrefabInstance:
       propertyPath: actionEvents.Array.data[18].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    - target: {fileID: 3914884982506606422, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
-      propertyPath: force
-      value: 13.96
-      objectReference: {fileID: 0}
     - target: {fileID: 4920997721104621800, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_Parameters.colorGradient.key0.b
       value: 0.2171591
@@ -19869,13 +19873,13 @@ PrefabInstance:
       propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
       value: 0.5196533
       objectReference: {fileID: 0}
-    - target: {fileID: 7581919209272979861, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
-      propertyPath: hangSpeed
-      value: 5
+    - target: {fileID: 5368244036304838587, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.6
       objectReference: {fileID: 0}
-    - target: {fileID: 7581919209272979861, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
-      propertyPath: hangMask.m_Bits
-      value: 2048
+    - target: {fileID: 5368244036304838587, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.544
       objectReference: {fileID: 0}
     - target: {fileID: 7600208825878370843, guid: a3be2cc904a399a4b8e9c180c89eb04c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -39909,11 +39913,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5313574130377696497, guid: 97370fefff98fbe4c840edb7c5973e04, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 31.055681
+      value: 28.803417
       objectReference: {fileID: 0}
     - target: {fileID: 5313574130377696497, guid: 97370fefff98fbe4c840edb7c5973e04, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.18051
+      value: 5.18049
       objectReference: {fileID: 0}
     - target: {fileID: 5313574130377696497, guid: 97370fefff98fbe4c840edb7c5973e04, type: 3}
       propertyPath: m_LocalPosition.z
