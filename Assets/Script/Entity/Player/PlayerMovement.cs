@@ -41,6 +41,7 @@ namespace MonkeyMonk.Player
 
         [Header("Liane")]
         [SerializeField] private Liane liane;
+        [SerializeField] private Transform handSocket;
         [SerializeField] private float lianeSpeed;
         [SerializeField] private float lianeHorizontalSpeed = 0.2f;
         [SerializeField] private float lianeVerticalSpeed = 1;
@@ -502,7 +503,7 @@ namespace MonkeyMonk.Player
             _states[PlayerMovementType.None] = null;
             _states[PlayerMovementType.Ground] = new PlayerGroundMovement(this, _rb, _collider, horizontalAcceleration, maxHorizontalVelocity, groundMask);
             _states[PlayerMovementType.Air] = new PlayerAirMovement(this, _rb, airHorizontalAcceleration, maxHorizontalVelocity, gravityMultiplier, fallMultiplier, lowJumpMultiplier, maxFallVelocity);
-            _states[PlayerMovementType.Liane] = new PlayerLianeMovement(this, _rb, liane, gravityMultiplier, lianeHorizontalSpeed, lianeSpeed, lianeMaxAngle, lianeVerticalSpeed);
+            _states[PlayerMovementType.Liane] = new PlayerLianeMovement(this, _rb, liane, handSocket, gravityMultiplier, lianeHorizontalSpeed, lianeSpeed, lianeMaxAngle, lianeVerticalSpeed);
             _states[PlayerMovementType.Hang] = new PlayerHangMovement(this, _rb, _collider, hangMask, hangSpeed);
             _states[PlayerMovementType.Climb] = new PlayerClimbMovement(this, _rb, _collider, horizontalAcceleration, maxHorizontalVelocity);
 
